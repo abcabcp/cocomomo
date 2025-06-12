@@ -31,6 +31,7 @@ export default defineConfig({
           options: {
             staleTime: 10000,
           },
+          signal: true,
         },
       },
     },
