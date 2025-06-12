@@ -246,7 +246,7 @@ const ParticleCanvas = () => {
             ref={(el) => {
               countdownTextsRef.current[index] = el;
             }}
-            className="absolute text-7xl scale-[5] opacity-0 text-center"
+            className="text-white absolute text-5xl scale-[5] opacity-0 text-center text-2xl lg:text-5xl"
           >
             {number}
           </span>
@@ -257,7 +257,9 @@ const ParticleCanvas = () => {
           ref={comingSoonRef}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 opacity-0"
         >
-          <h1 className="text-white text-5xl font-bold">Coming Soon</h1>
+          <h1 className="text-white text-2xl lg:text-5xl font-bold">
+            Coming Soon
+          </h1>
         </div>
       )}
     </div>
