@@ -12,8 +12,8 @@ export default defineConfig({
     },
     output: {
       mode: 'tags',
-      target: './api/query',
-      schemas: './api/model',
+      target: './services/query',
+      schemas: './services/model',
       client: 'react-query',
       tsconfig: './tsconfig.json',
       biome: true,
@@ -22,16 +22,16 @@ export default defineConfig({
         title: (title) => {
           return `${title}Api`;
         },
-        mutator: {
-          path: './api/api.ts',
-          name: 'apiInstance',
-        },
         query: {
           useQuery: true,
           options: {
             staleTime: 10000,
           },
           signal: true,
+        },
+        mutator: {
+          path: './services/api.ts',
+          name: 'apiInstance',
         },
       },
     },
