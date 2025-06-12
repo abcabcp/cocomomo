@@ -224,7 +224,7 @@ const ParticleCanvas = () => {
   }, [initCanvas, render, startCountdown, isAnimationStarted, showComingSoon]);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-dvh overflow-hidden bg-black">
       <div className="w-[50vh] h-[50vh] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <Image
           ref={ringImgRef}
