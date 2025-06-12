@@ -1,0 +1,38 @@
+import { defineConfig } from 'orval';
+
+export default defineConfig({
+  api: {
+    input: {
+      target: `${process.env.NEXT_PUBLIC_API_URL}/swagger-json`,
+      filters: {
+        mode: 'exclude',
+        // Util 폴더 제외
+        tags: ['Util'],
+      },
+    },
+    output: {
+      mode: 'tags',
+      target: './api/query',
+      schemas: './api/model',
+      client: 'react-query',
+      tsconfig: './tsconfig.json',
+      biome: true,
+      clean: true,
+      override: {
+        title: (title) => {
+          return `${title}Api`;
+        },
+        mutator: {
+          path: './api/api.ts',
+          name: 'apiInstance',
+        },
+        query: {
+          useQuery: true,
+          options: {
+            staleTime: 10000,
+          },
+        },
+      },
+    },
+  },
+});
