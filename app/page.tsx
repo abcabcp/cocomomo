@@ -1,9 +1,9 @@
-import ParticleCanvas from '@/src/components/ParticleCanvas';
+'use client';
+
+import MainCanvas from '@/src/components/cocomomo/MainCanvas';
 
 export default function Home() {
   return (
-    <main className="w-full h-full">
-      <ParticleCanvas />
-    </main>
+    <MainCanvas />
   );
 }
