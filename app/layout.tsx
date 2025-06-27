@@ -1,17 +1,7 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import Dock from '@/src/components/common/Dock';
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+import { Dock, Header } from '@/widgets/layout';
+import { pretendardJP } from './fonts';
 
 export const metadata: Metadata = {
   title: 'COCO MOMO',
@@ -26,8 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-dvw h-dvh`}
+        className={`${pretendardJP.variable} antialiased w-dvw h-dvh`}
       >
+        <Header />
         {children}
         <Dock />
       </body>
