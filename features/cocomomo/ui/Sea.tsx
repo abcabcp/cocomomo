@@ -1,52 +1,54 @@
-
-'use client';
-
+import seaFragmentShader from '@/features/cocomomo/shaders/seaFragment.glsl';
+import seaVertexShader from '@/features/cocomomo/shaders/seaVertex.glsl';
 import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
-const planeSize = 100;
-const waveHeight = 0.3;
-const waveSpeed = 1.2;
-
 export function Sea() {
-    const meshRef = useRef<THREE.Mesh>(null);
+    const materialRef = useRef<THREE.ShaderMaterial>(null);
+
+    const uniforms = useMemo(() => ({
+        iGlobalTime: { value: 0 },
+        iResolution: { value: new THREE.Vector2() },
+    }), []);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (materialRef.current) {
+                materialRef.current.uniforms.iResolution.value.x = window.innerWidth;
+                materialRef.current.uniforms.iResolution.value.y = window.innerHeight;
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     useFrame(({ clock }) => {
-        if (!meshRef.current) return;
-
-        const time = clock.getElapsedTime() * waveSpeed;
-        const position = meshRef.current.geometry.getAttribute('position');
-
-        for (let i = 0; i < position.count; i++) {
-            const x = position.getX(i);
-            const y = position.getY(i);
-
-            const waveX1 = Math.sin(x * 0.05 + time * 0.7) * waveHeight;
-            const waveX2 = Math.sin(x * 0.02 + time * 0.4) * waveHeight * 2;
-            const waveY1 = Math.cos(y * 0.01 + time * 0.3) * waveHeight;
-            const waveY2 = Math.cos(y * 0.01 + time * 0.6) * waveHeight * 1.5;
-
-            const z = waveX1 + waveX2 + waveY1 + waveY2;
-            position.setZ(i, z);
+        if (materialRef.current) {
+            materialRef.current.uniforms.iGlobalTime.value = clock.getElapsedTime();
         }
-        position.needsUpdate = true;
     });
 
     return (
         <mesh
-            ref={meshRef}
-            rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, -1, 0]}
-            receiveShadow
+            frustumCulled={false}
+            position={[0, 0, 0]}
         >
-            <boxGeometry args={[planeSize, planeSize, 1]} />
-            <meshStandardMaterial
-                color="#98daf4"
-
-                transparent
-                opacity={0.85}
+            <planeGeometry args={[2, 2]} />
+            <shaderMaterial
+                ref={materialRef}
+                uniforms={uniforms}
+                vertexShader={seaVertexShader}
+                fragmentShader={seaFragmentShader}
+                transparent={true}
             />
         </mesh>
     );
 }
+
+export default Sea;

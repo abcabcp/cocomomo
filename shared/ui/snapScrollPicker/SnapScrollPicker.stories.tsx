@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import SnapScrollPicker from './index';
+import { SnapScrollPicker } from './index';
 
 const meta = {
   title: 'Atomic/SnapScrollPicker',

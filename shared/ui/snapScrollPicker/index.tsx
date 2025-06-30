@@ -17,7 +17,7 @@ export type SnapScrollPickerProps =
   | NumberScrollPickerProps
   | TimeScrollPickerProps;
 
-export default function SnapScrollPicker(props: SnapScrollPickerProps) {
+export function SnapScrollPicker(props: SnapScrollPickerProps) {
   if (props.type === 'time') {
     return <TimeScrollPicker {...(props as TimeScrollPickerProps)} />;
   }

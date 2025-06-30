@@ -3,22 +3,31 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import { OrbitControls } from "@react-three/drei";
-import { Sea, Sky, Light } from "@/features/cocomomo/ui";
+import { Sea } from "@/features/cocomomo/ui";
 
 export function MainCanvas() {
     return (
         <Canvas
             gl={{ antialias: true }}
             className="w-full h-full z-0"
-            camera={{ position: [0, 0, 10], fov: 45 }}
+            camera={{
+                position: [0, 5, 20],
+                fov: 45,
+                near: 0.1,
+                far: 1000
+            }}
             shadows
         >
-            {/* TODO: texture 찾기 + controls 조정 */}
             <Suspense fallback={null}>
-                <Light />
-                <Sky />
                 <Sea />
-                <OrbitControls />
+                <OrbitControls
+                    enableZoom={true}
+                    enablePan={true}
+                    minPolarAngle={0}
+                    maxPolarAngle={Math.PI / 2.5}
+                    minDistance={5}
+                    maxDistance={50}
+                />
             </Suspense>
         </Canvas>
     )

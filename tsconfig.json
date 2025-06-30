@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "shared/types/**/*.d.ts"
+    "shared/types/**/*.d.ts",
+    "types/**/*.d.ts"
   ],
   "exclude": ["node_modules"]
 }

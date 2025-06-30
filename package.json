@@ -20,12 +20,12 @@
     "cookies-next": "^6.0.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.19.1",
-    "framer-motion-3d": "^12.4.13",
     "gsap": "^3.13.0",
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "three": "^0.177.0"
+    "three": "^0.177.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
@@ -44,6 +44,7 @@
     "clsx": "^2.1.1",
     "dotenv-cli": "^8.0.0",
     "orval": "^7.9.0",
+    "raw-loader": "^4.0.2",
     "storybook": "^8.0.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4",
