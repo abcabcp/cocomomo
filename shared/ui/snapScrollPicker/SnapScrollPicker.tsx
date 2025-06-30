@@ -48,7 +48,6 @@ export default function SnapScrollPicker({
       safeIndex = Math.max(0, Math.floor(rawIndex * 2) / 2);
     }
 
-    // 정수 인덱스로 보정
     safeIndex = Math.round(safeIndex);
     const newValue = items[safeIndex];
 
@@ -91,7 +90,7 @@ export default function SnapScrollPicker({
         snapToItem(index);
       }
     }
-  }, []);
+  }, [selectedValue, items, snapToItem]);
 
   useEffect(() => {
     const container = containerRef.current;

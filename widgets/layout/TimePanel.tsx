@@ -1,10 +1,10 @@
 'use client';
 
 import { formatTimeString, SlidePanel, SnapScrollPicker } from "@/shared";
-import { useTimePanel } from "./hooks/useTimePanel";
+import { useTimeControl } from "@/shared/lib/hooks/useTimeControl";
 
 export function TimePanel() {
-    const { currentTime, selectedTime, handleTimeChange, setUserDefinedTime, isOpen, setIsOpen, handleClose } = useTimePanel();
+    const { currentTime, selectedTime, handleTimeChange, isOpen, setIsOpen, handleClose } = useTimeControl();
 
     return (
         <>
@@ -17,7 +17,7 @@ export function TimePanel() {
                 onClose={handleClose}
                 direction="right"
                 wrapperClassName="mt-6 bg-transparent¡¡"
-                className="mt-6 h-fit rounded-2xl p-4 bg-white/80"
+                className="mt-6 h-fit rounded-2xl p-4"
                 marginX={16}
             >
                 <>

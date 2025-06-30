@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Dock, Header } from '@/widgets/layout';
 import { pretendardJP } from './fonts';
+import ClientLayout from '@/widgets/layout/ClientLayout';
 
 export const metadata: Metadata = {
   title: 'COCO MOMO',
@@ -18,9 +18,9 @@ export default function RootLayout({
       <body
         className={`${pretendardJP.variable} antialiased w-dvw h-dvh`}
       >
-        <Header />
-        {children}
-        <Dock />
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html >
   );

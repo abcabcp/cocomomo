@@ -13,7 +13,6 @@ const nextConfig: NextConfig = {
     },
   },
   webpack: (config) => {
-    // GLSL 셰이더 파일을 위한 로더 설정
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,
       use: ['raw-loader'],

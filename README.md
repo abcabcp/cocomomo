@@ -5,9 +5,10 @@
 
 ## 주요 기능
 - 리얼리스틱 오션 셰이더 (바다 물결 효과)
+- 시간대별 바다 표현 (새벽, 일출, 오전, 오후, 일몰, 저녁/밤)
 
 ## 크레딧
-- 바다 셰이더 코드는 [Jonathan Blair](https://codepen.io/knoland/pen/XKxrJb)의 작업을 기반으로 하였으며, MIT 라이센스에 따라 사용되었습니다.
+- 바다 셰이더 코드는 [Jonathan Blair](https://codepen.io/knoland/pen/XKxrJb)의 작업을 기반으로 하였습니다.
 
 ## 라이센스
 이 프로젝트는 MIT 라이센스 하에 배포됩니다. 자세한 내용은 [LICENSE](./LICENSE) 파일을 참조하세요.
