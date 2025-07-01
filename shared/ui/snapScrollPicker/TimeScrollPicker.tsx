@@ -2,21 +2,71 @@
 
 import { useCallback, useMemo } from 'react';
 import { BaseScrollPickerProps } from '.';
-import SnapScrollPicker from './SnapScrollPicker';
+import SnapScrollPicker, { PickerStyleType } from './SnapScrollPicker';
 import { formatTimeString, parseTimeString } from '@/shared/lib';
+import { cva } from 'class-variance-authority';
 
 type Period = 'AM' | 'PM';
+
+const containerStyles = cva(
+  'relative w-full min-w-[300px] h-full [mask-image:linear-gradient(to_bottom,transparent_0%,black_20%,black_80%,transparent_100%)]',
+  {
+    variants: {
+      styleType: {
+        normal: '',
+        primary: 'min-w-[430px]',
+      },
+    },
+    defaultVariants: {
+      styleType: 'normal',
+    },
+  }
+);
+
+
+const leftColumnStyles = cva(
+  'text-2xl rounded-l-lg',
+  {
+    variants: {
+      styleType: {
+        normal: ' h-[60px]',
+        primary: ' h-[60px]',
+      },
+    },
+    defaultVariants: {
+      styleType: 'normal',
+    },
+  }
+);
+
+const leftColumnPointerStyles = cva(
+  'py-3',
+  {
+    variants: {
+      styleType: {
+        normal: 'bg-grayscale-200 rounded-l-2xl h-[60px]',
+        primary: 'h-25 text-white font-medium bg-white/10 rounded-l-2xl',
+      },
+    },
+    defaultVariants: {
+      styleType: 'normal',
+    },
+  }
+);
+
 
 export interface TimeScrollPickerProps extends BaseScrollPickerProps {
   // hh:mm
   value: string;
   // hh:mm 형식으로 리턴.
   onChange: (value: string) => void;
+  styleType?: PickerStyleType;
 }
 
 export default function TimeScrollPicker({
   value,
   onChange,
+  styleType = 'normal',
 }: TimeScrollPickerProps) {
   const { hour, minute, period } = parseTimeString(value ?? '');
 
@@ -47,22 +97,23 @@ export default function TimeScrollPicker({
 
   return (
     <>
-      <div className="relative w-full h-full [mask-image:linear-gradient(to_bottom,transparent_0%,black_20%,black_80%,transparent_100%)]">
+      <div className={containerStyles({ styleType })}>
         <div className="w-full grid grid-cols-[22%_22%_22%_34%] gap-0 items-center relative">
-          <div className="text-2xl rounded-l-lg">
-            <p className="py-3 h-[60px]">&nbsp;</p>
-            <p className="py-3 h-[60px]">&nbsp;</p>
-            <p className="py-3 h-[60px] bg-grayscale-200 rounded-l-2xl">
+          <div>
+            <p className={leftColumnStyles({ styleType })}>&nbsp;</p>
+            <p className={leftColumnStyles({ styleType })}>&nbsp;</p>
+            <p className={leftColumnPointerStyles({ styleType })}>
               &nbsp;
             </p>
-            <p className="py-3 h-[60px]">&nbsp;</p>
-            <p className="py-3 h-[60px]">&nbsp;</p>
+            <p className={leftColumnStyles({ styleType })}>&nbsp;</p>
+            <p className={leftColumnStyles({ styleType })}>&nbsp;</p>
           </div>
           <div className="overflow-hidden">
             <SnapScrollPicker
               items={hours}
               selectedValue={hour}
               onSelect={handleHourChange}
+              styleType={styleType}
             />
           </div>
 
@@ -71,6 +122,7 @@ export default function TimeScrollPicker({
               items={minutes}
               selectedValue={minute}
               onSelect={handleMinuteChange}
+              styleType={styleType}
             />
           </div>
 
@@ -80,6 +132,7 @@ export default function TimeScrollPicker({
               selectedValue={period}
               onSelect={handlePeriodChange}
               pointerClassName="rounded-r-2xl"
+              styleType={styleType}
             />
           </div>
         </div>

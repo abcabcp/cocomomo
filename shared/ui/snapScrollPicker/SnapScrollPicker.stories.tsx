@@ -20,6 +20,11 @@ const meta = {
       control: 'radio',
       options: ['number', 'time'],
     },
+    styleType: {
+      description: 'ScrollPicker의 스타일을 설정합니다.',
+      control: 'radio',
+      options: ['normal', 'primary'],
+    },
     selectValue: {
       description: 'NumberScrollPicker에서 선택된 값입니다.',
       control: 'number',
@@ -66,5 +71,6 @@ export const TimeScrollPicker: Story = {
     type: 'time',
     value: '12:30 PM',
     onChange: (value: string) => console.log('Selected time:', value),
+    styleType: "primary"
   },
 };

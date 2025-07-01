@@ -1,5 +1,69 @@
-import { cn } from '@/shared';
+import { cva } from 'class-variance-authority';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+export type PickerStyleType = 'normal' | 'primary';
+
+const containerStyles = cva(
+  'relative h-[300px] overflow-hidden',
+  {
+    variants: {
+      styleType: {
+        normal: '',
+        primary: 'h-[340px]',
+      },
+    },
+    defaultVariants: {
+      styleType: 'normal',
+    },
+  }
+);
+
+const pointerStyles = cva(
+  'absolute pointer-events-none top-[120px] left-0 right-0 z-3 bg-lightgray',
+  {
+    variants: {
+      styleType: {
+        normal: 'h-[60px]',
+        primary: 'h-25 text-white font-medium bg-white/10 backdrop-filter',
+      },
+    },
+    defaultVariants: {
+      styleType: 'normal',
+    },
+  }
+);
+
+const itemStyles = cva(
+  'flex items-center justify-center w-full text-center text-2xl cursor-pointer',
+  {
+    variants: {
+      styleType: {
+        normal: 'h-[60px]',
+        primary: '',
+      },
+      isSelected: {
+        true: 'text-black',
+        false: 'text-gray-400',
+      },
+    },
+    compoundVariants: [
+      {
+        styleType: 'primary',
+        isSelected: true,
+        className: 'text-white scale-120 transition-all duration-200 text-5xl font-extrabold tracking-wide h-25 text-shadow-lg drop-shadow-md',
+      },
+      {
+        styleType: 'primary',
+        isSelected: false,
+        className: 'transition-all duration-200 opacity-70 h-[60px]',
+      }
+    ],
+    defaultVariants: {
+      styleType: 'normal',
+      isSelected: false,
+    },
+  }
+);
 
 interface SnapScrollPickerProps {
   className?: string;
@@ -9,6 +73,7 @@ interface SnapScrollPickerProps {
   onSelect: (value: number | string) => void;
   itemHeight?: number;
   formatValue?: (value: number | string) => string;
+  styleType?: PickerStyleType;
 }
 
 export default function SnapScrollPicker({
@@ -19,11 +84,13 @@ export default function SnapScrollPicker({
   onSelect,
   itemHeight = 60,
   formatValue = (val) => val.toString().padStart(2, '0'),
+  styleType = 'normal',
 }: SnapScrollPickerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const [scrolling, setScrolling] = useState(false);
   const visibleItemCount = 5;
+
 
   const paddingTop = Math.floor(visibleItemCount / 2) * itemHeight;
   const paddingBottom =
@@ -115,13 +182,11 @@ export default function SnapScrollPicker({
     };
   }, [handleScrollEnd]);
 
+
   return (
-    <div className={cn('relative h-[300px] overflow-hidden', className)}>
+    <div className={containerStyles({ styleType, className })}>
       <div
-        className={cn(
-          'absolute pointer-events-none top-[120px] left-0 right-0 h-[60px] z-3 bg-lightgray',
-          pointerClassName,
-        )}
+        className={pointerStyles({ styleType, className: pointerClassName })}
       />
       <div
         ref={containerRef}
@@ -135,11 +200,10 @@ export default function SnapScrollPicker({
         {items.map((item, idx) => (
           <div
             key={`${item}-${idx}`}
-            className={cn(
-              'h-[60px] flex items-center justify-center w-full text-center text-2xl cursor-pointer',
-              { 'text-black': item === selectedValue },
-              { 'text-gray-300': item !== selectedValue },
-            )}
+            className={itemStyles({
+              styleType,
+              isSelected: item === selectedValue
+            })}
             onClick={() => {
               const actualIndex = items.indexOf(item);
               if (actualIndex !== -1) {
