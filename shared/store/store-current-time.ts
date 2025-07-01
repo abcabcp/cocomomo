@@ -9,31 +9,21 @@ interface TimeData {
 }
 
 interface CurrentTimeStore {
-  // 현재 표시할 시간
   currentTime: TimeData;
-  // 사용자가 시간을 변경했는지 여부
   isCustomTime: boolean;
-  // 로컬 시간과의 차이 (밀리초 단위)
   timeDifferenceMs: number;
-  // 마지막 업데이트 시간 (성능 최적화용)
   lastUpdateTime: number;
 
-  // 시간 설정 함수
   setCurrentTime: (time: TimeData) => void;
-  // 사용자가 시간을 직접 설정
   setCustomTime: (time: TimeData) => void;
-  // 로컬 시간 기준으로 시간 업데이트 (매 초 호출)
   updateTimeByDifference: () => void;
-  // 로컬 시간으로 리셋
   resetToLocalTime: () => void;
 }
 
-// 현재 로컬 시간 가져오기 (내부 유틸리티)
 const getLocalTime = (): TimeData => {
   return getCurrentTime();
 };
 
-// 두 시간 간의 차이 계산 (밀리초)
 const calculateTimeDifference = (
   userTime: TimeData,
   localTime: TimeData,
@@ -69,7 +59,6 @@ const calculateTimeDifference = (
   return getUserTimeMs() - getLocalTimeMs();
 };
 
-// 시간 차이를 적용하여 현재 시간 계산
 const applyTimeDifference = (differenceMs: number): TimeData => {
   const now = new Date();
   const targetTime = new Date(now.getTime() + differenceMs);
@@ -106,18 +95,15 @@ export const useCurrentTimeStore = create<CurrentTimeStore>((set, get) => ({
   updateTimeByDifference: () => {
     const { isCustomTime, timeDifferenceMs, lastUpdateTime } = get();
 
-    // 커스텀 시간이 아니면 로컬 시간 사용
     if (!isCustomTime) {
       set({ currentTime: getLocalTime() });
       return;
     }
 
-    // 마지막 업데이트 후 100ms 이내면 스킵 (성능 최적화)
     if (Date.now() - lastUpdateTime < 100) {
       return;
     }
 
-    // 시간 차이 적용하여 현재 시간 계산
     const updatedTime = applyTimeDifference(timeDifferenceMs);
     set({
       currentTime: updatedTime,
