@@ -3,19 +3,22 @@ import * as THREE from 'three';
 import { useCurrentTimeStore } from '@/shared/store';
 import { PresetName } from '../types/sea';
 import { ANIMATION_DURATION, SEA_TIME_PRESETS } from '../model/sea';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import gsap from 'gsap';
 
 export function useSea() {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const { gl, size } = useThree();
   const { currentTime } = useCurrentTimeStore();
   const [activePreset, setActivePreset] = useState<PresetName>('morning');
   const [animating, setAnimating] = useState(false);
+  const isFirstRenderRef = useRef(true);
 
   const uniforms = useMemo(
     () => ({
       iGlobalTime: { value: 0 },
       iResolution: { value: new THREE.Vector2() },
+      uAspectRatio: { value: 1.0 },
       uSkyColor: { value: new THREE.Vector3(0.4, 0.6, 0.8) },
       uSkyTopColor: { value: new THREE.Vector3(0.2, 0.5, 0.9) },
       uSeaBaseColor: { value: new THREE.Vector3(0.05, 0.15, 0.3) },
@@ -30,52 +33,6 @@ export function useSea() {
     }),
     [],
   );
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (materialRef.current) {
-        materialRef.current.uniforms.iResolution.value.x = window.innerWidth;
-        materialRef.current.uniforms.iResolution.value.y = window.innerHeight;
-      }
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!currentTime || animating) return;
-
-    let hour24 = currentTime.hour;
-    if (currentTime.period === 'PM' && hour24 !== 12) hour24 += 12;
-    if (currentTime.period === 'AM' && hour24 === 12) hour24 = 0;
-
-    const totalMinutes = hour24 * 60 + currentTime.minute;
-    let newPreset: PresetName = 'morning';
-
-    if (totalMinutes >= 180 && totalMinutes < 300) {
-      newPreset = 'dawn';
-    } else if (totalMinutes >= 300 && totalMinutes < 420) {
-      newPreset = 'sunrise';
-    } else if (totalMinutes >= 420 && totalMinutes < 720) {
-      newPreset = 'morning';
-    } else if (totalMinutes >= 720 && totalMinutes < 1020) {
-      newPreset = 'afternoon';
-    } else if (totalMinutes >= 1020 && totalMinutes < 1140) {
-      newPreset = 'sunset';
-    } else {
-      newPreset = 'night';
-    }
-
-    if (newPreset !== activePreset) {
-      setActivePreset(newPreset);
-      animateToPreset(newPreset);
-    }
-  }, [currentTime, activePreset, animating]);
 
   const animateToPreset = useCallback((presetName: PresetName) => {
     if (!materialRef.current) return;
@@ -123,7 +80,6 @@ export function useSea() {
     animateVector3Value('uSeaWaterColor', targetPreset.seaWaterColor);
     animateVector3Value('uSunPosition', targetPreset.sunPosition);
     animateVector3Value('uMoonPosition', targetPreset.moonPosition);
-
     animateScalarValue('uMoonBrightness', targetPreset.moonBrightness);
     animateScalarValue('uStarBrightness', targetPreset.starBrightness);
     animateScalarValue('uWaveSpeed', targetPreset.waveSpeed);
@@ -132,6 +88,60 @@ export function useSea() {
 
     return timeline;
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (materialRef.current) {
+        const pixelRatio = gl.getPixelRatio();
+        const pixelWidth = size.width * pixelRatio;
+        const pixelHeight = size.height * pixelRatio;
+
+        materialRef.current.uniforms.iResolution.value.set(
+          pixelWidth,
+          pixelHeight,
+        );
+
+        const aspectRatio = pixelWidth / pixelHeight;
+        materialRef.current.uniforms.uAspectRatio.value = aspectRatio;
+      }
+    };
+
+    handleResize();
+  }, [gl, size]);
+
+  useEffect(() => {
+    if (!currentTime) return;
+
+    let hour24 = currentTime.hour;
+    if (currentTime.period === 'PM' && hour24 !== 12) hour24 += 12;
+    if (currentTime.period === 'AM' && hour24 === 12) hour24 = 0;
+
+    const totalMinutes = hour24 * 60 + currentTime.minute;
+    let newPreset: PresetName = 'morning';
+
+    if (totalMinutes >= 180 && totalMinutes < 300) {
+      newPreset = 'dawn';
+    } else if (totalMinutes >= 300 && totalMinutes < 420) {
+      newPreset = 'sunrise';
+    } else if (totalMinutes >= 420 && totalMinutes < 720) {
+      newPreset = 'morning';
+    } else if (totalMinutes >= 720 && totalMinutes < 1020) {
+      newPreset = 'afternoon';
+    } else if (totalMinutes >= 1020 && totalMinutes < 1140) {
+      newPreset = 'sunset';
+    } else {
+      newPreset = 'night';
+    }
+
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      setActivePreset(newPreset);
+      animateToPreset(newPreset);
+    } else if (!animating && newPreset !== activePreset) {
+      setActivePreset(newPreset);
+      animateToPreset(newPreset);
+    }
+  }, [currentTime, activePreset, animating, animateToPreset]);
 
   useFrame(({ clock }) => {
     if (materialRef.current) {

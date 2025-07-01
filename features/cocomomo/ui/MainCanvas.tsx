@@ -8,8 +8,8 @@ import { Time } from "./Time";
 export function MainCanvas() {
     return (
         <Canvas
+            className="fixed inset-0 z-0"
             gl={{ antialias: true }}
-            className="w-full h-full z-0"
             camera={{ position: [0, 5, 20], fov: 50, near: 0.1, far: 1000 }}
             shadows
         >

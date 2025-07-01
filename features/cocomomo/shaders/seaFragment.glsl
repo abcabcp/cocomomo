@@ -1,5 +1,6 @@
 uniform float iGlobalTime;
 uniform vec2 iResolution;
+uniform float uAspectRatio;
 
 uniform vec3 uSkyColor;      
 uniform vec3 uSkyTopColor;   
@@ -247,9 +248,11 @@ void main() {
   SEA_WATER_COLOR = uSeaWaterColor;
   SEA_TIME = iGlobalTime * SEA_SPEED;
   
-  vec2 uv = gl_FragCoord.xy / iResolution.xy;
-  uv = uv * 2.0 - 1.0;
-  uv.x *= iResolution.x / iResolution.y;    
+  vec2 uv = gl_FragCoord.xy / iResolution.xy; 
+  uv = uv * 2.0 - 1.0;                         
+  
+  uv.x *= uAspectRatio;
+  
   float time = iGlobalTime * 0.3;
 
   vec3 ang = vec3(
@@ -257,9 +260,7 @@ void main() {
   );  
   
   vec3 ori = vec3(0.0,3.5,time*5.0);
-  vec3 dir = normalize(
-    vec3(uv.xy,-2.0)
-  );
+  vec3 dir = normalize(vec3(uv.x, uv.y, -2.0));
   dir.z += length(uv) * 0.15;
   dir = normalize(dir);
 
@@ -287,5 +288,5 @@ void main() {
   
   color = mix(color, sunMoonEffect, clamp(length(sunMoonEffect), 0.0, 0.95));
 
-  gl_FragColor = vec4(pow(color,vec3(0.65)), 1.0); // 감마 보정 값도 조정
+  gl_FragColor = vec4(pow(color,vec3(0.65)), 1.0);
 }
