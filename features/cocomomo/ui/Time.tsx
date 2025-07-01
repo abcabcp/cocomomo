@@ -12,6 +12,7 @@ export function Time() {
             <div className="min-w-[300px] flex items-center">
                 <SnapScrollPicker
                     type="time"
+                    styleType="primary"
                     value={formatTimeString(currentTime.hour, currentTime.minute, currentTime.period)}
                     onChange={(value) => setUserDefinedTime(parseTimeString(value))}
                 />

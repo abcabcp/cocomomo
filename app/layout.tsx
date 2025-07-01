@@ -4,24 +4,27 @@ import { pretendardJP } from './fonts';
 import ClientLayout from '@/widgets/layout/ClientLayout';
 
 export const metadata: Metadata = {
-  title: 'COCO MOMO',
-  description: 'COCO MOMO',
+    title: 'COCO MOMO',
+    description: 'COCO MOMO',
 };
 
 export default function RootLayout({
-  children,
+    children,
+    modal,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
+    modal: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${pretendardJP.variable} antialiased w-dvw h-dvh`}
-      >
-        <ClientLayout>
-          {children}
-        </ClientLayout>
-      </body>
-    </html >
-  );
+    return (
+        <html lang="en">
+            <body
+                className={`${pretendardJP.variable} antialiased w-dvw h-dvh`}
+            >
+                <ClientLayout>
+                    {children}
+                    {modal}
+                </ClientLayout>
+            </body>
+        </html >
+    );
 }

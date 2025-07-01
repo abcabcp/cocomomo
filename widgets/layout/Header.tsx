@@ -3,15 +3,13 @@ import { TimePanel } from './TimePanel';
 
 export function Header() {
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white/80 flex justify-between items-center text-sm px-4">
+        <header className="fixed top-0 left-0 right-0 z-1 w-full bg-white/80 flex justify-between items-center text-sm px-4">
             <div className='flex gap-x-2 items-center text-black'>
                 <h1>
                     <Image src="/assets/svgs/logo.svg" alt="logo" width={24} height={24} />
                     <span className='sr-only'>COCOMOMO</span>
                 </h1>
                 <ul className='flex gap-x-2'>
-                    <li><button>이동</button></li>
-                    <li><button>터미널</button></li>
                     <li><button>도움말</button></li>
                 </ul>
             </div>

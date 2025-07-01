@@ -20,10 +20,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
 
     return (
-        <>
+        <div className="w-full h-full relative">
             <Header />
             {children}
             <Dock />
-        </>
+        </div>
     );
 }   

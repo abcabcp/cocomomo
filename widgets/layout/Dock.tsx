@@ -5,8 +5,11 @@ import { cn } from '@/shared';
 import { useDragAndDrop } from '@/shared/lib/hooks/useDragAndDrop';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 
 export function Dock() {
+    const router = useRouter();
+    const pathname = usePathname();
     const {
         dragging,
         sortItems,
@@ -35,6 +38,7 @@ export function Dock() {
         };
     };
 
+
     return (
         <nav className="p-2 z-10 absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/40 rounded-lg backdrop-blur-md">
             <ul className="flex gap-x-2">
@@ -45,7 +49,7 @@ export function Dock() {
                         initial={{ opacity: 1 }}
                         animate={getAnimationProps(index)}
                         className={cn(
-                            'rounded-lg flex items-center justify-center cursor-grab',
+                            'rounded-lg flex items-center justify-center cursor-pointer',
                             menu.className,
                             draggedIndex === index ? 'z-50' : 'z-10',
                             dragging && draggedIndex === index ? 'cursor-grabbing' : '',
@@ -59,10 +63,12 @@ export function Dock() {
                             e.preventDefault();
                             onDragOver(index, e as any);
                         }}
+                        onClick={() => router.push(menu.link)}
                     >
                         <motion.div
                             whileHover={{ scale: selectedItem?.title === menu.title ? 1.1 : 1.0 }}
                             whileTap={{ scale: selectedItem?.title === menu.title ? 0.95 : 1.0 }}
+                            className='relative'
                         >
                             <Image
                                 src={menu.imageSrc}
@@ -71,6 +77,7 @@ export function Dock() {
                                 height={40}
                                 className="pointer-events-none"
                             />
+                            {pathname === menu.link && <span className="absolute bottom-[-7px] left-1/2 transform -translate-x-1/2 w-[5px] h-[5px] rounded-full bg-gray-500" />}
                         </motion.div>
                     </motion.li>
                 ))}

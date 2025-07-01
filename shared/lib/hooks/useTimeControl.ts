@@ -1,8 +1,9 @@
 'use client';
 
 import { parseTimeString } from '@/shared';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import { useCurrentTimeStore } from '@/shared/store';
+import { getCurrentTime } from '@/shared/lib/utils/time';
 
 export function useTimeControl() {
   const {
@@ -14,12 +15,7 @@ export function useTimeControl() {
 
   const [selectedTime, setSelectedTime] = useState(currentTime);
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedTime(currentTime);
-    }
-  }, [isOpen]);
+  const [isReset, setIsReset] = useState(false);
 
   const handleClose = useCallback(() => {
     setIsOpen(false);
@@ -45,15 +41,31 @@ export function useTimeControl() {
     [setCustomTime],
   );
 
+  const resetTime = useCallback(() => {
+    setIsReset(true);
+    resetToLocalTime();
+    setSelectedTime(getCurrentTime());
+    setTimeout(() => {
+      setIsReset(false);
+    }, 1000);
+  }, [resetToLocalTime]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedTime(currentTime);
+    }
+  }, [isOpen]);
+
   return {
+    isOpen,
     currentTime,
     selectedTime,
+    isReset,
     handleTimeChange,
     setUserDefinedTime,
-    isOpen,
     setIsOpen,
     handleClose,
-    resetToLocalTime,
+    resetTime,
     updateTimeByDifference,
   };
 }
