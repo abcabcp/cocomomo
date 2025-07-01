@@ -1,9 +1,5 @@
-import ParticleCanvas from '@/src/components/ParticleCanvas';
+import { MainCanvas } from '@/features/cocomomo/ui';
 
-export default function Home() {
-  return (
-    <main className="w-full h-full">
-      <ParticleCanvas />
-    </main>
-  );
+export default function Page() {
+  return <MainCanvas />;
 }
