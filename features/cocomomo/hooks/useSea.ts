@@ -3,9 +3,8 @@ import { useCurrentTimeStore } from '@/shared/store';
 import { PresetName } from '../types/sea';
 import { ANIMATION_DURATION, SEA_TIME_PRESETS } from '../model/sea';
 import { useFrame, useThree } from '@react-three/fiber';
-import { useDetectGPU } from '@react-three/drei';
-import gsap from 'gsap';
 import { ShaderMaterial, Vector2, Vector3 } from 'three';
+import gsap from 'gsap';
 
 export function useSea() {
   const materialRef = useRef<ShaderMaterial>(null);
@@ -14,8 +13,6 @@ export function useSea() {
   const [activePreset, setActivePreset] = useState<PresetName>('morning');
   const [animating, setAnimating] = useState(false);
   const isFirstRenderRef = useRef(true);
-  const GPUTier = useDetectGPU();
-  const [qualityLevel, setQualityLevel] = useState(1.0);
 
   const uniforms = useMemo(
     () => ({
@@ -33,7 +30,6 @@ export function useSea() {
       uWaveSpeed: { value: 0.8 },
       uWaveHeight: { value: 0.5 },
       uWaveChoppy: { value: 1.0 },
-      uQualityLevel: { value: 1.0 },
     }),
     [],
   );
@@ -104,14 +100,11 @@ export function useSea() {
 
         const aspectRatio = pixelWidth / pixelHeight;
         materialRef.current.uniforms.uAspectRatio.value = aspectRatio;
-
-        // 품질 수준 설정
-        materialRef.current.uniforms.uQualityLevel.value = qualityLevel;
       }
     };
 
     handleResize();
-  }, [gl, size, qualityLevel]);
+  }, [gl, size]);
 
   useEffect(() => {
     if (!currentTime) return;
@@ -153,36 +146,11 @@ export function useSea() {
     }
   });
 
-  const setQuality = useCallback((level: number) => {
-    const clampedLevel = Math.max(0, Math.min(1, level));
-    setQualityLevel(clampedLevel);
-
-    if (materialRef.current) {
-      materialRef.current.uniforms.uQualityLevel.value = clampedLevel;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (GPUTier.tier === 0 || GPUTier.tier === 1) {
-      setQualityLevel(0.0);
-      if (materialRef.current) {
-        materialRef.current.uniforms.uQualityLevel.value = 0.0;
-      }
-    } else if (GPUTier.tier === 2) {
-      setQualityLevel(0.5);
-      if (materialRef.current) {
-        materialRef.current.uniforms.uQualityLevel.value = 0.5;
-      }
-    }
-  }, [GPUTier.tier]);
-
   return {
     materialRef,
     uniforms,
     animateToPreset,
     animating,
     activePreset,
-    qualityLevel,
-    setQuality,
   };
 }

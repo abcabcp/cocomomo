@@ -13,14 +13,14 @@ export function MainCanvas() {
         <Canvas
             className="fixed inset-0 z-0"
             gl={{
-                antialias: false,
+                antialias: true,
                 powerPreference: 'high-performance',
-                precision: 'lowp',
+                precision: 'mediump',
                 failIfMajorPerformanceCaveat: true,
                 preserveDrawingBuffer: true,
                 logarithmicDepthBuffer: false
             }}
-            dpr={[0.6, 1.5]}
+            dpr={1}
             performance={{ min: 0.5 }}
         >
             <Sea />
