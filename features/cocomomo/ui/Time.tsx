@@ -15,12 +15,13 @@ export function Time() {
             zIndexRange={[100, 0]}
             distanceFactor={10}
         >
-            <div className="min-w-[300px] flex items-center p-4">
+            <div className="flex items-center p-4">
                 <SnapScrollPicker
                     type="time"
                     styleType="primary"
                     value={formatTimeString(currentTime.hour, currentTime.minute, currentTime.period)}
                     onChange={(value) => setUserDefinedTime(parseTimeString(value))}
+
                 />
             </div>
         </Html>
