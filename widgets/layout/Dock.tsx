@@ -20,7 +20,6 @@ export function Dock() {
         draggedIndex
     } = useDragAndDrop({ items: dockMenuItems });
 
-    // 애니메이션 속성을 계산하는 함수
     const getAnimationProps = (index: number) => {
         const isDragged = draggedIndex === index;
         const isBeforeDragged = index > 0 && index - 1 === draggedIndex;
@@ -40,7 +39,7 @@ export function Dock() {
 
 
     return (
-        <nav className="p-2 z-10 absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/40 rounded-lg backdrop-blur-md">
+        <nav className="p-2 z-10 absolute bottom-10 md:bottom-5 left-1/2 -translate-x-1/2 bg-white/40 rounded-lg backdrop-blur-md z-50">
             <ul className="flex gap-x-2">
                 {sortItems.map((menu, index) => (
                     <motion.li
@@ -63,7 +62,17 @@ export function Dock() {
                             e.preventDefault();
                             onDragOver(index, e as any);
                         }}
-                        onClick={() => router.push(menu.link)}
+                        onClick={() => {
+                            if (menu.title === 'mail') {
+                                window.open('mailto:dltmfrl600@gmail.com', '_blank');
+                                return;
+                            }
+                            if (pathname === menu.link) {
+                                window.history.go(-1);
+                            } else {
+                                router.push(menu.link);
+                            }
+                        }}
                     >
                         <motion.div
                             whileHover={{ scale: selectedItem?.title === menu.title ? 1.1 : 1.0 }}

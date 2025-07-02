@@ -3,18 +3,18 @@
 import { useCallback, useMemo } from 'react';
 import { BaseScrollPickerProps } from '.';
 import SnapScrollPicker, { PickerStyleType } from './SnapScrollPicker';
-import { formatTimeString, parseTimeString } from '@/shared/lib';
+import { cn, formatTimeString, parseTimeString } from '@/shared/lib';
 import { cva } from 'class-variance-authority';
 
 type Period = 'AM' | 'PM';
 
 const containerStyles = cva(
-  'relative w-full min-w-[300px] h-full [mask-image:linear-gradient(to_bottom,transparent_0%,black_20%,black_80%,transparent_100%)]',
+  'relative w-full h-full [mask-image:linear-gradient(to_bottom,transparent_0%,black_20%,black_80%,transparent_100%)]',
   {
     variants: {
       styleType: {
         normal: '',
-        primary: 'min-w-[430px]',
+        primary: 'min-w-[220px] max-w-[300px] lg:min-w-[320px]',
       },
     },
     defaultVariants: {
@@ -25,12 +25,12 @@ const containerStyles = cva(
 
 
 const leftColumnStyles = cva(
-  'text-2xl rounded-l-lg',
+  'rounded-l-lg',
   {
     variants: {
       styleType: {
-        normal: ' h-[60px]',
-        primary: ' h-[60px]',
+        normal: 'h-[60px]',
+        primary: 'h-[60px] ',
       },
     },
     defaultVariants: {
@@ -45,7 +45,7 @@ const leftColumnPointerStyles = cva(
     variants: {
       styleType: {
         normal: 'bg-grayscale-200 rounded-l-2xl h-[60px]',
-        primary: 'h-25 text-white font-medium bg-white/10 rounded-l-2xl',
+        primary: 'h-[60px] text-white font-medium bg-white/10 rounded-l-2xl',
       },
     },
     defaultVariants: {
@@ -100,13 +100,13 @@ export default function TimeScrollPicker({
       <div className={containerStyles({ styleType })}>
         <div className="w-full grid grid-cols-[22%_22%_22%_34%] gap-0 items-center relative">
           <div>
-            <p className={leftColumnStyles({ styleType })}>&nbsp;</p>
+            <p className={cn(leftColumnStyles({ styleType }), { 'hidden lg:block': styleType === 'primary' })}>&nbsp;</p>
             <p className={leftColumnStyles({ styleType })}>&nbsp;</p>
             <p className={leftColumnPointerStyles({ styleType })}>
               &nbsp;
             </p>
             <p className={leftColumnStyles({ styleType })}>&nbsp;</p>
-            <p className={leftColumnStyles({ styleType })}>&nbsp;</p>
+            <p className={cn(leftColumnStyles({ styleType }), { 'hidden lg:block': styleType === 'primary' })}>&nbsp;</p>
           </div>
           <div className="overflow-hidden">
             <SnapScrollPicker

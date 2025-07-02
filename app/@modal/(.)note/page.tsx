@@ -1,8 +1,8 @@
-import { Blog } from "@/features/blog";
+import { Note } from "@/features/note";
 import { Modal } from "@/widgets";
 
 export default function Page() {
     return (
-        <Modal title="Blog" body={<Blog />} />
+        <Modal title="Note" body={<Note />} />
     );
 }

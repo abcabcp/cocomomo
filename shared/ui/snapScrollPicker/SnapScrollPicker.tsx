@@ -4,12 +4,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 export type PickerStyleType = 'normal' | 'primary';
 
 const containerStyles = cva(
-  'relative h-[300px] overflow-hidden',
+  'relative overflow-hidden',
   {
     variants: {
       styleType: {
-        normal: '',
-        primary: 'h-[340px]',
+        normal: 'h-[300px]',
+        primary: 'h-[180px] lg:h-[300px]',
       },
     },
     defaultVariants: {
@@ -19,12 +19,12 @@ const containerStyles = cva(
 );
 
 const pointerStyles = cva(
-  'absolute pointer-events-none top-[120px] left-0 right-0 z-3 bg-lightgray',
+  'absolute pointer-events-none left-0 right-0 z-3 bg-lightgray',
   {
     variants: {
       styleType: {
-        normal: 'h-[60px]',
-        primary: 'h-25 text-white font-medium bg-white/10 backdrop-filter',
+        normal: 'h-[60px] top-[120px] ',
+        primary: 'h-[60px] top-[60px] lg:top-[120px] text-white font-medium bg-white/10 backdrop-filter',
       },
     },
     defaultVariants: {
@@ -34,7 +34,7 @@ const pointerStyles = cva(
 );
 
 const itemStyles = cva(
-  'flex items-center justify-center w-full text-center text-2xl cursor-pointer',
+  'flex items-center justify-center w-full text-center text-xl lg:text-2xl cursor-pointer',
   {
     variants: {
       styleType: {
@@ -50,12 +50,12 @@ const itemStyles = cva(
       {
         styleType: 'primary',
         isSelected: true,
-        className: 'text-white scale-120 transition-all duration-200 text-5xl font-extrabold tracking-wide h-25 text-shadow-lg drop-shadow-md',
+        className: 'text-white text-scale-110 transition-all duration-200 text-xl lg:text-4xl font-extrabold tracking-wide h-[60px] text-shadow-lg drop-shadow-md',
       },
       {
         styleType: 'primary',
         isSelected: false,
-        className: 'transition-all duration-200 opacity-70 h-[60px]',
+        className: 'transition-all duration-200 opacity-70 h-[60px] ',
       }
     ],
     defaultVariants: {
@@ -89,8 +89,7 @@ export default function SnapScrollPicker({
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const [scrolling, setScrolling] = useState(false);
-  const visibleItemCount = 5;
-
+  const [visibleItemCount, setVisibleItemCount] = useState(5);
 
   const paddingTop = Math.floor(visibleItemCount / 2) * itemHeight;
   const paddingBottom =
@@ -160,6 +159,18 @@ export default function SnapScrollPicker({
   }, [selectedValue, items, snapToItem]);
 
   useEffect(() => {
+    if (styleType === 'primary') {
+      const handleResize = () => {
+        setVisibleItemCount(window.innerWidth >= 1024 ? 5 : 3);
+      };
+
+      handleResize(); // 초기값 설정
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, [styleType]);
+
+  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -215,7 +226,6 @@ export default function SnapScrollPicker({
             {formatValue ? formatValue(item) : item}
           </div>
         ))}
-
         <div style={{ height: paddingBottom }} />
       </div>
     </div>
