@@ -1,3 +1,5 @@
+'use client';
+
 export function Chrome() {
     return (
         <div className="w-full h-full">
