@@ -27,7 +27,7 @@ const MODAL_SIZE = {
     DEFAULT_HEIGHT: 600,
 };
 
-const checkIsMobileView = (): boolean => window.innerWidth <= MODAL_SIZE.BREAKPOINT;
+const checkIsMobileView = (): boolean => typeof window !== 'undefined' && window.innerWidth <= MODAL_SIZE.BREAKPOINT;
 const calcModalPosition = (
     windowWidth: number,
     windowHeight: number,
@@ -77,7 +77,7 @@ export function Modal({
     const [recentlyInteracted, setRecentlyInteracted] = useState(false);
 
     const updateModalLayout = () => {
-        const { innerWidth, innerHeight } = window;
+        const { innerWidth, innerHeight } = typeof window !== 'undefined' ? window : { innerWidth: 1440, innerHeight: 900 };
 
         setWindowSize({
             width: innerWidth,
@@ -103,12 +103,14 @@ export function Modal({
     };
 
     const onClose = () => {
+        if (typeof window === 'undefined') return;
         window.history.go(-1);
         setIsOpen(false);
         props.onClose?.();
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
+        if (typeof window === 'undefined') return;
         if (window.innerWidth > MODAL_SIZE.BREAKPOINT && headerRef.current && modalRef.current) {
             e.preventDefault();
             e.stopPropagation();
@@ -122,6 +124,7 @@ export function Modal({
     };
 
     const handleResizeMouseDown = (e: React.MouseEvent) => {
+        if (typeof window === 'undefined') return;
         if (window.innerWidth > MODAL_SIZE.BREAKPOINT && modalRef.current) {
             e.preventDefault();
             e.stopPropagation();
@@ -144,6 +147,7 @@ export function Modal({
     }, []);
 
     useEffect(() => {
+        if (typeof window === 'undefined') return;
         const handleResize = () => updateModalLayout();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
@@ -271,7 +275,7 @@ export function Modal({
                     <div className="flex-1 overflow-auto w-full">
                         {body}
                     </div>
-                    {window.innerWidth > MODAL_SIZE.BREAKPOINT && (
+                    {typeof window !== 'undefined' && window.innerWidth > MODAL_SIZE.BREAKPOINT && (
                         <div
                             ref={resizeHandleRef}
                             className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent"
