@@ -8,8 +8,14 @@ export function Time() {
     const { currentTime, setUserDefinedTime } = useTimeControl();
 
     return (
-        <Html position={[0, 4.5, 10]} center>
-            <div className="min-w-[300px] flex items-center">
+        <Html
+            position={[0, 1, 0]}
+            center
+            prepend
+            zIndexRange={[100, 0]}
+            distanceFactor={10}
+        >
+            <div className="min-w-[300px] flex items-center p-4">
                 <SnapScrollPicker
                     type="time"
                     styleType="primary"

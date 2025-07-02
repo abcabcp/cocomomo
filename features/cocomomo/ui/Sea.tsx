@@ -4,14 +4,16 @@ import seaFragmentShader from '@/features/cocomomo/shaders/seaFragment.glsl';
 import seaVertexShader from '@/features/cocomomo/shaders/seaVertex.glsl';
 import { useThree } from '@react-three/fiber';
 import { useRef } from 'react';
-import * as THREE from 'three';
+import { Mesh } from 'three';
 import { useSea } from '../hooks/useSea';
 
 
 export function Sea() {
     const { materialRef, uniforms } = useSea();
-    const meshRef = useRef<THREE.Mesh>(null);
+    const meshRef = useRef<Mesh>(null);
     const { viewport } = useThree();
+
+
     return (
         <mesh
             ref={meshRef}
