@@ -1,6 +1,12 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  compress: true,
+  productionBrowserSourceMaps: false,
   experimental: {
     viewTransition: true,
     turbo: {
@@ -12,7 +18,22 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  webpack: (config) => {
+  headers: async () => [
+    {
+      source: '/:path*',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'public, max-age=3600, must-revalidate',
+        },
+      ],
+    },
+  ],
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      config.optimization.minimize = true;
+      config.optimization.minimizer = config.optimization.minimizer || [];
+    }
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,
       use: ['raw-loader'],

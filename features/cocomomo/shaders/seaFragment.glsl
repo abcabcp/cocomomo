@@ -14,13 +14,15 @@ uniform float uWaveSpeed;
 uniform float uWaveHeight;     
 uniform float uWaveChoppy;     
 
-const int NUM_STEPS = 8;
-const float PI	 	= 3.1415;
-const float EPSILON	= 1e-3;
+uniform float uQualityLevel; 
+
+const int NUM_STEPS = 6; 
+const float PI = 3.1415;
+const float EPSILON = 1e-3;
 float EPSILON_NRM;
 
-const int ITER_GEOMETRY = 3;
-const int ITER_FRAGMENT = 5;
+int ITER_GEOMETRY; 
+int ITER_FRAGMENT; 
 float SEA_HEIGHT;      
 float SEA_CHOPPY;      
 const float SEA_SPEED = 1.0;
@@ -56,15 +58,15 @@ float hash( vec2 p ) {
 
 float noise( in vec2 p ) {
   vec2 i = floor(p);
-  vec2 f = fract(p);	
-  vec2 u = f * f * (3.0 - 2.0 * f);
+  vec2 f = fract(p);
+  
+  vec2 u = f * f; 
+  
   return -1.0 + 2.0 * mix(
-  	mix(
-    	hash(i + vec2(0.0,0.0)
-    ), 
-  	hash(i + vec2(1.0,0.0)), u.x),
-  	mix(hash(i + vec2(0.0,1.0) ), 
-  	hash(i + vec2(1.0,1.0) ), u.x), 
+    mix(hash(i + vec2(0.0,0.0)), 
+        hash(i + vec2(1.0,0.0)), u.x),
+    mix(hash(i + vec2(0.0,1.0)), 
+        hash(i + vec2(1.0,1.0)), u.x), 
     u.y
   );
 }
@@ -84,26 +86,25 @@ vec3 getSkyColor(vec3 e) {
   vec3 ret = mix(uSkyColor, uSkyTopColor, e.y);
   
   float sunIntensity = max(0.0, 1.0 - 8.0 * distance(normalize(e), normalize(uSunPosition)));
-  sunIntensity = pow(sunIntensity, 8.0); 
+  sunIntensity = pow(sunIntensity, 6.0); 
   ret += vec3(1.2, 1.0, 0.7) * sunIntensity * 0.2; 
   
   float moonIntensity = max(0.0, 1.0 - 8.0 * distance(normalize(e), normalize(uMoonPosition)));
-  moonIntensity = pow(moonIntensity, 8.0); 
+  moonIntensity = pow(moonIntensity, 6.0); 
   ret += vec3(0.95, 0.95, 1.1) * moonIntensity * uMoonBrightness * 0.2; 
   
-  if (uStarBrightness > 0.0) {
+  if (uStarBrightness > 0.0 && uQualityLevel > 0.5) {
     vec2 uv = vec2(atan(e.z, e.x), asin(e.y));
     
-    vec2 grid = floor(uv * 30.0);
-    vec2 pos = fract(uv * 30.0) - 0.5;
+    vec2 grid = floor(uv * 20.0); 
+    vec2 pos = fract(uv * 20.0) - 0.5;
     
     float rnd = hash(grid);
-    
     float dist = length(pos);
     
-    float stars = (1.0 - smoothstep(0.02, 0.04, dist)) * step(0.95, rnd);
+    float stars = (1.0 - step(0.04, dist)) * step(0.97, rnd);
     
-    float twinkle = 0.7 + 0.3 * sin(iGlobalTime * (1.0 + rnd) + rnd * 10.0);
+    float twinkle = 0.8 + 0.2 * sin(iGlobalTime * rnd);
     
     stars *= uStarBrightness * max(0.0, e.y + 0.1) * twinkle;
     ret += vec3(0.8, 0.9, 1.0) * stars;
@@ -137,6 +138,8 @@ float map(vec3 p) {
     freq *= 1.9; 
     amp *= 0.22;
     choppy = mix(choppy, 1.0, 0.2);
+    
+    if(uQualityLevel < 0.5 && i >= 1) break;
   }
   return p.y - h;
 }
@@ -158,6 +161,8 @@ float map_detailed(vec3 p) {
       freq *= 1.9; 
       amp *= 0.22;
       choppy = mix(choppy,1.0,0.2);
+      
+      if(uQualityLevel < 0.5 && i >= 2) break;
     }
     return p.y - h;
 }
@@ -188,6 +193,11 @@ vec3 getSeaColor(
 vec3 getNormal(vec3 p, float eps) {
   vec3 n;
   n.y = map_detailed(p);    
+  
+  if(uQualityLevel < 0.5) {
+    eps *= 2.0;
+  }
+  
   n.x = map_detailed(vec3(p.x+eps,p.y,p.z)) - n.y;
   n.z = map_detailed(vec3(p.x,p.y,p.z+eps)) - n.y;
   n.y = eps;
@@ -205,7 +215,15 @@ float heightMapTracing(vec3 ori, vec3 dir, out vec3 p) {
 
   float hm = map(ori + dir * tm);    
   float tmid = 0.0;
+  
+  int steps = NUM_STEPS;
+  if(uQualityLevel < 0.5) {
+    steps = 5; 
+  }
+  
   for(int i = 0; i < NUM_STEPS; i++) {
+    if(i >= steps) break; 
+    
     tmid = mix(tm,tx, hm/(hm-hx));                   
     p = ori + dir * tmid;                   
     float hmid = map(p);
@@ -242,6 +260,9 @@ vec3 renderSunMoon(vec3 rayDir) {
 void main() {
   EPSILON_NRM = 0.1 / iResolution.x;
   
+  ITER_GEOMETRY = uQualityLevel > 0.5 ? 3 : 2;
+  ITER_FRAGMENT = uQualityLevel > 0.5 ? 5 : 3;
+  
   SEA_HEIGHT = uWaveHeight;
   SEA_CHOPPY = uWaveChoppy;
   SEA_BASE = uSeaBaseColor;
@@ -255,9 +276,7 @@ void main() {
   
   float time = iGlobalTime * 0.3;
 
-  vec3 ang = vec3(
-    sin(time*3.0)*0.1,sin(time)*0.2+0.3,time
-  );  
+  vec3 ang = vec3(sin(time*3.0)*0.1, sin(time)*0.2+0.3, time);
   
   vec3 ori = vec3(0.0,3.5,time*5.0);
   vec3 dir = normalize(vec3(uv.x, uv.y, -2.0));
@@ -267,26 +286,17 @@ void main() {
   vec3 p;
   heightMapTracing(ori,dir,p);
   vec3 dist = p - ori;
-  vec3 n = getNormal(
-    p,
-    dot(dist,dist) * EPSILON_NRM
-  );
-  vec3 light = normalize(vec3(0.0,1.0,0.8)); 
+  vec3 n = getNormal(p, dot(dist,dist) * EPSILON_NRM);
   
-  light = normalize(mix(vec3(0.0, 1.0, 0.8), uSunPosition, 0.8));
+  vec3 light = normalize(mix(vec3(0.0, 1.0, 0.8), uSunPosition, 0.8));
 
   vec3 sunMoonEffect = renderSunMoon(dir);
   
   vec3 skyColor = getSkyColor(dir);
   vec3 seaColor = getSeaColor(p,n,light,dir,dist);
   
-  vec3 color = mix(
-    skyColor,
-    seaColor,
-    pow(smoothstep(0.0,-0.05,dir.y),0.3)
-  );
-  
+  vec3 color = mix(skyColor, seaColor, pow(smoothstep(0.0,-0.05,dir.y),0.3));
   color = mix(color, sunMoonEffect, clamp(length(sunMoonEffect), 0.0, 0.95));
 
-  gl_FragColor = vec4(pow(color,vec3(0.65)), 1.0);
+  gl_FragColor = vec4(pow(color,vec3(0.7)), 1.0); 
 }

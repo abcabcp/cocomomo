@@ -1,22 +1,30 @@
 'use client';
 
-import { Sea } from "@/features/cocomomo/ui";
 import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
 import { Time } from "./Time";
+import dynamic from "next/dynamic";
+import { Html } from "@react-three/drei";
+import { Loading } from "@/shared";
+
+const Sea = dynamic(() => import('./Sea'), { ssr: false, loading: () => <Html><Loading /></Html> });
 
 export function MainCanvas() {
     return (
         <Canvas
             className="fixed inset-0 z-0"
-            gl={{ antialias: true }}
-            camera={{ position: [0, 5, 20], fov: 50, near: 0.1, far: 1000 }}
-            shadows
+            gl={{
+                antialias: false,
+                powerPreference: 'high-performance',
+                precision: 'lowp',
+                failIfMajorPerformanceCaveat: true,
+                preserveDrawingBuffer: true,
+                logarithmicDepthBuffer: false
+            }}
+            dpr={[0.6, 1.5]}
+            performance={{ min: 0.5 }}
         >
-            <Suspense fallback={null}>
-                <Sea />
-            </Suspense>
+            <Sea />
             <Time />
         </Canvas>
-    )
+    );
 }

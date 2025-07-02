@@ -1,35 +1,39 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
-import * as THREE from 'three';
 import { useCurrentTimeStore } from '@/shared/store';
 import { PresetName } from '../types/sea';
 import { ANIMATION_DURATION, SEA_TIME_PRESETS } from '../model/sea';
 import { useFrame, useThree } from '@react-three/fiber';
+import { useDetectGPU } from '@react-three/drei';
 import gsap from 'gsap';
+import { ShaderMaterial, Vector2, Vector3 } from 'three';
 
 export function useSea() {
-  const materialRef = useRef<THREE.ShaderMaterial>(null);
+  const materialRef = useRef<ShaderMaterial>(null);
   const { gl, size } = useThree();
   const { currentTime } = useCurrentTimeStore();
   const [activePreset, setActivePreset] = useState<PresetName>('morning');
   const [animating, setAnimating] = useState(false);
   const isFirstRenderRef = useRef(true);
+  const GPUTier = useDetectGPU();
+  const [qualityLevel, setQualityLevel] = useState(1.0);
 
   const uniforms = useMemo(
     () => ({
       iGlobalTime: { value: 0 },
-      iResolution: { value: new THREE.Vector2() },
+      iResolution: { value: new Vector2() },
       uAspectRatio: { value: 1.0 },
-      uSkyColor: { value: new THREE.Vector3(0.4, 0.6, 0.8) },
-      uSkyTopColor: { value: new THREE.Vector3(0.2, 0.5, 0.9) },
-      uSeaBaseColor: { value: new THREE.Vector3(0.05, 0.15, 0.3) },
-      uSeaWaterColor: { value: new THREE.Vector3(0.2, 0.5, 0.7) },
-      uSunPosition: { value: new THREE.Vector3(0.2, 0.6, 0.8) },
-      uMoonPosition: { value: new THREE.Vector3(0.0, -1.0, 0.0) },
+      uSkyColor: { value: new Vector3(0.4, 0.6, 0.8) },
+      uSkyTopColor: { value: new Vector3(0.2, 0.5, 0.9) },
+      uSeaBaseColor: { value: new Vector3(0.05, 0.15, 0.3) },
+      uSeaWaterColor: { value: new Vector3(0.2, 0.5, 0.7) },
+      uSunPosition: { value: new Vector3(0.2, 0.6, 0.8) },
+      uMoonPosition: { value: new Vector3(0.0, -1.0, 0.0) },
       uMoonBrightness: { value: 0.0 },
       uStarBrightness: { value: 0.0 },
       uWaveSpeed: { value: 0.8 },
       uWaveHeight: { value: 0.5 },
       uWaveChoppy: { value: 1.0 },
+      uQualityLevel: { value: 1.0 },
     }),
     [],
   );
@@ -45,10 +49,7 @@ export function useSea() {
       onComplete: () => setAnimating(false),
     });
 
-    const animateVector3Value = (
-      uniformName: string,
-      targetValue: THREE.Vector3,
-    ) => {
+    const animateVector3Value = (uniformName: string, targetValue: Vector3) => {
       timeline.to(
         uniforms[uniformName].value,
         {
@@ -103,11 +104,14 @@ export function useSea() {
 
         const aspectRatio = pixelWidth / pixelHeight;
         materialRef.current.uniforms.uAspectRatio.value = aspectRatio;
+
+        // 품질 수준 설정
+        materialRef.current.uniforms.uQualityLevel.value = qualityLevel;
       }
     };
 
     handleResize();
-  }, [gl, size]);
+  }, [gl, size, qualityLevel]);
 
   useEffect(() => {
     if (!currentTime) return;
@@ -149,11 +153,36 @@ export function useSea() {
     }
   });
 
+  const setQuality = useCallback((level: number) => {
+    const clampedLevel = Math.max(0, Math.min(1, level));
+    setQualityLevel(clampedLevel);
+
+    if (materialRef.current) {
+      materialRef.current.uniforms.uQualityLevel.value = clampedLevel;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (GPUTier.tier === 0 || GPUTier.tier === 1) {
+      setQualityLevel(0.0);
+      if (materialRef.current) {
+        materialRef.current.uniforms.uQualityLevel.value = 0.0;
+      }
+    } else if (GPUTier.tier === 2) {
+      setQualityLevel(0.5);
+      if (materialRef.current) {
+        materialRef.current.uniforms.uQualityLevel.value = 0.5;
+      }
+    }
+  }, [GPUTier.tier]);
+
   return {
     materialRef,
     uniforms,
     animateToPreset,
     animating,
     activePreset,
+    qualityLevel,
+    setQuality,
   };
 }
