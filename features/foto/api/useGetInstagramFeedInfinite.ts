@@ -25,15 +25,18 @@ interface InstagramResponse {
 
 export type InstagramFeedResponse = {
   data: InstagramPost[];
-  next?: string;
+  nextCursor?: string;
 };
 
 export const useGetInstagramFeedInfinite = () => {
   return useInfiniteQuery({
     queryKey: ['instagram-infinite'] as const,
     queryFn: fetchInstagramFeedInfinite,
-    initialPageParam: `https://graph.instagram.com/me/media?access_token=${process.env.NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN}&limit=12&fields=id,caption,media_type,media_url,thumbnail_url,permalink`,
-    getNextPageParam: (lastPage) => lastPage.next,
+    initialPageParam: '/api/instagram',
+    getNextPageParam: (lastPage) => {
+      if (!lastPage.nextCursor) return undefined;
+      return `/api/instagram?after=${lastPage.nextCursor}`;
+    },
     staleTime: 0,
     refetchOnWindowFocus: true,
   });
@@ -43,9 +46,6 @@ const fetchInstagramFeedInfinite = async (
   context: QueryFunctionContext<readonly ['instagram-infinite'], string>,
 ): Promise<InstagramFeedResponse> => {
   const { pageParam } = context;
-  const response = await axios.get<InstagramResponse>(pageParam);
-  return {
-    data: response.data.data,
-    next: response.data.paging?.next,
-  };
+  const response = await axios.get<InstagramFeedResponse>(pageParam);
+  return response.data;
 };
