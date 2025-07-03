@@ -17,6 +17,12 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.80.6
         version: 5.80.6(react@19.1.0)
+      '@tanstack/react-query-devtools':
+        specifier: 5.0.0-alpha.53
+        version: 5.0.0-alpha.53(@tanstack/react-query@5.80.6(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@tanstack/react-virtual':
+        specifier: ^3.13.12
+        version: 3.13.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@types/dat.gui':
         specifier: ^0.7.13
         version: 0.7.13
@@ -1761,10 +1767,29 @@ packages:
   '@tanstack/query-core@5.80.6':
     resolution: {integrity: sha512-nl7YxT/TAU+VTf+e2zTkObGTyY8YZBMnbgeA1ee66lIVqzKlYursAII6z5t0e6rXgwUMJSV4dshBTNacNpZHbQ==}
 
+  '@tanstack/query-devtools@5.81.2':
+    resolution: {integrity: sha512-jCeJcDCwKfoyyBXjXe9+Lo8aTkavygHHsUHAlxQKKaDeyT0qyQNLKl7+UyqYH2dDF6UN/14873IPBHchcsU+Zg==}
+
+  '@tanstack/react-query-devtools@5.0.0-alpha.53':
+    resolution: {integrity: sha512-jzQCG8SnM1XG1e5nfvL6XGDpN47S8Up59kLWvHAa7JLwurGxRx2AixuhopyPZg3sJGTJ1P0PTyWXo78vhZyxZQ==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.0.0-alpha.43
+      react: ^18.0.0
+      react-dom: ^18.0.0
+
   '@tanstack/react-query@5.80.6':
     resolution: {integrity: sha512-izX+5CnkpON3NQGcEm3/d7LfFQNo9ZpFtX2QsINgCYK9LT2VCIdi8D3bMaMSNhrAJCznRoAkFic76uvLroALBw==}
     peerDependencies:
       react: ^18 || ^19
+
+  '@tanstack/react-virtual@3.13.12':
+    resolution: {integrity: sha512-Gd13QdxPSukP8ZrkbgS2RwoZseTTbQPLnQEn7HY/rqtM+8Zt95f7xKC7N0EsKs7aoz0WzZ+fditZux+F8EzYxA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@tanstack/virtual-core@3.13.12':
+    resolution: {integrity: sha512-1YBOJfRHV4sXUmWsFSf5rQor4Ss82G8dQWLRbnk3GA4jeP8hQt1hxXh0tmflpC0dz3VgEv/1+qwPyLeWkQuPFA==}
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -6717,10 +6742,27 @@ snapshots:
 
   '@tanstack/query-core@5.80.6': {}
 
+  '@tanstack/query-devtools@5.81.2': {}
+
+  '@tanstack/react-query-devtools@5.0.0-alpha.53(@tanstack/react-query@5.80.6(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@tanstack/query-devtools': 5.81.2
+      '@tanstack/react-query': 5.80.6(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
   '@tanstack/react-query@5.80.6(react@19.1.0)':
     dependencies:
       '@tanstack/query-core': 5.80.6
       react: 19.1.0
+
+  '@tanstack/react-virtual@3.13.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@tanstack/virtual-core': 3.13.12
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@tanstack/virtual-core@3.13.12': {}
 
   '@testing-library/dom@10.4.0':
     dependencies:
