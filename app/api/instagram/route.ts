@@ -25,7 +25,7 @@ export async function GET(request: Request) {
     const after = searchParams.get('after');
 
     const params = new URLSearchParams({
-      access_token: process.env.INSTAGRAM_ACCESS_TOKEN || '',
+      access_token: process.env.NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN || '',
       limit: '12',
       fields: 'id,caption,media_type,media_url,thumbnail_url,permalink',
     });
