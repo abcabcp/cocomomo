@@ -78,12 +78,10 @@ export function Modal({
 
     const updateModalLayout = () => {
         const { innerWidth, innerHeight } = typeof window !== 'undefined' ? window : { innerWidth: 1440, innerHeight: 900 };
-
         setWindowSize({
             width: innerWidth,
             height: innerHeight
         });
-
         if (checkIsMobileView()) {
             setSize({
                 width: innerWidth,
@@ -247,6 +245,7 @@ export function Modal({
                 )}
             >
                 <div
+                    id="modal"
                     ref={modalRef}
                     style={checkIsMobileView() ? {
                         position: 'fixed',

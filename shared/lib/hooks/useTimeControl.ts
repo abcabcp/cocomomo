@@ -1,7 +1,7 @@
 'use client';
 
 import { parseTimeString } from '@/shared';
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { useCallback, useState, useEffect, useRef, useReducer } from 'react';
 import { useCurrentTimeStore } from '@/shared/store';
 import { getCurrentTime } from '@/shared/lib/utils/time';
 
@@ -14,12 +14,19 @@ export function useTimeControl() {
   } = useCurrentTimeStore();
 
   const [selectedTime, setSelectedTime] = useState(currentTime);
-  const [isOpen, setIsOpen] = useState(false);
   const [isReset, setIsReset] = useState(false);
 
-  const handleClose = useCallback(() => {
-    setIsOpen(false);
+  const [isOpen, setIsOpen] = useState(false);
 
+  const toggleOpen = useCallback(() => {
+    if (isOpen) {
+      setIsOpen(false);
+    } else {
+      setIsOpen(true);
+    }
+  }, [isOpen]);
+
+  const closePanel = useCallback(() => {
     if (
       selectedTime.hour !== currentTime.hour ||
       selectedTime.minute !== currentTime.minute ||
@@ -27,6 +34,7 @@ export function useTimeControl() {
     ) {
       setCustomTime(selectedTime);
     }
+    setIsOpen(false);
   }, [selectedTime, currentTime, setCustomTime]);
 
   const handleTimeChange = useCallback((value: string) => {
@@ -58,13 +66,14 @@ export function useTimeControl() {
 
   return {
     isOpen,
+    toggleOpen,
     currentTime,
     selectedTime,
     isReset,
     handleTimeChange,
     setUserDefinedTime,
     setIsOpen,
-    handleClose,
+    closePanel,
     resetTime,
     updateTimeByDifference,
   };

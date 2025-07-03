@@ -48,6 +48,10 @@ const nextConfig: NextConfig = {
         protocol: 'https' as const,
         hostname: 'res.cloudinary.com',
       },
+      {
+        protocol: 'https' as const,
+        hostname: 'scontent-ssn1-1.cdninstagram.com',
+      },
     ],
   },
 };

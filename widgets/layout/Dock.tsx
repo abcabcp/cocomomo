@@ -39,7 +39,7 @@ export function Dock() {
 
 
     return (
-        <nav className="p-2 z-10 absolute bottom-10 md:bottom-5 left-1/2 -translate-x-1/2 bg-white/40 rounded-lg backdrop-blur-md z-1">
+        <nav className="p-2 z-10 fixed bottom-10 md:bottom-5 left-1/2 -translate-x-1/2 bg-white/40 rounded-lg backdrop-blur-md z-1">
             <ul className="flex gap-x-2">
                 {sortItems.map((menu, index) => (
                     <motion.li
