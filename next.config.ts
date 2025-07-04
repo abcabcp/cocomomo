@@ -52,7 +52,18 @@ const nextConfig: NextConfig = {
         protocol: 'https' as const,
         hostname: 'scontent-ssn1-1.cdninstagram.com',
       },
+      {
+        protocol: 'https' as const,
+        hostname: 'scontent-iad3-2.cdninstagram.com',
+      },
+      {
+        protocol: 'https' as const,
+        hostname: '**.cdninstagram.com',
+      },
     ],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
   },
 };
 
