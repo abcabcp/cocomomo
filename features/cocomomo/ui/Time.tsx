@@ -5,7 +5,7 @@ import { Html } from "@react-three/drei";
 import { useTimeControl } from "@/shared/lib/hooks/useTimeControl";
 
 export function Time() {
-    const { currentTime, setUserDefinedTime } = useTimeControl();
+    const { currentTime, applyTimeImmediately } = useTimeControl();
 
     return (
         <Html
@@ -20,7 +20,7 @@ export function Time() {
                     type="time"
                     styleType="primary"
                     value={formatTimeString(currentTime.hour, currentTime.minute, currentTime.period)}
-                    onChange={(value) => setUserDefinedTime(parseTimeString(value))}
+                    onChange={(value) => applyTimeImmediately(parseTimeString(value))}
 
                 />
             </div>
