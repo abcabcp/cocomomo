@@ -1,13 +1,32 @@
-import Image from 'next/image';
+'use client';
+
 import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { cn, isMobileDevice } from '@/shared';
 import { TimePanel } from './TimePanel';
 import { SearchBar } from './SearchBar';
 
-export function Header() {
+type HeaderProps = {
+    visible: boolean;
+};
+
+export function Header({ visible }: HeaderProps) {
+    const pathname = usePathname();
+
     return (
-        <header className="fixed top-0 left-0 right-0 z-30 w-full bg-white/80 flex justify-between items-center text-sm px-4">
+        <header
+            className={cn(
+                "fixed top-0 left-0 right-0 w-full bg-white/80 flex justify-between items-center text-sm px-4 z-30",
+                "transition-transform duration-300 ease-in-out",
+                isMobileDevice()
+                    ? (!visible ? "transform -translate-y-full" : "transform translate-y-0")
+                    : "",
+                pathname === '/' && "lg:transform-none"
+            )}
+        >
             <div className='flex gap-x-2 items-center text-black'>
-                <h1>
+                <h1 className='cursor-pointer'>
                     <Link href="/">
                         <Image src="/assets/svgs/logo.svg" alt="logo" width={24} height={24} />
                         <span className='sr-only'>COCOMOMO</span>
@@ -29,5 +48,5 @@ export function Header() {
                 </li>
             </ul>
         </header>
-    )
+    );
 }

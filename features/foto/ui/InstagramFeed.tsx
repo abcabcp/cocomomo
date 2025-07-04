@@ -15,6 +15,7 @@ export function InstagramFeed() {
         posts,
         viewCount,
         isLoading,
+        isFetching,
         isError,
         error
     } = useInstagramFeed();
@@ -79,7 +80,7 @@ export function InstagramFeed() {
                         </div>
                     );
                 })}
-                {isLoading && (
+                {(isLoading || isFetching) && (
                     <SkeletonFeeds count={12} />
                 )}
             </div>
