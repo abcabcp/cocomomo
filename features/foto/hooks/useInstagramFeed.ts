@@ -20,11 +20,23 @@ export function useInstagramFeed() {
   const posts = data?.pages.flatMap((page) => page.data) || [];
 
   const getInitialViewCount = () => {
-    if (typeof window === 'undefined') return 3;
-    return window.innerWidth < 640 ? 2 : window.innerWidth < 1024 ? 3 : 4;
+    if (typeof window === 'undefined') return 4;
+    const width = window.innerWidth;
+    if (width < 768) return 2;
+    if (width < 1024) return 3;
+    return 4;
   };
 
   const [viewCount, setViewCount] = useState(getInitialViewCount());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setViewCount(getInitialViewCount());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const rowVirtualizer = useVirtualizer({
     count: Math.ceil(posts.length / viewCount),
@@ -55,24 +67,6 @@ export function useInstagramFeed() {
   useEffect(() => {
     rowVirtualizer.measure();
   }, [posts.length, rowVirtualizer]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleResize = () => {
-      setViewCount(getInitialViewCount());
-      rowVirtualizer.measure();
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    const resizeObserver = new ResizeObserver(handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      resizeObserver?.disconnect();
-    };
-  }, []);
 
   useEffect(() => {
     if (!observerRef.current || !hasNextPage || isFetching) return;

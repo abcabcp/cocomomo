@@ -14,7 +14,6 @@ export function InstagramFeed() {
         observerRef,
         posts,
         viewCount,
-        isFetching,
         isLoading,
         isError,
         error
@@ -25,7 +24,7 @@ export function InstagramFeed() {
     }
 
     return (
-        <div ref={scrollRef} className="w-full h-full overflow-auto">
+        <div ref={scrollRef} className="w-full h-full min-h-screen overflow-auto">
             <div
                 className="relative w-full h-full"
                 style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
@@ -40,10 +39,7 @@ export function InstagramFeed() {
                             ref={measureRowHeight}
                             key={virtualRow.key}
                             data-index={virtualRow.index}
-                            className={`absolute top-0 left-0 w-full grid gap-4 p-2 ${viewCount === 2 ? 'grid-cols-2' :
-                                viewCount === 3 ? 'grid-cols-3' :
-                                    'grid-cols-4'
-                                }`}
+                            className={`absolute top-0 left-0 w-full grid gap-4 p-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4`}
                             style={{
                                 height: `${virtualRow.size}px`,
                                 transform: `translateY(${virtualRow.start}px)`,
@@ -84,7 +80,7 @@ export function InstagramFeed() {
                     );
                 })}
                 {isLoading && (
-                    <SkeletonFeeds count={12} viewCount={viewCount} />
+                    <SkeletonFeeds count={12} />
                 )}
             </div>
 
