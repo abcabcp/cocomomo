@@ -5,13 +5,13 @@ import { useTimeControl } from "@/shared/lib/hooks/useTimeControl";
 import Image from "next/image";
 
 export function TimePanel() {
-    const { isOpen, isReset, currentTime, selectedTime, handleTimeChange, closePanel, resetTime, toggleOpen } = useTimeControl();
+    const { isOpen, isReset, currentTime, selectedTime, handleTempTimeChange, closePanel, resetTime, toggleOpen } = useTimeControl();
 
     return (
         <>
             <button
                 onClick={toggleOpen}
-                className="hover:opacity-80 cursor-pointer"
+                className="hover:opacity-80 cursor-pointer text-white"
             >
                 {formatTimeString(currentTime.hour, currentTime.minute, currentTime.period)}
             </button>
@@ -33,7 +33,7 @@ export function TimePanel() {
                         selectedTime.minute,
                         selectedTime.period as 'AM' | 'PM'
                     )}
-                    onChange={handleTimeChange}
+                    onChange={handleTempTimeChange}
                 />
             </SlidePanel>
         </>

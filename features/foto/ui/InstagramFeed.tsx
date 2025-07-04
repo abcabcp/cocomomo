@@ -15,14 +15,13 @@ export function InstagramFeed() {
         posts,
         viewCount,
         isLoading,
+        isFetching,
         isError,
         error
     } = useInstagramFeed();
-
     if (isError) {
         return <div className="text-red-500">Error: {error?.message}</div>;
     }
-
     return (
         <div ref={scrollRef} className="w-full h-full min-h-screen overflow-auto">
             <div
@@ -79,7 +78,7 @@ export function InstagramFeed() {
                         </div>
                     );
                 })}
-                {isLoading && (
+                {(isLoading || isFetching) && (
                     <SkeletonFeeds count={12} />
                 )}
             </div>

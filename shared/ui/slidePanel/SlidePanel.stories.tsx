@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import SlidePanel from './SlidePanel';
+import { SlidePanel } from './SlidePanel';
 
 const meta: Meta<typeof SlidePanel> = {
     title: 'UI/SlidePanel',
@@ -14,7 +14,6 @@ const meta: Meta<typeof SlidePanel> = {
 export default meta;
 type Story = StoryObj<typeof SlidePanel>;
 
-// 스토리북에서 상태 관리를 위한 래퍼 컴포넌트
 const SlidePanelWithControls = (args: React.ComponentProps<typeof SlidePanel>) => {
     const [isOpen, setIsOpen] = useState(false);
 

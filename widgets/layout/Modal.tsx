@@ -1,8 +1,8 @@
 'use client';
 
-import { cn } from '@/shared';
-import { JSX, ReactNode, useEffect, useRef, useState } from 'react';
-import { unstable_ViewTransition as ViewTransition } from 'react'
+import { cn, isMobileDevice } from '@/shared';
+import { usePathname } from 'next/navigation';
+import { JSX, ReactNode, useEffect, useRef, useState, unstable_ViewTransition as ViewTransition } from 'react';
 
 interface ModalProps {
     title?: string;
@@ -44,6 +44,7 @@ export function Modal({
     className,
     ...props
 }: ModalProps): JSX.Element | null {
+    const pathname = usePathname();
     const modalRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
@@ -105,6 +106,10 @@ export function Modal({
         window.history.go(-1);
         setIsOpen(false);
         props.onClose?.();
+    };
+
+    const onFullscreen = () => {
+        window.location.href = pathname;
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -242,6 +247,7 @@ export function Modal({
                 ref={overlayRef}
                 className={cn(
                     `fixed inset-0 bg-opacity-50 overflow-hidden h-dvh w-screen z-20`,
+                    { 'z-40': checkIsMobileView() && !isMobileDevice() }
                 )}
             >
                 <div
@@ -267,8 +273,8 @@ export function Modal({
                         className="relative w-full px-4 py-2 flex items-center cursor-move z-10"
                         onMouseDown={handleMouseDown}
                     >
-                        <button className='w-3 h-3 bg-red-500 rounded-full mr-2' onClick={onClose} />
-                        <button className='w-3 h-3 bg-green-500 rounded-full mr-2' />
+                        <button className='w-3 h-3 bg-red-500 rounded-full mr-2 cursor-pointer' onClick={onClose}><p className="sr-only">Close</p></button>
+                        <button className='w-3 h-3 bg-green-500 rounded-full mr-2 cursor-pointer' onClick={onFullscreen}><p className="sr-only">Fullscreen</p></button>
                         <h2 className="text-sm">{title}</h2>
                     </header>
                     <div className="flex-1 overflow-auto w-full">

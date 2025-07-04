@@ -19,6 +19,7 @@ export function SearchBar() {
         setIsOpen(false);
     };
 
+    // TODO: timePanel dim이 header 영역 가리는 부분 수정 후 클릭 문제 해결
     const handleBackdropClick = (e: React.MouseEvent) => {
         if (e.target === e.currentTarget) {
             onClose();
@@ -73,8 +74,8 @@ export function SearchBar() {
 
     return (
         <>
-            <button className='cursor-pointer' onClick={handleSearchClick}>
-                <Image src="/assets/svgs/search.svg" alt="search" width={16} height={16} />
+            <button className='cursor-pointer text-white' onClick={handleSearchClick}>
+                Search
             </button>
             {isOpen && (
                 <div

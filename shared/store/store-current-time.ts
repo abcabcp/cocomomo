@@ -1,7 +1,11 @@
+'use client';
+
 import { create } from 'zustand';
 import { getCurrentTime } from '@/shared';
 
-// 시간 타입 정의
+const isClientSide = () => typeof window !== 'undefined';
+const safeDate = () => (isClientSide() ? new Date() : null);
+
 interface TimeData {
   hour: number;
   minute: number;
@@ -29,7 +33,6 @@ const calculateTimeDifference = (
   localTime: TimeData,
 ): number => {
   const getUserTimeMs = () => {
-    const now = new Date();
     const userHour =
       userTime.period === 'PM' && userTime.hour < 12
         ? userTime.hour + 12
@@ -37,13 +40,13 @@ const calculateTimeDifference = (
           ? 0
           : userTime.hour;
 
-    const userDate = new Date();
+    const userDate = safeDate();
+    if (!userDate) return 0;
     userDate.setHours(userHour, userTime.minute, 0, 0);
     return userDate.getTime();
   };
 
   const getLocalTimeMs = () => {
-    const now = new Date();
     const localHour =
       localTime.period === 'PM' && localTime.hour < 12
         ? localTime.hour + 12
@@ -51,7 +54,8 @@ const calculateTimeDifference = (
           ? 0
           : localTime.hour;
 
-    const localDate = new Date();
+    const localDate = safeDate();
+    if (!localDate) return 0;
     localDate.setHours(localHour, localTime.minute, 0, 0);
     return localDate.getTime();
   };
@@ -60,7 +64,8 @@ const calculateTimeDifference = (
 };
 
 const applyTimeDifference = (differenceMs: number): TimeData => {
-  const now = new Date();
+  const now = safeDate();
+  if (!now) return { hour: 12, minute: 0, period: 'AM' };
   const targetTime = new Date(now.getTime() + differenceMs);
   const hours = targetTime.getHours();
   const minutes = targetTime.getMinutes();
@@ -76,7 +81,7 @@ export const useCurrentTimeStore = create<CurrentTimeStore>((set, get) => ({
   currentTime: getLocalTime(),
   isCustomTime: false,
   timeDifferenceMs: 0,
-  lastUpdateTime: Date.now(),
+  lastUpdateTime: isClientSide() ? Date.now() : 0,
 
   setCurrentTime: (time: TimeData) => set({ currentTime: time }),
 
@@ -88,7 +93,7 @@ export const useCurrentTimeStore = create<CurrentTimeStore>((set, get) => ({
       currentTime: time,
       isCustomTime: true,
       timeDifferenceMs: timeDiff,
-      lastUpdateTime: Date.now(),
+      lastUpdateTime: isClientSide() ? Date.now() : 0,
     });
   },
 
@@ -100,14 +105,14 @@ export const useCurrentTimeStore = create<CurrentTimeStore>((set, get) => ({
       return;
     }
 
-    if (Date.now() - lastUpdateTime < 100) {
+    if (isClientSide() && Date.now() - lastUpdateTime < 100) {
       return;
     }
 
     const updatedTime = applyTimeDifference(timeDifferenceMs);
     set({
       currentTime: updatedTime,
-      lastUpdateTime: Date.now(),
+      lastUpdateTime: isClientSide() ? Date.now() : 0,
     });
   },
 

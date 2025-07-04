@@ -1,13 +1,13 @@
 'use client';
 
 import { dockMenuItems } from '@/entities';
-import { cn } from '@/shared';
+import { cn, isMobileDevice } from '@/shared';
 import { useDragAndDrop } from '@/shared/lib/hooks/useDragAndDrop';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 
-export function Dock() {
+export function Dock({ visible }: { visible: boolean }) {
     const router = useRouter();
     const pathname = usePathname();
     const {
@@ -39,7 +39,18 @@ export function Dock() {
 
 
     return (
-        <nav className="p-2 z-10 fixed bottom-10 md:bottom-5 left-1/2 -translate-x-1/2 bg-white/40 rounded-lg backdrop-blur-md z-1">
+        <nav
+            className={cn(
+                "p-2 z-50 fixed bottom-10 md:bottom-5 left-1/2 -translate-x-1/2",
+                "bg-white/40 rounded-lg backdrop-blur-md",
+                "transform transition-transform duration-300 ease-in-out",
+                isMobileDevice()
+                    ? (!visible ? "translate-y-[200%]" : "translate-y-0")
+                    : "",
+                "data-[dock=true]"
+            )}
+            data-dock="true"
+        >
             <ul className="flex gap-x-2">
                 {sortItems.map((menu, index) => (
                     <motion.li
