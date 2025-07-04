@@ -1,6 +1,6 @@
 'use client';
 
-export function BlogSidebar({
+export function Sidebar({
     asidePanelWidth,
     setAsidePanelWidth,
     wrapperRef,

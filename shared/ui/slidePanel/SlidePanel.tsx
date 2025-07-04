@@ -18,7 +18,7 @@ export interface SlidePanelProps {
     marginX?: number;
 }
 
-export const SlidePanel = ({
+export function SlidePanel({
     isOpen,
     onClose,
     direction = 'right',
@@ -29,7 +29,7 @@ export const SlidePanel = ({
     wrapperClassName,
     animationDuration = 300,
     marginX = 0,
-}: SlidePanelProps) => {
+}: SlidePanelProps) {
     const panelRef = useRef<HTMLDivElement>(null);
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -119,5 +119,3 @@ export const SlidePanel = ({
         </>
     );
 };
-
-export default SlidePanel;

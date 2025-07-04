@@ -19,11 +19,9 @@ export function InstagramFeed() {
         isError,
         error
     } = useInstagramFeed();
-
     if (isError) {
         return <div className="text-red-500">Error: {error?.message}</div>;
     }
-
     return (
         <div ref={scrollRef} className="w-full h-full min-h-screen overflow-auto">
             <div

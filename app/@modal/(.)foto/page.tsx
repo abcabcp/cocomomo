@@ -3,6 +3,6 @@ import { Modal } from "@/widgets";
 
 export default function Page() {
     return (
-        <Modal title="Foto" body={<Foto />} />
+        <Modal title="Foto" body={<Foto modal />} />
     );
 }

@@ -1,14 +1,12 @@
 'use client';
 
 import { isMobileDevice } from '@/shared';
-import { useCurrentTimeStore } from '@/shared/store';
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { Header } from './Header';
-import { Dock } from './Dock';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Dock } from './Dock';
+import { Header } from './Header';
 
 
 const queryClient = new QueryClient({
@@ -20,7 +18,6 @@ const queryClient = new QueryClient({
     },
 });
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-    const { updateTimeByDifference } = useCurrentTimeStore();
     const [headerVisible, setHeaderVisible] = useState(!isMobileDevice());
     const [dockVisible, setDockVisible] = useState(!isMobileDevice());
     const pathname = usePathname();
@@ -79,15 +76,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             window.removeEventListener('touchend', handleTouchEnd);
         };
     }, [headerVisible, isHome]);
-
-    useEffect(() => {
-        updateTimeByDifference();
-        const interval = setInterval(() => {
-            updateTimeByDifference();
-        }, 1000);
-        return () => clearInterval(interval);
-    }, [updateTimeByDifference]);
-
 
     return (
         <div className="w-full h-full relative">

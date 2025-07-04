@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { pretendardJP } from './fonts';
 import ClientLayout from '@/widgets/layout/ClientLayout';
+import { SessionProvider } from 'next-auth/react';
 
 export const metadata: Metadata = {
     title: 'COCO MOMO',
@@ -20,11 +21,13 @@ export default function RootLayout({
             <body
                 className={`${pretendardJP.variable} antialiased w-dvw h-dvh`}
             >
-                <ClientLayout>
-                    {children}
-                    {modal}
-                </ClientLayout>
+                <SessionProvider>
+                    <ClientLayout>
+                        {children}
+                        {modal}
+                    </ClientLayout>
+                </SessionProvider>
             </body>
-        </html >
+        </html>
     );
 }
