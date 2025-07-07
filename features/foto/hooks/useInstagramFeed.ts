@@ -1,7 +1,8 @@
 'use client';
 
+import { debounce } from '@/shared';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useGetInstagramFeedInfinite } from '../api';
 
 export function useInstagramFeed() {
@@ -9,15 +10,16 @@ export function useInstagramFeed() {
     data,
     fetchNextPage,
     hasNextPage,
+    isFetchingNextPage,
     isLoading,
     isFetching,
     isError,
     error,
   } = useGetInstagramFeedInfinite();
-  const rowHeightRef = useRef<number>(300);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<HTMLDivElement>(null);
+
+  const rowHeightRef = useRef<number>(500);
   const posts = data?.pages.flatMap((page) => page.data) || [];
+  const currentPage = data?.pages.at(-1)?.nextCursor;
 
   const getInitialViewCount = () => {
     if (typeof window === 'undefined') return 4;
@@ -29,20 +31,11 @@ export function useInstagramFeed() {
 
   const [viewCount, setViewCount] = useState(getInitialViewCount());
 
-  useEffect(() => {
-    const handleResize = () => {
-      setViewCount(getInitialViewCount());
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   const rowVirtualizer = useVirtualizer({
     count: Math.ceil(posts.length / viewCount),
     estimateSize: () => rowHeightRef.current,
-    overscan: 5,
-    getScrollElement: () => scrollRef.current,
+    overscan: 2,
+    getScrollElement: () => document.getElementById('foto-scroll'),
     getItemKey: (index) => index,
   });
 
@@ -51,12 +44,11 @@ export function useInstagramFeed() {
 
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
-      const index = Number(element.dataset.index) ?? 0;
-      const gridItemWidth = entry.contentRect.width / viewCount;
-      const height = gridItemWidth;
+      const height = entry.contentRect.height + 20;
+
       if (rowHeightRef.current !== height) {
         rowHeightRef.current = height;
-        rowVirtualizer.resizeItem(index, height);
+        rowVirtualizer.measure();
       }
     });
 
@@ -64,30 +56,38 @@ export function useInstagramFeed() {
     return () => resizeObserver.disconnect();
   };
 
-  useEffect(() => {
-    rowVirtualizer.measure();
-  }, [posts.length, rowVirtualizer]);
+  useLayoutEffect(() => {
+    const handleResize = debounce(() => {
+      rowVirtualizer.measure();
+    }, 150);
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [rowVirtualizer]);
 
   useEffect(() => {
-    if (!observerRef.current || !hasNextPage || isFetching) return;
+    const lastRow = rowVirtualizer.getVirtualItems().at(-1);
+    if (!lastRow || !hasNextPage || isFetchingNextPage) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 },
-    );
-    observer.observe(observerRef.current);
-    return () => observer.disconnect();
-  }, [hasNextPage, isFetching, fetchNextPage]);
+    const totalRows = Math.ceil(posts.length / viewCount);
+    const isLastRowVisible = lastRow.index >= totalRows - 1;
+
+    if (isLastRowVisible) {
+      fetchNextPage();
+    }
+  }, [
+    rowVirtualizer.getVirtualItems(),
+    posts.length,
+    viewCount,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    currentPage,
+  ]);
 
   return {
     rowVirtualizer,
     measureRowHeight,
-    scrollRef,
-    observerRef,
     posts,
     viewCount,
     setViewCount,
@@ -95,7 +95,6 @@ export function useInstagramFeed() {
     isLoading,
     isError,
     error,
-    hasNextPage,
     fetchNextPage,
   };
 }
