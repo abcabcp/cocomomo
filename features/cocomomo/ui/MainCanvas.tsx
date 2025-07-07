@@ -9,18 +9,18 @@ import { Loading } from "@/shared";
 const Sea = dynamic(() => import('./Sea'), { ssr: false, loading: () => <Html><Loading /></Html> });
 
 export function MainCanvas() {
+    const dpr = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1;
     return (
         <Canvas
             className="fixed inset-0 z-0"
             gl={{
                 antialias: true,
                 powerPreference: 'high-performance',
-                precision: 'mediump',
-                failIfMajorPerformanceCaveat: true,
-                preserveDrawingBuffer: true,
-                logarithmicDepthBuffer: false
+                precision: 'highp',
+                failIfMajorPerformanceCaveat: false,
+                alpha: true
             }}
-            dpr={1}
+            dpr={dpr}
             performance={{ min: 0.5 }}
         >
             <Sea />
