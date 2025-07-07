@@ -22,3 +22,52 @@ body {
   color: var(--foreground);
   font-family: var(--font-pretendard-jp);
 }
+
+html,
+body,
+div,
+section,
+article,
+main,
+aside,
+nav,
+header,
+footer,
+form,
+ul,
+ol,
+pre,
+code {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+.scroll-container::-webkit-scrollbar,
+.overflow-auto::-webkit-scrollbar,
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-x-auto::-webkit-scrollbar,
+[style*="overflow"]::-webkit-scrollbar,
+[style*="overflow-y"]::-webkit-scrollbar,
+[style*="overflow-x"]::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@supports (-webkit-touch-callout: none) {
+  * {
+    -webkit-overflow-scrolling: auto !important;
+  }
+}
+
+*[class*="overflow"]::-webkit-scrollbar {
+  display: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
