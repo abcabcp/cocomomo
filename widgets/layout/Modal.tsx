@@ -277,7 +277,7 @@ export function Modal({
                         <button className='w-3 h-3 bg-green-500 rounded-full mr-2 cursor-pointer' onClick={onFullscreen}><p className="sr-only">Fullscreen</p></button>
                         <h2 className="text-sm">{title}</h2>
                     </header>
-                    <div className="flex-1 overflow-auto w-full">
+                    <div className="w-full flex flex-col flex-1 overflow-hidden">
                         {body}
                     </div>
                     {typeof window !== 'undefined' && window.innerWidth > MODAL_SIZE.BREAKPOINT && (

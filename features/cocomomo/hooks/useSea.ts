@@ -18,7 +18,6 @@ export function useSea() {
     () => ({
       iGlobalTime: { value: 0 },
       iResolution: { value: new Vector2() },
-      uAspectRatio: { value: 1.0 },
       uSkyColor: { value: new Vector3(0.4, 0.6, 0.8) },
       uSkyTopColor: { value: new Vector3(0.2, 0.5, 0.9) },
       uSeaBaseColor: { value: new Vector3(0.05, 0.15, 0.3) },
@@ -97,9 +96,6 @@ export function useSea() {
           pixelWidth,
           pixelHeight,
         );
-
-        const aspectRatio = pixelWidth / pixelHeight;
-        materialRef.current.uniforms.uAspectRatio.value = aspectRatio;
       }
     };
 
