@@ -6,9 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type FindAllPostsParams = {
-  tags?: string;
-  searchTerm?: string;
-  limit?: number;
-  page?: number;
+export type CommentRemoveResponseDto = {
+  /** 삭제 코멘트 id */
+  id: number;
 };

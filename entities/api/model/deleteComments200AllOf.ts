@@ -5,11 +5,11 @@
  * COCOMOMO 백엔드 API 문서
  * OpenAPI spec version: 1.0
  */
-import type { Comment } from './comment';
+import type { CommentRemoveResponseDto } from './commentRemoveResponseDto';
 
 export type DeleteComments200AllOf = {
   statusCode?: number;
   success?: boolean;
-  data?: Comment;
+  data?: CommentRemoveResponseDto;
   timestamp?: string;
 };

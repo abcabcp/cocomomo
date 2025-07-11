@@ -79,7 +79,6 @@ export const getGetCommentsByPostIdCommentsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!postId,
-    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getCommentsByPostIdComments>>,

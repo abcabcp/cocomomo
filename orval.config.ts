@@ -23,9 +23,6 @@ export default defineConfig({
         title: (title) => `${title}Api`,
         query: {
           useQuery: true,
-          options: {
-            staleTime: 10000,
-          },
           signal: true,
         },
         mutator: {

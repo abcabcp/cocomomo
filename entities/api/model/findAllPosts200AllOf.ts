@@ -5,11 +5,11 @@
  * COCOMOMO 백엔드 API 문서
  * OpenAPI spec version: 1.0
  */
-import type { PostRemoveResponseDto } from './postRemoveResponseDto';
+import type { PostsResponseDto } from './postsResponseDto';
 
-export type RemovePosts200AllOf = {
+export type FindAllPosts200AllOf = {
   statusCode?: number;
   success?: boolean;
-  data?: PostRemoveResponseDto;
+  data?: PostsResponseDto;
   timestamp?: string;
 };

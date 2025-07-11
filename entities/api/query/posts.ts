@@ -25,6 +25,7 @@ import type {
   ApiErrorDto,
   CreatePostDto,
   CreatePosts200AllOf,
+  FindAllPosts200AllOf,
   FindAllPostsParams,
   FindOnePosts200AllOf,
   RemovePosts200AllOf,
@@ -41,7 +42,12 @@ export const findAllPosts = (
   params?: FindAllPostsParams,
   signal?: AbortSignal,
 ) => {
-  return apiInstance<void>({ url: `/posts`, method: 'GET', params, signal });
+  return apiInstance<FindAllPosts200AllOf>({
+    url: `/posts`,
+    method: 'GET',
+    params,
+    signal,
+  });
 };
 
 export const getFindAllPostsQueryKey = (params?: FindAllPostsParams) => {
@@ -67,12 +73,7 @@ export const getFindAllPostsQueryOptions = <
     signal,
   }) => findAllPosts(params, signal);
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 10000,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof findAllPosts>>,
     TError,
     TData
@@ -292,7 +293,6 @@ export const getFindOnePostsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof findOnePosts>>,

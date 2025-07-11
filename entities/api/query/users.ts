@@ -50,12 +50,7 @@ export const getGetProfileUsersQueryOptions = <
     signal,
   }) => getProfileUsers(signal);
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 10000,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getProfileUsers>>,
     TError,
     TData
@@ -199,12 +194,7 @@ export const getGetCurrentUserUsersQueryOptions = <
     Awaited<ReturnType<typeof getCurrentUserUsers>>
   > = ({ signal }) => getCurrentUserUsers(signal);
 
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 10000,
-    ...queryOptions,
-  } as UseQueryOptions<
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getCurrentUserUsers>>,
     TError,
     TData

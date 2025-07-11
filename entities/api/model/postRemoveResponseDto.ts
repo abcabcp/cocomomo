@@ -6,9 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type FindAllPostsParams = {
-  tags?: string;
-  searchTerm?: string;
-  limit?: number;
-  page?: number;
+export type PostRemoveResponseDto = {
+  /** 삭제된 게시글 ID */
+  id: number;
 };
