@@ -1,10 +1,10 @@
 'use client';
 
-import { useAuth } from "@/features/auth/hooks";
+import { useAuth } from "@/features/auth";
+import { cn } from "@/shared";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef } from "react";
 import { SUBMENU_STATE } from "./Header";
-import { cn } from "@/shared";
 
 export function SubMenu({
     dropdownState,
@@ -14,9 +14,8 @@ export function SubMenu({
     handleDropdownClick: (state: SUBMENU_STATE) => void;
 }) {
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const { handleGithubLogin, handleGithubLogout } = useAuth();
-    const { data: session } = useSession();
-    const isLogin = !session || !session.user;
+    const { status } = useSession();
+    const { handleGithubLogin, handleLogout } = useAuth();
 
     useEffect(() => {
         if (dropdownState === SUBMENU_STATE.NONE) return;
@@ -58,14 +57,14 @@ export function SubMenu({
                                     </button>
                                 </li>
                                 <li className="w-full px-2 min-w-24 text-ellipsis">
-                                    <button className="py-1 hover:bg-white/10 w-full text-start" onClick={() => {
-                                        if (isLogin) {
+                                    <button onClick={async () => {
+                                        if (status === 'unauthenticated') {
                                             handleGithubLogin();
                                         } else {
-                                            handleGithubLogout();
+                                            handleLogout();
                                         }
                                     }}>
-                                        {isLogin ? '로그인' : `${session?.user?.name} 로그아웃`}
+                                        {status === 'unauthenticated' ? '로그인' : '로그아웃'}
                                     </button>
                                 </li></>
                         }

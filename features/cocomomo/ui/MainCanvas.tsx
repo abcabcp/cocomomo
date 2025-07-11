@@ -1,10 +1,10 @@
 'use client';
 
-import { Canvas } from "@react-three/fiber";
-import { Time } from "./Time";
-import dynamic from "next/dynamic";
-import { Html } from "@react-three/drei";
 import { Loading } from "@/shared";
+import { Html } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import dynamic from "next/dynamic";
+import { Time } from "./Time";
 
 const Sea = dynamic(() => import('./Sea'), { ssr: false, loading: () => <Html><Loading /></Html> });
 

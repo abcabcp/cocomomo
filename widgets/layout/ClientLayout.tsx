@@ -1,13 +1,14 @@
 'use client';
 
-import { isMobileDevice } from '@/shared';
+import { AuthProvider, isMobileDevice, Loading } from '@/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Dock } from './Dock';
 import { Header } from './Header';
-
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -17,7 +18,7 @@ const queryClient = new QueryClient({
         },
     },
 });
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({ children, session }: { children: React.ReactNode, session: Session | null }) {
     const [headerVisible, setHeaderVisible] = useState(!isMobileDevice());
     const [dockVisible, setDockVisible] = useState(!isMobileDevice());
     const pathname = usePathname();
@@ -78,13 +79,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     }, [headerVisible, isHome]);
 
     return (
-        <div className="w-full h-full relative">
-            <Header visible={isHome || (isMobileDevice() ? headerVisible : true)} />
+        <SessionProvider session={session}>
             <QueryClientProvider client={queryClient}>
-                {children}
-                <ReactQueryDevtools />
+                <AuthProvider>
+                    <div className="w-full h-full relative">
+                        <Header visible={isHome || (isMobileDevice() ? headerVisible : true)} />
+                        {children}
+                        <ReactQueryDevtools />
+                        <Dock visible={isHome || (isMobileDevice() ? dockVisible : true)} />
+                    </div>
+                </AuthProvider>
             </QueryClientProvider>
-            <Dock visible={isHome || (isMobileDevice() ? dockVisible : true)} />
-        </div>
+        </SessionProvider>
     );
 }   

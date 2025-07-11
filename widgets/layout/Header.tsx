@@ -1,6 +1,7 @@
 'use client';
 
 import { cn, isMobileDevice } from '@/shared';
+import { useUserStore } from '@/shared/store';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -21,6 +22,7 @@ export enum SUBMENU_STATE {
 export function Header({ visible }: HeaderProps) {
     const [dropdownState, setDropdownState] = useState<SUBMENU_STATE>(SUBMENU_STATE.NONE);
     const pathname = usePathname();
+    const { user } = useUserStore();
 
     const handleDropdownClick = (target: SUBMENU_STATE) => {
         if (dropdownState === target) {
@@ -70,10 +72,17 @@ export function Header({ visible }: HeaderProps) {
                         handleDropdownClick={handleDropdownClick}
                     />}
             </div>
-            <ul className='flex gap-x-2 text-black items-center'>
-                <li>
-                    Lang
-                </li>
+            <ul className='flex gap-x-2 text-white items-center'>
+                {user?.name && (
+                    <li className='flex items-center gap-x-2'>
+                        <div className='bg-yellow-500 text-white rounded-md text-xs px-2'>{user?.name}</div>
+                        {user?.role === 'ADMIN' && (
+                            <p className='bg-blue-500 text-white rounded-md text-xs px-2'>
+                                Admin
+                            </p>
+                        )}
+                    </li>
+                )}
                 <li className='flex items-center'>
                     <SearchBar />
                 </li>
