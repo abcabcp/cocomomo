@@ -1,23 +1,5 @@
 import { NextResponse } from 'next/server';
 
-interface InstagramResponse {
-  data: Array<{
-    id: string;
-    caption: string;
-    media_type: 'IMAGE' | 'CAROUSEL_ALBUM' | 'VIDEO';
-    media_url: string;
-    thumbnail_url?: string;
-    permalink: string;
-  }>;
-  paging: {
-    cursors: {
-      before: string;
-      after: string;
-    };
-    next: string;
-  };
-}
-
 async function fetchInstagramMedia(accessToken: string, after?: string | null) {
   const params = new URLSearchParams({
     access_token: accessToken,
