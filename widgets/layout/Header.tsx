@@ -33,13 +33,14 @@ export function Header({ visible }: HeaderProps) {
 
     return (
         <header
+            data-header="true"
             className={cn(
                 "fixed top-0 left-0 right-0 w-full bg-black flex justify-between items-center text-sm font-bold px-4 z-30",
                 "transition-transform duration-300 ease-in-out",
                 isMobileDevice()
                     ? (!visible ? "transform -translate-y-full" : "transform translate-y-0")
                     : "",
-                pathname === '/' && "lg:transform-none"
+                pathname === '/' && "lg:transform-none",
             )}
         >
             <div className='flex gap-x-2 items-center text-gray-100'>

@@ -5,6 +5,8 @@ import { cn } from "@/shared";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef } from "react";
 import { SUBMENU_STATE } from "./Header";
+import { useRouter } from "next/navigation";
+
 
 export function SubMenu({
     dropdownState,
@@ -16,6 +18,7 @@ export function SubMenu({
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { status } = useSession();
     const { handleGithubLogin, handleLogout } = useAuth();
+    const router = useRouter();
 
     useEffect(() => {
         if (dropdownState === SUBMENU_STATE.NONE) return;
@@ -44,6 +47,7 @@ export function SubMenu({
                         {dropdownState === SUBMENU_STATE.COCOMOMO &&
                             <>
                                 <li className="w-full px-2 min-w-24 text-ellipsis">
+
                                     <button className="py-1 hover:bg-white/10 w-full border-b border-gray-800 text-start">
                                         Cocomomo에 관하여
                                     </button>
@@ -57,6 +61,13 @@ export function SubMenu({
                                     </button>
                                 </li>
                                 <li className="w-full px-2 min-w-24 text-ellipsis">
+                                    <button
+                                        onClick={() => {
+                                            router.back();
+                                        }}
+                                        className="w-full py-1 hover:bg-white/10 text-start">
+                                        뒤로 가기
+                                    </button>
                                     <button onClick={async () => {
                                         if (status === 'unauthenticated') {
                                             handleGithubLogin();

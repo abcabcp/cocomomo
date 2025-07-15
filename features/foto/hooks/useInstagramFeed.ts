@@ -3,7 +3,7 @@
 import { debounce } from '@/shared';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useGetInstagramFeedInfinite } from '../api';
+import { InstagramPost, useGetInstagramFeedInfinite } from '../api';
 
 export function useInstagramFeed() {
   const {
@@ -16,6 +16,7 @@ export function useInstagramFeed() {
     isError,
     error,
   } = useGetInstagramFeedInfinite();
+  const [selectedFeed, setSelectedFeed] = useState<InstagramPost>();
 
   const rowHeightRef = useRef<number>(500);
   const posts = data?.pages.flatMap((page) => page.data) || [];
@@ -54,6 +55,14 @@ export function useInstagramFeed() {
 
     resizeObserver.observe(element);
     return () => resizeObserver.disconnect();
+  };
+
+  const onSelectFeed = (feed: InstagramPost) => {
+    setSelectedFeed(feed);
+  };
+
+  const onCloseFeed = () => {
+    setSelectedFeed(undefined);
   };
 
   useLayoutEffect(() => {
@@ -96,5 +105,8 @@ export function useInstagramFeed() {
     isError,
     error,
     fetchNextPage,
+    onSelectFeed,
+    onCloseFeed,
+    selectedFeed,
   };
 }

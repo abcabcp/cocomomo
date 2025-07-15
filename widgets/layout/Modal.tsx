@@ -242,7 +242,7 @@ export function Modal({
     if (!isOpen) return null;
 
     return (
-        <ViewTransition name="modal">
+        <ViewTransition name="modal" enter="fade-in" exit="fade-out">
             <div
                 ref={overlayRef}
                 className={cn(
@@ -250,48 +250,50 @@ export function Modal({
                     { 'z-40': checkIsMobileView() && !isMobileDevice() }
                 )}
             >
-                <div
-                    id="modal"
-                    ref={modalRef}
-                    style={checkIsMobileView() ? {
-                        position: 'fixed',
-                        left: 0,
-                        top: 0,
-                        width: '100vw',
-                        height: '100vh',
-                    } : {
-                        position: 'absolute',
-                        left: `${position.left}px`,
-                        top: `${position.top}px`,
-                        width: `${size.width}px`,
-                        height: `${size.height}px`,
-                    }}
-                    className='flex flex-col bg-black/60 rounded-2xl'
-                >
-                    <header
-                        ref={headerRef}
-                        className="relative w-full px-4 py-2 flex items-center cursor-move z-10"
-                        onMouseDown={handleMouseDown}
+                <ViewTransition name="modal-wrapper" enter="slide-in" exit="slide-out">
+                    <div
+                        id="modal"
+                        ref={modalRef}
+                        style={checkIsMobileView() ? {
+                            position: 'fixed',
+                            left: 0,
+                            top: 0,
+                            width: '100vw',
+                            height: '100vh',
+                        } : {
+                            position: 'absolute',
+                            left: `${position.left}px`,
+                            top: `${position.top}px`,
+                            width: `${size.width}px`,
+                            height: `${size.height}px`,
+                        }}
+                        className='flex flex-col bg-black/60 rounded-2xl'
                     >
-                        <button className='w-3 h-3 bg-red-500 rounded-full mr-2 cursor-pointer' onClick={onClose}><p className="sr-only">Close</p></button>
-                        <button className='w-3 h-3 bg-green-500 rounded-full mr-2 cursor-pointer' onClick={onFullscreen}><p className="sr-only">Fullscreen</p></button>
-                        <h2 className="text-sm">{title}</h2>
-                    </header>
-                    <div className="w-full flex flex-col flex-1 overflow-hidden">
-                        {body}
+                        <header
+                            ref={headerRef}
+                            className="relative w-full px-4 py-2 flex items-center cursor-move z-10"
+                            onMouseDown={handleMouseDown}
+                        >
+                            <button className='w-3 h-3 bg-red-500 rounded-full mr-2 cursor-pointer' onClick={onClose}><p className="sr-only">Close</p></button>
+                            <button className='w-3 h-3 bg-green-500 rounded-full mr-2 cursor-pointer' onClick={onFullscreen}><p className="sr-only">Fullscreen</p></button>
+                            <h2 className="text-sm">{title}</h2>
+                        </header>
+                        <div className="w-full flex flex-col flex-1 overflow-hidden">
+                            {body}
+                        </div>
+                        {typeof window !== 'undefined' && window.innerWidth > MODAL_SIZE.BREAKPOINT && (
+                            <div
+                                ref={resizeHandleRef}
+                                className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent"
+                                onMouseDown={handleResizeMouseDown}
+                                onClick={(e) => e.stopPropagation()}
+                                style={{
+                                    boxShadow: '2px 2px 0 #ffffff inset',
+                                }}
+                            />
+                        )}
                     </div>
-                    {typeof window !== 'undefined' && window.innerWidth > MODAL_SIZE.BREAKPOINT && (
-                        <div
-                            ref={resizeHandleRef}
-                            className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent"
-                            onMouseDown={handleResizeMouseDown}
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                                boxShadow: '2px 2px 0 #ffffff inset',
-                            }}
-                        />
-                    )}
-                </div>
+                </ViewTransition>
             </div>
         </ViewTransition>
     );
