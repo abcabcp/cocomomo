@@ -1,10 +1,10 @@
-import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { useCurrentTimeStore } from '@/shared/store';
-import { PresetName } from '../types/sea';
-import { ANIMATION_DURATION, SEA_TIME_PRESETS } from '../model/sea';
 import { useFrame, useThree } from '@react-three/fiber';
-import { ShaderMaterial, Vector2, Vector3 } from 'three';
 import gsap from 'gsap';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ShaderMaterial, Vector2, Vector3 } from 'three';
+import { ANIMATION_DURATION, SEA_TIME_PRESETS } from '../model/sea';
+import { PresetName } from '../types';
 
 export function useSea() {
   const materialRef = useRef<ShaderMaterial>(null);

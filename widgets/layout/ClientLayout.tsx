@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthProvider, isMobileDevice, Loading } from '@/shared';
+import { AuthProvider, isMobileDevice } from '@/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Session } from 'next-auth';

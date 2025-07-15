@@ -7,12 +7,10 @@ import { useRef } from 'react';
 import { Mesh } from 'three';
 import { useSea } from '../hooks/useSea';
 
-
 export function Sea() {
-    const { materialRef, uniforms } = useSea();
     const meshRef = useRef<Mesh>(null);
+    const { materialRef, uniforms } = useSea();
     const { viewport } = useThree();
-
 
     return (
         <mesh

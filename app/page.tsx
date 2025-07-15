@@ -1,7 +1,23 @@
-import { MainCanvas } from '@/features/cocomomo/ui';
+'use client';
 
-export default function Page() {
+import { Loading } from '@/shared';
+import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
+
+const MainCanvas = dynamic(
+  () => import('@/features/cocomomo/ui/MainCanvas'),
+  {
+    loading: () => <Loading />,
+    ssr: false
+  }
+);
+
+export default function Home() {
   return (
-    <MainCanvas />
+    <main className="relative w-full h-full">
+      <Suspense fallback={<Loading />}>
+        <MainCanvas />
+      </Suspense>
+    </main>
   );
 }

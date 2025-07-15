@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import TerserPlugin from 'terser-webpack-plugin';
 
 const nextConfig: NextConfig = {
   compiler: {
@@ -6,20 +7,29 @@ const nextConfig: NextConfig = {
   },
   compress: true,
   productionBrowserSourceMaps: false,
-  experimental: {
-    viewTransition: true,
-    turbo: {
-      rules: {
-        '*.{glsl,vs,fs,vert,frag}': {
-          loaders: ['raw-loader'],
-          as: '*.js',
-        },
+  turbopack: {
+    rules: {
+      '*.{glsl,vs,fs,vert,frag}': {
+        loaders: ['raw-loader'],
+        as: '*.js',
       },
     },
+  },
+  experimental: {
+    viewTransition: true,
   },
   headers: async () => [
     {
       source: '/:path*',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'public, max-age=31536000, immutable',
+        },
+      ],
+    },
+    {
+      source: '/',
       headers: [
         {
           key: 'Cache-Control',
@@ -32,6 +42,63 @@ const nextConfig: NextConfig = {
     if (!dev && !isServer) {
       config.optimization.minimize = true;
       config.optimization.minimizer = config.optimization.minimizer || [];
+      config.optimization.minimizer.push(
+        new TerserPlugin({
+          terserOptions: {
+            compress: {
+              drop_console: true,
+              dead_code: true,
+              drop_debugger: true,
+              ecma: 2020,
+              passes: 2,
+            },
+            mangle: true,
+            format: {
+              comments: false,
+            },
+          },
+          extractComments: false,
+        }),
+      );
+
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = true;
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        maxInitialRequests: 25,
+        minSize: 20000,
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          framework: {
+            chunks: 'all',
+            name: 'framework',
+            test: /[\\/]node_modules[\\/](react|react-dom|scheduler|next|framer-motion)[\\/]/,
+            priority: 40,
+            enforce: true,
+          },
+          three: {
+            chunks: 'all',
+            name: 'three-bundle',
+            test: /[\\/]node_modules[\\/](three|@react-three)[\\/]/,
+            priority: 30,
+            reuseExistingChunk: true,
+          },
+          lib: {
+            test: /[\\/]node_modules[\\/]/,
+            chunks: 'all',
+            priority: 20,
+            name(module: any) {
+              if (!module.context) return 'vendor';
+              const match = module.context.match(
+                /[\\/]node_modules[\\/](.*?)([\\/]|$)/,
+              );
+              if (!match || !match[1]) return 'vendor';
+              return `lib.${match[1].replace('@', '')}`;
+            },
+          },
+        },
+      };
     }
     config.module.rules.push({
       test: /\.(glsl|vs|fs|vert|frag)$/,
@@ -64,7 +131,6 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
   },
-  
 };
 
 export default nextConfig;
