@@ -10,6 +10,7 @@ export default defineConfig({
         tags: ['Util'],
       },
     },
+
     output: {
       mode: 'tags',
       target: './entities/api/query',
@@ -19,20 +20,16 @@ export default defineConfig({
       biome: true,
       clean: true,
       override: {
-        title: (title) => {
-          return `${title}Api`;
-        },
+        title: (title) => `${title}Api`,
         query: {
           useQuery: true,
-          options: {
-            staleTime: 10000,
-          },
           signal: true,
         },
         mutator: {
           path: './entities/api/api.ts',
           name: 'apiInstance',
         },
+        useTypeOverInterfaces: true,
       },
     },
   },

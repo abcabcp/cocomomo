@@ -3,7 +3,7 @@
 import { useInfiniteQuery, QueryFunctionContext } from '@tanstack/react-query';
 import axios from 'axios';
 
-interface InstagramPost {
+export interface InstagramPost {
   id: string;
   caption: string;
   media_type: 'IMAGE' | 'CAROUSEL_ALBUM' | 'VIDEO';

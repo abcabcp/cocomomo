@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "orval:dev": "dotenv -e .env.development -- orval",
-    "orval:prod": "dotenv -e .env.production -- orval",
+    "orval": "dotenv -e .env.development -- orval",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -26,7 +25,7 @@
     "framer-motion": "^12.19.1",
     "gsap": "^3.13.0",
     "next": "15.3.3",
-    "next-auth": "5.0.0-beta.29",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "three": "^0.177.0",
@@ -55,6 +54,7 @@
     "storybook": "^8.0.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4",
+    "terser-webpack-plugin": "^5.3.14",
     "ts-node": "^10.9.2",
     "typescript": "^5"
   }

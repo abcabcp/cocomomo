@@ -3,10 +3,10 @@
 import { useInstagramFeed } from '@/features/foto/hooks';
 import { cn } from '@/shared';
 import Image from 'next/image';
-import Link from 'next/link';
+import { InstagramPost } from '../api';
 import { SkeletonFeeds } from './SkeletonFeeds';
 
-export function InstagramFeed({ modal }: { modal?: boolean }) {
+export function InstagramFeed({ modal, onSelectFeed, onCloseFeed }: { modal?: boolean, onSelectFeed?: (feed: InstagramPost) => void, onCloseFeed?: () => void }) {
     const {
         rowVirtualizer,
         measureRowHeight,
@@ -15,16 +15,17 @@ export function InstagramFeed({ modal }: { modal?: boolean }) {
         isLoading,
         isFetching,
         isError,
-        error
+        error,
     } = useInstagramFeed();
 
     if (isError) {
         return <div className="text-red-500">Error: {error?.message}</div>;
     }
+
     return (
         <div
             className={cn("overflow-y-auto", {
-                'calc(100vh - 120px) max-h-full': !modal
+                'h-[calc(100vh-120px)] max-h-full': !modal
             })}
         >
             <div
@@ -55,11 +56,10 @@ export function InstagramFeed({ modal }: { modal?: boolean }) {
                                         key={post.id}
                                         className="group relative"
                                         style={{ paddingTop: '100%' }}
+                                        onClick={() => onSelectFeed?.(post)}
                                     >
-                                        <Link
-                                            href={post.permalink}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+
+                                        <div
                                             className={cn(
                                                 'absolute inset-0 block overflow-hidden hover:opacity-90 transition-opacity',
                                                 'bg-white border border-subtle rounded-xl cursor-pointer',
@@ -78,7 +78,12 @@ export function InstagramFeed({ modal }: { modal?: boolean }) {
                                             <div className="hidden group-hover:flex absolute inset-0 items-end justify-start z-[2]">
                                                 <p className="p-2 text-white text-sm whitespace-pre-line">{post.caption}</p>
                                             </div>
-                                        </Link>
+                                            {post.media_type === 'VIDEO' && (
+                                                <div className="absolute right-2 top-2 z-[2]">
+                                                    <Image src="/assets/svgs/video.svg" alt="video" width={24} height={24} />
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -86,13 +91,15 @@ export function InstagramFeed({ modal }: { modal?: boolean }) {
                     );
                 })}
             </div>
-            {(isLoading || isFetching) && (
-                <div
-                    className="relative w-full">
-                    <SkeletonFeeds count={12} />
+            {
+                (isLoading || isFetching) && (
+                    <div
+                        className="relative w-full">
+                        <SkeletonFeeds count={12} />
 
-                </div>
-            )}
-        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 };

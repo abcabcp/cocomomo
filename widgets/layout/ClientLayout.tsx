@@ -1,13 +1,14 @@
 'use client';
 
-import { isMobileDevice } from '@/shared';
+import { AuthProvider, isMobileDevice } from '@/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Session } from 'next-auth';
+import { SessionProvider } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Dock } from './Dock';
 import { Header } from './Header';
-
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -17,22 +18,23 @@ const queryClient = new QueryClient({
         },
     },
 });
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
-    const [headerVisible, setHeaderVisible] = useState(!isMobileDevice());
-    const [dockVisible, setDockVisible] = useState(!isMobileDevice());
-    const pathname = usePathname();
-    const isHome = pathname === '/';
 
+export default function ClientLayout({ children, session }: { children: React.ReactNode, session: Session | null }) {
+    const [isNavVisible, setIsNavVisible] = useState(!isMobileDevice());
+    const pathname = usePathname();
+    const isHome = pathname === '/'
 
     useEffect(() => {
         if (isHome || typeof window === 'undefined' || !isMobileDevice()) return;
 
         let startY = 0;
         let lastY = 0;
+        let touchStartTime = 0;
 
         const handleTouchStart = (e: TouchEvent) => {
             startY = e.touches[0].clientY;
             lastY = startY;
+            touchStartTime = Date.now();
         };
 
         const handleTouchMove = (e: TouchEvent) => {
@@ -40,51 +42,55 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             const deltaY = currentY - lastY;
             lastY = currentY;
 
-            if (startY < 100 && deltaY > 10 && !headerVisible) {
-                setHeaderVisible(true);
-            }
-            else if (startY > window.innerHeight * 2 / 3 && deltaY < -10 && !dockVisible) {
-                setDockVisible(true);
-            }
-            else if (deltaY < -10 && headerVisible) {
-                setHeaderVisible(false);
+            const minSwipeDownDistance = 8;
+            if (deltaY > minSwipeDownDistance) {
+                setIsNavVisible(true);
+                return;
             }
         };
 
-        const handleTouchEnd = (e: TouchEvent) => {
-            const touchTarget = e.target as HTMLElement;
-            const isHeaderArea = touchTarget.closest('header');
-            const isDockArea = touchTarget.closest('[data-dock]');
-
-            if (!isHeaderArea && startY < 100 && headerVisible && Math.abs(lastY - startY) < 5) {
-                setHeaderVisible(false);
-            }
-            if (!isDockArea && dockVisible) {
-                setDockVisible(false);
-            }
+        const handleTouchEnd = () => {
             startY = 0;
             lastY = 0;
+        };
+
+        const handleClick = (e: MouseEvent) => {
+            if (!isNavVisible) return;
+
+            const target = e.target as HTMLElement;
+            const isHeaderArea = target.closest('[data-header]');
+            const isDockArea = target.closest('[data-dock]');
+
+            if (!isHeaderArea && !isDockArea) {
+                setIsNavVisible(false);
+            }
         };
 
         window.addEventListener('touchstart', handleTouchStart);
         window.addEventListener('touchmove', handleTouchMove);
         window.addEventListener('touchend', handleTouchEnd);
+        window.addEventListener('click', handleClick);
 
         return () => {
             window.removeEventListener('touchstart', handleTouchStart);
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
+            window.removeEventListener('click', handleClick);
         };
-    }, [headerVisible, isHome]);
+    }, [isNavVisible, isHome]);
 
     return (
-        <div className="w-full h-full relative">
-            <Header visible={isHome || (isMobileDevice() ? headerVisible : true)} />
+        <SessionProvider session={session}>
             <QueryClientProvider client={queryClient}>
-                {children}
-                <ReactQueryDevtools />
+                <AuthProvider>
+                    <div className="w-full h-full relative bg-black">
+                        <Header visible={isHome || (isMobileDevice() ? isNavVisible : true)} />
+                        {children}
+                        <ReactQueryDevtools />
+                        <Dock visible={isHome || (isMobileDevice() ? isNavVisible : true)} />
+                    </div>
+                </AuthProvider>
             </QueryClientProvider>
-            <Dock visible={isHome || (isMobileDevice() ? dockVisible : true)} />
-        </div>
+        </SessionProvider>
     );
 }   

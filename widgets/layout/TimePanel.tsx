@@ -3,9 +3,19 @@
 import { formatTimeString, SlidePanel, SnapScrollPicker } from "@/shared";
 import { useTimeControl } from "@/shared/lib/hooks/useTimeControl";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export function TimePanel() {
     const { isOpen, isReset, currentTime, selectedTime, handleTempTimeChange, closePanel, resetTime, toggleOpen } = useTimeControl();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const timeString = mounted
+        ? formatTimeString(currentTime.hour, currentTime.minute, currentTime.period)
+        : "00:00";
 
     return (
         <>
@@ -13,7 +23,7 @@ export function TimePanel() {
                 onClick={toggleOpen}
                 className="hover:opacity-80 cursor-pointer text-white"
             >
-                {formatTimeString(currentTime.hour, currentTime.minute, currentTime.period)}
+                {timeString}
             </button>
             <SlidePanel
                 isOpen={isOpen}

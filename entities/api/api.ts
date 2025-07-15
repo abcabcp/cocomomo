@@ -1,5 +1,7 @@
+import { getAccessToken } from '@/shared/lib/utils/accessToken';
 import axios, { AxiosRequestConfig } from 'axios';
-import { getCookie, deleteCookie } from 'cookies-next';
+import { deleteCookie } from 'cookies-next';
+import { signOut } from 'next-auth/react';
 
 export const ACCESS_TOKEN = 'accessToken';
 
@@ -21,13 +23,13 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config: any) => {
-  const accessToken = getCookie(ACCESS_TOKEN);
+  const accessToken = getAccessToken();
   if (accessToken) {
     return {
       ...config,
       headers: {
         ...config.headers,
-        [ACCESS_TOKEN]: accessToken,
+        'access-token': accessToken,
       },
     };
   }
@@ -35,13 +37,25 @@ api.interceptors.request.use((config: any) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error) {
-      clearTokens();
-      window.location.href = '/';
-    }
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
+      // try {
+      //   // const newAccessToken = await refreshToken(); // 토큰 갱신 로직 구현 필요
+      //   // setAccessToken(newAccessToken);
+
+      //   // originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+      //   return api(originalRequest);
+      // } catch (refreshError) {
+      //   await signOut();
+      //   return Promise.reject(refreshError);
+      // }
+    }
     return Promise.reject(error);
   },
 );

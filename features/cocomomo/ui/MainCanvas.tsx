@@ -2,29 +2,69 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Time } from "./Time";
-import dynamic from "next/dynamic";
-import { Html } from "@react-three/drei";
-import { Loading } from "@/shared";
+import { Sea } from "./Sea";
+import { Suspense, memo, useEffect, useState, useRef } from "react";
+import { AdaptiveDpr, AdaptiveEvents, BakeShadows } from "@react-three/drei";
 
-const Sea = dynamic(() => import('./Sea'), { ssr: false, loading: () => <Html><Loading /></Html> });
+const MemoizedSea = memo(Sea);
+const MemoizedTime = memo(Time);
 
-export function MainCanvas() {
-    const dpr = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio, 2) : 1;
+export default function MainCanvas() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [dpr, setDpr] = useState(1);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setDpr(Math.min(window.devicePixelRatio, 2));
+        }
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsVisible(entry.isIntersecting);
+            },
+            { threshold: 0.1 }
+        );
+
+        if (canvasRef.current) {
+            observer.observe(canvasRef.current);
+        }
+
+        return () => {
+            if (canvasRef.current) {
+                observer.unobserve(canvasRef.current);
+            }
+        };
+    }, []);
+
     return (
         <Canvas
-            className="fixed inset-0 z-0"
+            ref={canvasRef}
+            className="fixed inset-0 z-10"
             gl={{
-                antialias: true,
+                antialias: false,
                 powerPreference: 'high-performance',
-                precision: 'highp',
+                precision: 'mediump',
                 failIfMajorPerformanceCaveat: false,
                 alpha: true
             }}
             dpr={dpr}
             performance={{ min: 0.5 }}
+            frameloop={isVisible ? "always" : "demand"}
+            shadows={false}
         >
-            <Sea />
-            <Time />
+            <AdaptiveDpr pixelated />
+            <AdaptiveEvents />
+            <BakeShadows />
+
+            <Suspense fallback={null}>
+                {isVisible && (
+                    <>
+                        <MemoizedSea />
+                        <MemoizedTime />
+                    </>
+                )}
+            </Suspense>
         </Canvas>
     );
 }

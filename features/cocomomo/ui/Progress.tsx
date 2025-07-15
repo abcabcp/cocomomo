@@ -6,13 +6,29 @@ export function Progress() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => (prev + 1) % 100);
-    }, 100);
+    if (typeof window === 'undefined') return;
+    const calculateLoadProgress = () => {
+      const perf = window.performance;
+      if (perf) {
+        const navEntry = perf.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+
+        if (navEntry) {
+          const loadTime = navEntry.loadEventEnd - navEntry.startTime;
+          const currentTime = Date.now() - navEntry.startTime;
+          setProgress(Math.min(100, (currentTime / loadTime) * 100));
+        }
+      } else {
+        setProgress(prev => Math.min(prev + 10, 95));
+      }
+    };
+
+    const interval = setInterval(calculateLoadProgress, 100);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <progress className="progress progress-primary w-56 mt-5 rounded-full" value={progress} />
+    <div className="w-[17%] bg-gray-200 rounded-full h-4 mt-4 bg-gray-700">
+      <div className="bg-blue-600 h-full rounded-full" style={{ width: `${progress}%` }} />
+    </div>
   );
 }

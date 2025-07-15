@@ -79,7 +79,7 @@ export function Dock({ visible }: { visible: boolean }) {
                                 return;
                             }
                             if (pathname === menu.link) {
-                                window.history.go(-1);
+                                router.back();
                             } else {
                                 router.push(menu.link);
                             }

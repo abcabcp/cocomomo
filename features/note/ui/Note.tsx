@@ -1,7 +1,7 @@
 'use client';
 
+import { Sidebar, cn, isMobileDevice } from "@/shared";
 import { useRef, useState } from "react";
-import { cn, isMobileDevice, Sidebar } from "@/shared";
 
 export function Note({ modal }: { modal?: boolean }) {
     const wrapperRef = useRef<HTMLDivElement>(null);
