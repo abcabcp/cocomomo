@@ -3,12 +3,12 @@ import localFont from 'next/font/local';
 export const pretendardJP = localFont({
   src: [
     {
-      path: '../public/assets/fonts/PretendardJP-Regular.woff2',
+      path: './fonts/PretendardJP-Regular.woff2',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../public/assets/fonts/PretendardJP-SemiBold.woff2',
+      path: './fonts/PretendardJP-SemiBold.woff2',
       weight: '600',
       style: 'normal',
     },
