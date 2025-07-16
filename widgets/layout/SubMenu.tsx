@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useRef } from "react";
 import { SUBMENU_STATE } from "./Header";
 import { useRouter } from "next/navigation";
+import { useUserStore } from "@/shared/store";
 
 
 export function SubMenu({
@@ -18,6 +19,7 @@ export function SubMenu({
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { status } = useSession();
     const { handleGithubLogin, handleLogout } = useAuth();
+    const { user } = useUserStore();
     const router = useRouter();
 
     useEffect(() => {
@@ -75,7 +77,7 @@ export function SubMenu({
                                             handleLogout();
                                         }
                                     }}>
-                                        {status === 'unauthenticated' ? '로그인' : '로그아웃'}
+                                        {status === 'unauthenticated' ? '로그인' : `${user?.name} 로그아웃`}
                                     </button>
                                 </li></>
                         }
