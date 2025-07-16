@@ -36,9 +36,13 @@ export default async function RootLayout({
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `
-                        window.performance.mark('app-start');
-                        if ('caches' in window) {
-                            caches.open('asset-cache');
+                        try {
+                            window.performance.mark('app-start');
+                            if ('caches' in window) {
+                                caches.open('asset-cache');
+                            }
+                        } catch (e) {
+                            console.log('Error in performance measurement');
                         }
                         `
                     }}
@@ -51,21 +55,6 @@ export default async function RootLayout({
                     {children}
                     {modal}
                 </ClientLayout>
-                <script
-                    defer
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                        window.addEventListener('load', () => {
-                            setTimeout(() => {
-                                window.performance.mark('app-loaded');
-                                const navEntry = performance.getEntriesByType('navigation')[0];
-                                const lcpEntry = performance.getEntriesByType('largest-contentful-paint')[0];
-                                console.log('LCP:', lcpEntry ? lcpEntry.startTime / 1000 : 'Not available');
-                            }, 0);
-                        });
-                        `
-                    }}
-                />
             </body>
         </html>
     );
