@@ -49,7 +49,7 @@ export default async function RootLayout({
                 />
             </head>
             <body
-                className={`${pretendardJP.variable} antialiased w-dvw h-dvh`}
+                className={`${pretendardJP.className} w-dvw h-dvh`}
             >
                 <ClientLayout session={session}>
                     {children}
