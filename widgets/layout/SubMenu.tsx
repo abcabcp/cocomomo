@@ -5,7 +5,7 @@ import { cn } from "@/shared";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef } from "react";
 import { SUBMENU_STATE } from "./Header";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/shared/store";
 
 
@@ -21,6 +21,7 @@ export function SubMenu({
     const { handleGithubLogin, handleLogout } = useAuth();
     const { user } = useUserStore();
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         if (dropdownState === SUBMENU_STATE.NONE) return;
@@ -70,13 +71,15 @@ export function SubMenu({
                                         className="w-full py-1 hover:bg-white/10 text-start">
                                         뒤로 가기
                                     </button>
-                                    <button onClick={async () => {
-                                        if (status === 'unauthenticated') {
-                                            handleGithubLogin();
-                                        } else {
-                                            handleLogout();
-                                        }
-                                    }}>
+                                    <button
+                                        className="w-full py-1 hover:bg-white/10 text-start"
+                                        onClick={async () => {
+                                            if (status === 'unauthenticated' && pathname !== '/login') {
+                                                handleGithubLogin();
+                                            } else {
+                                                handleLogout();
+                                            }
+                                        }}>
                                         {status === 'unauthenticated' ? '로그인' : `${user?.name} 로그아웃`}
                                     </button>
                                 </li></>
