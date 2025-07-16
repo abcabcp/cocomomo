@@ -14,17 +14,17 @@ export const authOptions: NextAuthOptions = {
       name: 'next-auth.pkce.code_verifier',
       options: {
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
         path: '/',
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
       },
     },
     callbackUrl: {
       name: `next-auth.callback-url`,
       options: {
-        sameSite: 'none',
+        sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
         path: '/',
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
       },
     },
   },

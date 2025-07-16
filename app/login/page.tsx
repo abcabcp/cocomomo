@@ -1,17 +1,19 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { clearTokens } from '@/entities/api/api';
 import { useLoginAuth } from '@/entities/api/query/auth';
 import { setAccessToken, setRefreshToken } from '@/shared/lib/utils/accessToken';
-import { clearTokens } from '@/entities/api/api';
+import { useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 
 export default function Page() {
   const { data: session, status } = useSession();
-  const params = useSearchParams();
-  const callbackUrl = params.get('callbackUrl') || '/';
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/';
   const router = useRouter();
+  const isProcessing = useRef(false);
+
   const { mutateAsync: login } = useLoginAuth({
     mutation: {
       onSuccess: (result) => {
@@ -20,39 +22,54 @@ export default function Page() {
           setAccessToken(data.accessToken);
           setRefreshToken(data.refreshToken);
           router.push(callbackUrl);
+        } else {
+          clearTokens();
+          setTimeout(() => router.push('/'), 3000);
         }
       },
       onError: () => {
-        console.log('[ERROR] useLoginAuth ', status, session);
         clearTokens();
-        router.push(callbackUrl);
+        setTimeout(() => router.push('/'), 3000);
       }
     },
   });
 
   const handleLogin = async () => {
-    console.log('[handleLogin] ', status, session);
-    if (!session?.accessToken) {
-      console.log('[handleLogin] accessToken is not found');
+    if (isProcessing.current) return;
+
+    try {
+      isProcessing.current = true;
+      if (!session?.accessToken) {
+        clearTokens();
+        setTimeout(() => router.push('/'), 3000);
+        return;
+      }
+
+      const payload = {
+        accessToken: session.accessToken,
+        platform: 'github' as const,
+      };
+
+      await login({ data: payload });
+    } catch (error) {
       clearTokens();
-      router.push(callbackUrl);
-      return;
+      setTimeout(() => router.push('/'), 3000);
+    } finally {
+      isProcessing.current = false;
     }
-    const payload = {
-      accessToken: session.accessToken,
-      platform: 'github' as const,
-    };
-    console.log('[handleLogin] accessToken is found');
-    await login({ data: payload });
   };
 
-
   useEffect(() => {
-    console.log('[BEFORE] ', status, session);
     if (status === 'loading') return;
-    console.log('[AFTER] ', status, session)
-    handleLogin();
+    if (status === 'authenticated') {
+      handleLogin();
+    } else if (status === 'unauthenticated') {
+      clearTokens();
+      setTimeout(() => router.push('/'), 3000);
+    }
   }, [status, session]);
 
-  return <div>Redirecting to login...</div>;
+  return (
+    <p>login...</p>
+  );
 }
