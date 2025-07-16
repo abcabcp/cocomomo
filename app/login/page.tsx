@@ -23,6 +23,7 @@ export default function Page() {
         }
       },
       onError: () => {
+        console.log('[ERROR] useLoginAuth ', status, session);
         clearTokens();
         router.push(callbackUrl);
       }
@@ -30,7 +31,9 @@ export default function Page() {
   });
 
   const handleLogin = async () => {
+    console.log('[handleLogin] ', status, session);
     if (!session?.accessToken) {
+      console.log('[handleLogin] accessToken is not found');
       clearTokens();
       router.push(callbackUrl);
       return;
@@ -39,12 +42,15 @@ export default function Page() {
       accessToken: session.accessToken,
       platform: 'github' as const,
     };
+    console.log('[handleLogin] accessToken is found');
     await login({ data: payload });
   };
 
 
   useEffect(() => {
+    console.log('[BEFORE] ', status, session);
     if (status === 'loading') return;
+    console.log('[AFTER] ', status, session)
     handleLogin();
   }, [status, session]);
 
