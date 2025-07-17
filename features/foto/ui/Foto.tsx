@@ -24,7 +24,6 @@ export function Foto({ modal }: { modal?: boolean }) {
                     'h-fit': modal
                 })}>
                 <InstagramFeed modal onSelectFeed={onSelectFeed} onCloseFeed={onCloseFeed} />
-
             </div>
             {
                 selectedFeed && (
