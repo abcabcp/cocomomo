@@ -6,8 +6,6 @@ export default defineConfig({
       target: `${process.env.NEXT_PUBLIC_API_URL}/swagger-json`,
       filters: {
         mode: 'exclude',
-        // Util 폴더 제외
-        tags: ['Util'],
       },
     },
 
