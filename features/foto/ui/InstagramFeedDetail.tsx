@@ -1,22 +1,15 @@
 'use client';
 
-import { InstagramPost } from "../api";
+import { cn } from "@/shared";
 import Image from "next/image";
-import { cn, isMobileDevice } from "@/shared";
 import Link from "next/link";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { InstagramPost } from "../api";
 import { Comments } from "./Comments";
 
 export function InstagramFeedDetail({ modal, feed, onClose }: { modal?: boolean, feed: InstagramPost, onClose: () => void }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isVideoLoading, setIsVideoLoading] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsOpen(true);
-        }, 10);
-        return () => clearTimeout(timer);
-    }, []);
 
     const handleClose = () => {
         setIsOpen(false);
@@ -24,6 +17,13 @@ export function InstagramFeedDetail({ modal, feed, onClose }: { modal?: boolean,
             onClose();
         }, 100);
     };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsOpen(true);
+        }, 10);
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <div className={cn('absolute top-0 left-0 w-full h-full backdrop-blur-md rounded-2xl overflow-y-auto md:overflow-y-hidden', {
@@ -35,13 +35,13 @@ export function InstagramFeedDetail({ modal, feed, onClose }: { modal?: boolean,
                 isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             )}>
                 <div className="flex justify-between items-center w-full gap-x-3 mt-10 my-5 md:my-5">
-                    <Link href={feed.permalink} target="_blank" className="bg-white/10 hover:bg-white/20 md:bg-black/40 md:hover:bg-black/20 text-white px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer text-sm flex items-center justify-center gap-2 w-full">
+                    <Link href={feed.permalink} target="_blank" className="bg-white/10 hover:bg-white/20 md:bg-black/40 md:hover:bg-black/20 text-white px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer text-sm flex items-center justify-center gap-2 w-full border border-gray-400">
                         Instagram
                         <Image src="/assets/svgs/instagram.svg" alt="instagram" width={24} height={24} />
                     </Link>
                     <button
                         onClick={handleClose}
-                        className="bg-white/10 hover:bg-white/20 md:bg-black/40 md:hover:bg-black/20 text-white px-4 py-[10px] rounded-lg transition-colors duration-200 cursor-pointer text-sm w-full"
+                        className="bg-white/10 hover:bg-white/20 md:bg-black/40 md:hover:bg-black/20 text-white px-4 py-[10px] rounded-lg transition-colors duration-200 cursor-pointer text-sm w-full border border-gray-400"
                     >
                         Closed
                     </button>
