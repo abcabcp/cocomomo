@@ -1,6 +1,6 @@
-export function Post({ asidePanelWidth }: { asidePanelWidth: number }) {
+export function Post() {
     return (
-        <article className={`h-full`} style={{ width: `calc(100% - ${asidePanelWidth}px)` }}>
+        <article className="h-full w-full" >
             Contents 위치
         </article>
     );
