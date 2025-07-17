@@ -180,11 +180,21 @@ export const createPosts = (
   createPostDto: CreatePostDto,
   signal?: AbortSignal,
 ) => {
+  const formData = new FormData();
+  formData.append(`title`, createPostDto.title);
+  formData.append(`content`, createPostDto.content);
+  if (createPostDto.tags !== undefined) {
+    formData.append(`tags`, createPostDto.tags);
+  }
+  if (createPostDto.thumbnail !== undefined) {
+    formData.append(`thumbnail`, createPostDto.thumbnail);
+  }
+
   return apiInstance<CreatePosts200AllOf>({
     url: `/posts`,
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: createPostDto,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: formData,
     signal,
   });
 };
@@ -398,11 +408,25 @@ export function useFindOnePosts<
  * @summary 게시글 수정
  */
 export const updatePosts = (id: string, updatePostDto: UpdatePostDto) => {
+  const formData = new FormData();
+  if (updatePostDto.title !== undefined) {
+    formData.append(`title`, updatePostDto.title);
+  }
+  if (updatePostDto.content !== undefined) {
+    formData.append(`content`, updatePostDto.content);
+  }
+  if (updatePostDto.tags !== undefined) {
+    formData.append(`tags`, updatePostDto.tags);
+  }
+  if (updatePostDto.thumbnail !== undefined) {
+    formData.append(`thumbnail`, updatePostDto.thumbnail);
+  }
+
   return apiInstance<UpdatePosts200AllOf>({
     url: `/posts/${id}`,
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    data: updatePostDto,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: formData,
   });
 };
 

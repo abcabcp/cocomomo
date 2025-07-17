@@ -6,6 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
+export * from './addImageUtils200AllOf';
+export * from './addImageUtilsParams';
+export * from './addImagesUtils200AllOf';
+export * from './addImagesUtilsParams';
 export * from './apiErrorDto';
 export * from './apiErrorDtoErrors';
 export * from './authResponseDto';
@@ -18,6 +22,9 @@ export * from './createComments200AllOf';
 export * from './createPostDto';
 export * from './createPosts200AllOf';
 export * from './deleteComments200AllOf';
+export * from './deleteImageByUrlUtils200AllOf';
+export * from './deleteImageByUrlUtilsParams';
+export * from './deleteImageDto';
 export * from './findAllPosts200AllOf';
 export * from './findAllPostsParams';
 export * from './findOnePosts200AllOf';
@@ -35,6 +42,10 @@ export * from './updateCommentDto';
 export * from './updateComments200AllOf';
 export * from './updatePostDto';
 export * from './updatePosts200AllOf';
+export * from './uploadImageDto';
+export * from './uploadImageRequestDto';
+export * from './uploadImagesDto';
+export * from './uploadImagesRequestDto';
 export * from './user';
 export * from './userResponse';
 export * from './userResponseRole';
