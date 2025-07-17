@@ -14,6 +14,12 @@ export default function Page() {
   const router = useRouter();
   const isProcessing = useRef(false);
 
+  const onError = () => {
+    clearTokens();
+    sessionStorage.clear();
+    setTimeout(() => router.push(callbackUrl), 1000);
+  };
+
   const { mutateAsync: login } = useLoginAuth({
     mutation: {
       onSuccess: (result) => {
@@ -23,14 +29,10 @@ export default function Page() {
           setRefreshToken(data.refreshToken);
           router.push(callbackUrl);
         } else {
-          clearTokens();
-          setTimeout(() => router.push('/'), 3000);
+          onError();
         }
       },
-      onError: () => {
-        clearTokens();
-        setTimeout(() => router.push('/'), 3000);
-      }
+      onError,
     },
   });
 
@@ -41,7 +43,7 @@ export default function Page() {
       isProcessing.current = true;
       if (!session?.accessToken) {
         clearTokens();
-        setTimeout(() => router.push('/'), 3000);
+        setTimeout(() => router.push(callbackUrl), 1000);
         return;
       }
 
@@ -52,8 +54,7 @@ export default function Page() {
 
       await login({ data: payload });
     } catch (error) {
-      clearTokens();
-      setTimeout(() => router.push('/'), 3000);
+      onError();
     } finally {
       isProcessing.current = false;
     }
@@ -64,8 +65,7 @@ export default function Page() {
     if (status === 'authenticated') {
       handleLogin();
     } else if (status === 'unauthenticated') {
-      clearTokens();
-      setTimeout(() => router.push('/'), 3000);
+      onError();
     }
   }, [status, session]);
 
