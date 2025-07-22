@@ -1,14 +1,17 @@
 'use client';
 
-import { cn, isMobileDevice } from '@/shared';
+import { cn } from '@/shared';
+import { useModalStore } from '@/shared/store';
 import { usePathname } from 'next/navigation';
-import { JSX, ReactNode, useEffect, useRef, useState, unstable_ViewTransition as ViewTransition } from 'react';
+import { JSX, ReactNode, unstable_ViewTransition as ViewTransition, useEffect, useRef, useState } from 'react';
 
 interface ModalProps {
+    id?: string;
     title?: string;
     body?: ReactNode;
     onClose?: () => void;
     className?: string;
+    order?: number;
 }
 
 type ModalState = {
@@ -21,13 +24,12 @@ type PositionState = {
     top: number;
 };
 
-const MODAL_SIZE = {
+export const MODAL_SIZE = {
     BREAKPOINT: 1000,
     DEFAULT_WIDTH: 960,
     DEFAULT_HEIGHT: 600,
 };
 
-const checkIsMobileView = (): boolean => typeof window !== 'undefined' && window.innerWidth <= MODAL_SIZE.BREAKPOINT;
 const calcModalPosition = (
     windowWidth: number,
     windowHeight: number,
@@ -38,37 +40,38 @@ const calcModalPosition = (
     top: (windowHeight - modalHeight) / 2
 });
 
+const checkIsMobileView = (): boolean => typeof window !== 'undefined' && window.innerWidth <= MODAL_SIZE.BREAKPOINT;
+
 export function Modal({
+    id = 'modal',
     title,
     body,
     className,
+    order,
     ...props
 }: ModalProps): JSX.Element | null {
-    const pathname = usePathname();
     const modalRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
     const resizeHandleRef = useRef<HTMLDivElement>(null);
+    const { size, setSize } = useModalStore();
 
-    const [isOpen, setIsOpen] = useState(true);
     const [windowSize, setWindowSize] = useState({
         width: typeof window !== 'undefined' ? window.innerWidth : 1440,
         height: typeof window !== 'undefined' ? window.innerHeight : 900
     });
 
+
+
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
-    const [size, setSize] = useState<ModalState>({
-        width: MODAL_SIZE.DEFAULT_WIDTH,
-        height: MODAL_SIZE.DEFAULT_HEIGHT
-    });
 
     const [position, setPosition] = useState<PositionState>(
         calcModalPosition(
             windowSize.width,
             windowSize.height,
-            MODAL_SIZE.DEFAULT_WIDTH,
-            MODAL_SIZE.DEFAULT_HEIGHT
+            size.width,
+            size.height
         )
     );
 
@@ -104,12 +107,27 @@ export function Modal({
     const onClose = () => {
         if (typeof window === 'undefined') return;
         window.history.go(-1);
-        setIsOpen(false);
         props.onClose?.();
     };
 
     const onFullscreen = () => {
-        window.location.href = pathname;
+        if (checkIsMobileView()) return;
+        if (size.width === windowSize.width && size.height === windowSize.height) {
+            setSize({
+                width: MODAL_SIZE.DEFAULT_WIDTH,
+                height: MODAL_SIZE.DEFAULT_HEIGHT
+            });
+            setPosition(calcModalPosition(windowSize.width, windowSize.height, MODAL_SIZE.DEFAULT_WIDTH, MODAL_SIZE.DEFAULT_HEIGHT));
+            return;
+        }
+        setSize({
+            width: windowSize.width,
+            height: windowSize.height
+        });
+        setPosition({
+            left: 0,
+            top: 0
+        });
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -144,11 +162,6 @@ export function Modal({
         }
     };
 
-
-    useEffect(() => {
-        updateModalLayout();
-    }, []);
-
     useEffect(() => {
         if (typeof window === 'undefined') return;
         const handleResize = () => updateModalLayout();
@@ -171,17 +184,9 @@ export function Modal({
             }
         };
 
-        const disableBodyScroll = () => {
-            document.body.style.overflow = 'hidden';
-        };
-
         const enableBodyScroll = () => {
             document.body.style.overflow = '';
         };
-
-        if (isOpen) {
-            disableBodyScroll();
-        }
 
         document.addEventListener('click', handleOutsideClick);
 
@@ -189,7 +194,7 @@ export function Modal({
             enableBodyScroll();
             document.removeEventListener('click', handleOutsideClick);
         };
-    }, [isOpen, isDragging, isResizing, recentlyInteracted]);
+    }, [isDragging, isResizing, recentlyInteracted]);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -238,63 +243,60 @@ export function Modal({
         };
     }, [isDragging, isResizing, dragOffset, size, windowSize, initialMousePos, initialSize]);
 
-
-    if (!isOpen) return null;
-
     return (
-        <ViewTransition name="modal" enter="fade-in" exit="fade-out">
+        <div
+            ref={overlayRef}
+            className="fixed inset-0 bg-opacity-50 overflow-hidden h-dvh w-screen"
+            style={{
+                zIndex: checkIsMobileView() ? 40 : 20 + (order ?? 0)
+            }}
+        >
             <div
-                ref={overlayRef}
-                className={cn(
-                    `fixed inset-0 bg-opacity-50 overflow-hidden h-dvh w-screen z-20`,
-                    { 'z-40': checkIsMobileView() && !isMobileDevice() }
-                )}
+                id={id}
+                ref={modalRef}
+                style={checkIsMobileView() ? {
+                    position: 'fixed',
+                    left: 0,
+                    top: 0,
+                    width: '100vw',
+                    height: '100vh',
+                } : {
+                    position: 'absolute',
+                    left: `${position.left}px`,
+                    top: `${position.top}px`,
+                    width: `${size.width}px`,
+                    height: `${size.height}px`,
+                }}
+                className='flex flex-col bg-black/60 rounded-2xl'
             >
-                <ViewTransition name="modal-wrapper" enter="slide-in" exit="slide-out">
+                <header
+                    ref={headerRef}
+                    className="relative w-full px-4 py-2 flex items-center cursor-move backdrop-blur-sm rounded-t-2xl"
+                    style={{
+                        zIndex: checkIsMobileView() ? 40 : 20 + (order ?? 0)
+                    }}
+                    onMouseDown={handleMouseDown}
+                >
+                    <button className='w-3 h-3 bg-red-500 rounded-full mr-2 cursor-pointer' onClick={onClose}><p className="sr-only">Close</p></button>
+                    <button className='w-3 h-3 bg-green-500 rounded-full mr-2 cursor-pointer' onClick={onFullscreen}><p className="sr-only">Fullscreen</p></button>
+                    <h2 className="text-sm">{title}</h2>
+                </header>
+                <div className="w-full flex flex-col flex-1 overflow-hidden">
+                    {body}
+                </div>
+                {typeof window !== 'undefined' && window.innerWidth > MODAL_SIZE.BREAKPOINT && (
                     <div
-                        id="modal"
-                        ref={modalRef}
-                        style={checkIsMobileView() ? {
-                            position: 'fixed',
-                            left: 0,
-                            top: 0,
-                            width: '100vw',
-                            height: '100vh',
-                        } : {
-                            position: 'absolute',
-                            left: `${position.left}px`,
-                            top: `${position.top}px`,
-                            width: `${size.width}px`,
-                            height: `${size.height}px`,
+                        ref={resizeHandleRef}
+                        className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent"
+                        style={{
+                            zIndex: checkIsMobileView() ? 40 : 20 + (order ?? 0),
+                            boxShadow: '2px 2px 0 #ffffff inset',
                         }}
-                        className='flex flex-col bg-black/60 rounded-2xl'
-                    >
-                        <header
-                            ref={headerRef}
-                            className="relative w-full px-4 py-2 flex items-center cursor-move z-10"
-                            onMouseDown={handleMouseDown}
-                        >
-                            <button className='w-3 h-3 bg-red-500 rounded-full mr-2 cursor-pointer' onClick={onClose}><p className="sr-only">Close</p></button>
-                            <button className='w-3 h-3 bg-green-500 rounded-full mr-2 cursor-pointer' onClick={onFullscreen}><p className="sr-only">Fullscreen</p></button>
-                            <h2 className="text-sm">{title}</h2>
-                        </header>
-                        <div className="w-full flex flex-col flex-1 overflow-hidden">
-                            {body}
-                        </div>
-                        {typeof window !== 'undefined' && window.innerWidth > MODAL_SIZE.BREAKPOINT && (
-                            <div
-                                ref={resizeHandleRef}
-                                className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent"
-                                onMouseDown={handleResizeMouseDown}
-                                onClick={(e) => e.stopPropagation()}
-                                style={{
-                                    boxShadow: '2px 2px 0 #ffffff inset',
-                                }}
-                            />
-                        )}
-                    </div>
-                </ViewTransition>
+                        onMouseDown={handleResizeMouseDown}
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                )}
             </div>
-        </ViewTransition>
+        </div >
     );
 }

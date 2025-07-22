@@ -1,7 +1,7 @@
 'use client';
 
 import { useInstagramFeed } from '@/features/foto/hooks';
-import { cn } from '@/shared';
+import { cn, Icon } from '@/shared';
 import Image from 'next/image';
 import { InstagramPost } from '../api';
 import { SkeletonFeeds } from './SkeletonFeeds';
@@ -80,7 +80,7 @@ export function InstagramFeed({ modal, onSelectFeed, onCloseFeed }: { modal?: bo
                                             </div>
                                             {post.media_type === 'VIDEO' && (
                                                 <div className="absolute right-2 top-2 z-[2]">
-                                                    <Image src="/assets/svgs/video.svg" alt="video" width={24} height={24} />
+                                                    <Icon name="video" size={24} className='text-black' />
                                                 </div>
                                             )}
                                         </div>

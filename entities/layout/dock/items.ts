@@ -2,7 +2,7 @@ export const dockMenuItems = [
   {
     title: 'chrome',
     link: '/chrome',
-    imageSrc: '/assets/svgs/chrome.svg',
+    icon: 'chrome',
     target: '',
     className: 'h-10 w-10 bg-white',
     width: 34,
@@ -11,7 +11,7 @@ export const dockMenuItems = [
   {
     title: 'blog',
     link: '/blog',
-    imageSrc: '/assets/svgs/blog.svg',
+    icon: 'blog',
     target: '',
     className: 'h-10 w-10 bg-white',
     order: 2,
@@ -19,7 +19,7 @@ export const dockMenuItems = [
   {
     title: 'github',
     link: '/github',
-    imageSrc: '/assets/svgs/github.svg',
+    icon: 'github',
     target: '',
     className: 'h-10 w-10 bg-white',
     width: 34,
@@ -28,22 +28,21 @@ export const dockMenuItems = [
   {
     title: 'note',
     link: '/note',
-    imageSrc: '/assets/images/note.webp',
+    icon: 'note',
     target: '',
     order: 4,
   },
   {
     title: 'mail',
     link: '/mail',
-    imageSrc: '/assets/images/email.webp',
-    className: 'h-10 w-10 bg-white',
+    icon: 'mail',
     target: '',
     order: 5,
   },
   {
     title: 'foto',
     link: '/foto',
-    imageSrc: '/assets/images/picture.webp',
+    icon: 'foto',
     target: '',
     order: 6,
     className: 'h-10 w-10 bg-white',
@@ -51,7 +50,7 @@ export const dockMenuItems = [
   {
     title: 'setting',
     link: '/setting',
-    imageSrc: '/assets/images/settings.webp',
+    icon: 'setting',
     target: '',
     order: 7,
   },

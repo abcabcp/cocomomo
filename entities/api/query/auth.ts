@@ -15,9 +15,10 @@ import type {
 
 import type {
   ApiErrorDto,
-  AuthResponseDto,
   LoginAuth200AllOf,
   LoginRequestDto,
+  RefreshTokenAuth200AllOf,
+  RefreshTokenRequestDto,
 } from '../model';
 
 import { apiInstance } from '../api';
@@ -108,10 +109,15 @@ export const useLoginAuth = <TError = ApiErrorDto, TContext = unknown>(
 /**
  * @summary 액세스 토큰 갱신
  */
-export const refreshTokenAuth = (signal?: AbortSignal) => {
-  return apiInstance<AuthResponseDto>({
+export const refreshTokenAuth = (
+  refreshTokenRequestDto: RefreshTokenRequestDto,
+  signal?: AbortSignal,
+) => {
+  return apiInstance<RefreshTokenAuth200AllOf>({
     url: `/auth/refresh`,
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: refreshTokenRequestDto,
     signal,
   });
 };
@@ -123,13 +129,13 @@ export const getRefreshTokenAuthMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof refreshTokenAuth>>,
     TError,
-    void,
+    { data: RefreshTokenRequestDto },
     TContext
   >;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof refreshTokenAuth>>,
   TError,
-  void,
+  { data: RefreshTokenRequestDto },
   TContext
 > => {
   const mutationKey = ['refreshTokenAuth'];
@@ -143,9 +149,11 @@ export const getRefreshTokenAuthMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof refreshTokenAuth>>,
-    void
-  > = () => {
-    return refreshTokenAuth();
+    { data: RefreshTokenRequestDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return refreshTokenAuth(data);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -154,7 +162,7 @@ export const getRefreshTokenAuthMutationOptions = <
 export type RefreshTokenAuthMutationResult = NonNullable<
   Awaited<ReturnType<typeof refreshTokenAuth>>
 >;
-
+export type RefreshTokenAuthMutationBody = RefreshTokenRequestDto;
 export type RefreshTokenAuthMutationError = ApiErrorDto;
 
 /**
@@ -165,7 +173,7 @@ export const useRefreshTokenAuth = <TError = ApiErrorDto, TContext = unknown>(
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof refreshTokenAuth>>,
       TError,
-      void,
+      { data: RefreshTokenRequestDto },
       TContext
     >;
   },
@@ -173,7 +181,7 @@ export const useRefreshTokenAuth = <TError = ApiErrorDto, TContext = unknown>(
 ): UseMutationResult<
   Awaited<ReturnType<typeof refreshTokenAuth>>,
   TError,
-  void,
+  { data: RefreshTokenRequestDto },
   TContext
 > => {
   const mutationOptions = getRefreshTokenAuthMutationOptions(options);

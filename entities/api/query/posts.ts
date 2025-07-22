@@ -27,6 +27,7 @@ import type {
   CreatePosts200AllOf,
   FindAllPosts200AllOf,
   FindAllPostsParams,
+  FindAllTagsPosts200AllOf,
   FindOnePosts200AllOf,
   RemovePosts200AllOf,
   UpdatePostDto,
@@ -180,11 +181,21 @@ export const createPosts = (
   createPostDto: CreatePostDto,
   signal?: AbortSignal,
 ) => {
+  const formData = new FormData();
+  formData.append(`title`, createPostDto.title);
+  formData.append(`content`, createPostDto.content);
+  if (createPostDto.tags !== undefined) {
+    formData.append(`tags`, createPostDto.tags);
+  }
+  if (createPostDto.thumbnail !== undefined) {
+    formData.append(`thumbnail`, createPostDto.thumbnail);
+  }
+
   return apiInstance<CreatePosts200AllOf>({
     url: `/posts`,
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: createPostDto,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: formData,
     signal,
   });
 };
@@ -255,6 +266,149 @@ export const useCreatePosts = <TError = ApiErrorDto, TContext = unknown>(
 
   return useMutation(mutationOptions, queryClient);
 };
+/**
+ * @summary 게시글 태그 조회
+ */
+export const findAllTagsPosts = (signal?: AbortSignal) => {
+  return apiInstance<FindAllTagsPosts200AllOf>({
+    url: `/posts/tags`,
+    method: 'GET',
+    signal,
+  });
+};
+
+export const getFindAllTagsPostsQueryKey = () => {
+  return [`/posts/tags`] as const;
+};
+
+export const getFindAllTagsPostsQueryOptions = <
+  TData = Awaited<ReturnType<typeof findAllTagsPosts>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof findAllTagsPosts>>, TError, TData>
+  >;
+}) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getFindAllTagsPostsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof findAllTagsPosts>>
+  > = ({ signal }) => findAllTagsPosts(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof findAllTagsPosts>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindAllTagsPostsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findAllTagsPosts>>
+>;
+export type FindAllTagsPostsQueryError = unknown;
+
+export function useFindAllTagsPosts<
+  TData = Awaited<ReturnType<typeof findAllTagsPosts>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findAllTagsPosts>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findAllTagsPosts>>,
+          TError,
+          Awaited<ReturnType<typeof findAllTagsPosts>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useFindAllTagsPosts<
+  TData = Awaited<ReturnType<typeof findAllTagsPosts>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findAllTagsPosts>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findAllTagsPosts>>,
+          TError,
+          Awaited<ReturnType<typeof findAllTagsPosts>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useFindAllTagsPosts<
+  TData = Awaited<ReturnType<typeof findAllTagsPosts>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findAllTagsPosts>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary 게시글 태그 조회
+ */
+
+export function useFindAllTagsPosts<
+  TData = Awaited<ReturnType<typeof findAllTagsPosts>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof findAllTagsPosts>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getFindAllTagsPostsQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * @summary 게시글 상세 조회
  */
@@ -398,11 +552,25 @@ export function useFindOnePosts<
  * @summary 게시글 수정
  */
 export const updatePosts = (id: string, updatePostDto: UpdatePostDto) => {
+  const formData = new FormData();
+  if (updatePostDto.title !== undefined) {
+    formData.append(`title`, updatePostDto.title);
+  }
+  if (updatePostDto.content !== undefined) {
+    formData.append(`content`, updatePostDto.content);
+  }
+  if (updatePostDto.tags !== undefined) {
+    formData.append(`tags`, updatePostDto.tags);
+  }
+  if (updatePostDto.thumbnail !== undefined) {
+    formData.append(`thumbnail`, updatePostDto.thumbnail);
+  }
+
   return apiInstance<UpdatePosts200AllOf>({
     url: `/posts/${id}`,
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    data: updatePostDto,
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: formData,
   });
 };
 

@@ -58,10 +58,9 @@ export default function ClientLayout({ children, session }: { children: React.Re
             if (!isNavVisible) return;
 
             const target = e.target as HTMLElement;
-            const isHeaderArea = target.closest('[data-header]');
             const isDockArea = target.closest('[data-dock]');
 
-            if (!isHeaderArea && !isDockArea) {
+            if (!isDockArea) {
                 setIsNavVisible(false);
             }
         };
@@ -84,8 +83,10 @@ export default function ClientLayout({ children, session }: { children: React.Re
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
                     <div className="w-full h-full relative bg-black">
-                        <Header visible={isHome || (isMobileDevice() ? isNavVisible : true)} />
-                        {children}
+                        <Header />
+                        <main className="w-full h-full pt-6">
+                            {children}
+                        </main>
                         <ReactQueryDevtools />
                         <Dock visible={isHome || (isMobileDevice() ? isNavVisible : true)} />
                     </div>

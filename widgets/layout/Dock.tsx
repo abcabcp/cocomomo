@@ -1,14 +1,15 @@
 'use client';
 
 import { dockMenuItems } from '@/entities';
-import { cn, isMobileDevice } from '@/shared';
+import { cn, Icon, IconType, isMobileDevice } from '@/shared';
 import { useDragAndDrop } from '@/shared/lib/hooks/useDragAndDrop';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useRouter, usePathname } from 'next/navigation';
+import { useTransitionRouter } from 'next-view-transitions';
+import { usePathname } from 'next/navigation';
 
 export function Dock({ visible }: { visible: boolean }) {
-    const router = useRouter();
+    const router = useTransitionRouter();
     const pathname = usePathname();
     const {
         dragging,
@@ -81,7 +82,10 @@ export function Dock({ visible }: { visible: boolean }) {
                             if (pathname === menu.link) {
                                 router.back();
                             } else {
-                                router.push(menu.link);
+                                router.push(`${menu.link}`, {
+                                    onTransitionReady: modalAnimation,
+                                    scroll: false,
+                                });
                             }
                         }}
                     >
@@ -90,12 +94,10 @@ export function Dock({ visible }: { visible: boolean }) {
                             whileTap={{ scale: selectedItem?.title === menu.title ? 0.95 : 1.0 }}
                             className='relative'
                         >
-                            <Image
-                                src={menu.imageSrc}
-                                alt={menu.title}
-                                width={menu.width ?? 40}
-                                height={40}
-                                className="pointer-events-none"
+                            <Icon
+                                name={menu.icon as IconType}
+                                className="pointer-events-none text-black"
+                                size={menu.icon === 'chrome' || menu.icon === 'github' ? 36 : 40}
                             />
                             {pathname === menu.link && <span className="absolute bottom-[-7px] left-1/2 transform -translate-x-1/2 w-[5px] h-[5px] rounded-full bg-gray-500" />}
                         </motion.div>
@@ -105,3 +107,29 @@ export function Dock({ visible }: { visible: boolean }) {
         </nav>
     );
 }
+
+
+const modalAnimation = () => {
+    const modalElement = document.getElementById('modal');
+    if (!modalElement) return;
+
+    modalElement.animate(
+        [
+            {
+                opacity: 0.5,
+                scale: 0.5,
+                transform: "translateY(20%)",
+            },
+            {
+                opacity: 1,
+                scale: 1,
+                transform: "translateY(0%)",
+            },
+        ],
+        {
+            duration: 100,
+            easing: "cubic-bezier(0.76, 0, 0.24, 1)",
+            fill: "forwards",
+        }
+    );
+};

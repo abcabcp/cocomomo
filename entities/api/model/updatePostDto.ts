@@ -12,7 +12,7 @@ export type UpdatePostDto = {
   /** 게시글 본문 내용 */
   content?: string;
   /** 게시글 태그 목록 */
-  tags?: string[];
-  /** 썸네일 이미지 URL (파일 업로드로 자동 처리되므로 일반적으로 사용하지 않음) */
-  thumbnailUrl?: string;
+  tags?: string;
+  /** 게시글 썸네일 이미지 파일 */
+  thumbnail?: Blob;
 };

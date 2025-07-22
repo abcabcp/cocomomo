@@ -12,5 +12,7 @@ export type CreatePostDto = {
   /** 게시글 본문 내용 */
   content: string;
   /** 게시글 태그 목록 */
-  tags?: string[];
+  tags?: string;
+  /** 게시글 썸네일 이미지 파일 */
+  thumbnail?: Blob;
 };

@@ -66,10 +66,11 @@ export function SubMenu({
                                 <li className="w-full px-2 min-w-24 text-ellipsis">
                                     <button
                                         onClick={() => {
-                                            router.back();
+                                            window.location.href = '/';
+                                            window.history.pushState(null, '', '/');
                                         }}
                                         className="w-full py-1 hover:bg-white/10 text-start">
-                                        뒤로 가기
+                                        홈으로 가기
                                     </button>
                                     <button
                                         className="w-full py-1 hover:bg-white/10 text-start"

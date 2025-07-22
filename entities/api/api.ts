@@ -1,7 +1,13 @@
-import { getAccessToken } from '@/shared/lib/utils/accessToken';
+import {
+  getAccessToken,
+  getRefreshToken,
+  setAccessToken,
+  setRefreshToken,
+} from '@/shared/lib/utils/accessToken';
 import axios, { AxiosRequestConfig } from 'axios';
 import { deleteCookie } from 'cookies-next';
 import { signOut } from 'next-auth/react';
+import { refreshTokenAuth } from './query/auth';
 
 export const ACCESS_TOKEN = 'accessToken';
 
@@ -44,17 +50,27 @@ api.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
-      // try {
-      //   // const newAccessToken = await refreshToken(); // 토큰 갱신 로직 구현 필요
-      //   // setAccessToken(newAccessToken);
-
-      //   // originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-      //   return api(originalRequest);
-      // } catch (refreshError) {
-      //   await signOut();
-      //   return Promise.reject(refreshError);
-      // }
+      const refreshToken = getRefreshToken();
+      if (!refreshToken) {
+        await signOut();
+        await clearTokens();
+        return Promise.reject();
+      }
+      try {
+        const { data } = await refreshTokenAuth({
+          platform: 'github',
+          refreshToken: refreshToken as string,
+        });
+        if (data?.accessToken && data?.refreshToken) {
+          setAccessToken(data.accessToken);
+          setRefreshToken(data.refreshToken);
+        }
+        return api(originalRequest);
+      } catch (refreshError) {
+        await signOut();
+        await clearTokens();
+        return Promise.reject(refreshError);
+      }
     }
     return Promise.reject(error);
   },

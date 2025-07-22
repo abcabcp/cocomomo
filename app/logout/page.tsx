@@ -1,12 +1,14 @@
 'use client';
 
 import { clearTokens } from '@/shared/lib/utils/accessToken';
+import { useUserStore } from '@/shared/store';
 import { signOut } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function SignOutPage() {
     const params = useSearchParams();
+    const { setUser } = useUserStore();
     const callbackUrl = params.get('callback_url') || '/';
     const [isMounted, setIsMounted] = useState(false);
 
@@ -18,7 +20,7 @@ export default function SignOutPage() {
                 if (typeof window !== 'undefined') {
                     sessionStorage.clear();
                     clearTokens();
-
+                    setUser(null);
                     setTimeout(() => {
                         window.location.replace(callbackUrl);
                     }, 3000);

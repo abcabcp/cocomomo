@@ -11,19 +11,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const setUser = useUserStore((state) => state.setUser);
   const accessToken = getAccessToken();
 
-  const { 
+  const {
     data: userInfo,
   } = useGetCurrentUserUsers({
     query: {
       enabled: status === 'authenticated' && !!accessToken,
-    },
+      staleTime: 0,
+      gcTime: 0,
+      refetchOnReconnect: true,
+      refetchOnWindowFocus: true,
+    }, 
   });
 
   useEffect(() => {
     if (userInfo?.data) {
       setUser(userInfo?.data);
+    } else {
+      setUser(null);
     }
   }, [userInfo]);
+
 
   return <>{children}</>
 }

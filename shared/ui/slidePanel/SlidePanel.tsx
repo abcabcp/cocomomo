@@ -112,7 +112,6 @@ export function SlidePanel({
                         transform: direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)'
                     })
                 }}
-                aria-modal="true"
             >
                 {children}
             </div>
