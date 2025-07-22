@@ -4,14 +4,12 @@ import type { Metadata, Viewport } from 'next';
 import { getServerSession } from 'next-auth';
 import { pretendardJP } from './fonts';
 import './globals.css';
+import { ViewTransitions } from 'next-view-transitions';
 
 export const metadata: Metadata = {
     title: 'COCO MOMO',
     description: 'COCO MOMO',
     metadataBase: new URL('https://cocomomo.com'),
-    other: {
-        'preload': '/assets/svgs/load.svg'
-    }
 };
 
 export const viewport: Viewport = {
@@ -28,14 +26,14 @@ export default async function RootLayout({
 }>) {
     const session = await getServerSession(authOptions);
     return (
-        <html lang="ko">
-            <head>
-                <link rel="preload" href="/assets/svgs/load.svg" as="image" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <ViewTransitions>
+            <html lang="ko">
+                <head>
+                    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: `
                         try {
                             window.performance.mark('app-start');
                             if ('caches' in window) {
@@ -45,17 +43,18 @@ export default async function RootLayout({
                             console.log('Error in performance measurement');
                         }
                         `
-                    }}
-                />
-            </head>
-            <body
-                className={`${pretendardJP.className} w-dvw h-dvh`}
-            >
-                <ClientLayout session={session}>
-                    {children}
-                    {modal}
-                </ClientLayout>
-            </body>
-        </html>
+                        }}
+                    />
+                </head>
+                <body
+                    className={`${pretendardJP.className} w-dvw h-dvh`}
+                >
+                    <ClientLayout session={session}>
+                        {children}
+                        {modal}
+                    </ClientLayout>
+                </body>
+            </html>
+        </ViewTransitions>
     );
 }

@@ -1,17 +1,12 @@
 'use client';
 
-import { cn, isMobileDevice } from '@/shared';
 import { useUserStore } from '@/shared/store';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { SearchBar } from './SearchBar';
 import { SubMenu } from './SubMenu';
 import { TimePanel } from './TimePanel';
-
-type HeaderProps = {
-    visible: boolean;
-};
+import { Icon } from '@/shared';
 
 export enum SUBMENU_STATE {
     NONE = -1,
@@ -19,9 +14,8 @@ export enum SUBMENU_STATE {
     HELP = 1,
 }
 
-export function Header({ visible }: HeaderProps) {
+export function Header() {
     const [dropdownState, setDropdownState] = useState<SUBMENU_STATE>(SUBMENU_STATE.NONE);
-    const pathname = usePathname();
     const { user } = useUserStore();
 
     const handleDropdownClick = (target: SUBMENU_STATE) => {
@@ -33,15 +27,7 @@ export function Header({ visible }: HeaderProps) {
 
     return (
         <header
-            data-header="true"
-            className={cn(
-                "fixed top-0 left-0 right-0 w-full bg-black flex justify-between items-center text-sm font-bold px-4 z-30",
-                "transition-transform duration-300 ease-in-out",
-                isMobileDevice()
-                    ? (!visible ? "transform -translate-y-full" : "transform translate-y-0")
-                    : "",
-                pathname === '/' && "lg:transform-none",
-            )}
+            className="fixed top-0 left-0 right-0 w-full bg-black flex justify-between items-center text-sm font-bold px-4 z-20"
         >
             <div className='flex gap-x-2 items-center text-gray-100'>
                 <button
@@ -53,7 +39,7 @@ export function Header({ visible }: HeaderProps) {
                         }
                     }}
                 >
-                    <Image src="/assets/svgs/logo.svg" alt="logo" width={24} height={24} />
+                    <Icon name="logo" size={24} />
                     <h1 className='sr-only'>COCOMOMO</h1>
                 </button>
                 <button

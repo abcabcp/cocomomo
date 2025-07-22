@@ -1,6 +1,6 @@
 'use client';
 
-import { formatTimeString, SlidePanel, SnapScrollPicker } from "@/shared";
+import { formatTimeString, Icon, SlidePanel, SnapScrollPicker } from "@/shared";
 import { useTimeControl } from "@/shared/lib/hooks/useTimeControl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -13,9 +13,15 @@ export function TimePanel() {
         setMounted(true);
     }, []);
 
-    const timeString = mounted
-        ? formatTimeString(currentTime.hour, currentTime.minute, currentTime.period)
-        : "00:00";
+    if (!mounted) {
+        return (
+            <button className="hover:opacity-80 cursor-pointer text-white">
+                00:00
+            </button>
+        );
+    }
+
+    const timeString = formatTimeString(currentTime.hour, currentTime.minute, currentTime.period);
 
     return (
         <>
@@ -34,17 +40,23 @@ export function TimePanel() {
                 marginX={16}
             >
                 <button onClick={resetTime} className="flex items-center justify-end">
-                    <Image src="/assets/svgs/reset.svg" alt="reset" width={24} height={24} className={isReset ? "animate-spin" : ""} />
+                    <Icon
+                        name="reset"
+                        size={24}
+                        className={isReset ? "animate-spin text-gray-500" : "text-gray-500"}
+                    />
                 </button>
-                <SnapScrollPicker
-                    type="time"
-                    value={formatTimeString(
-                        selectedTime.hour,
-                        selectedTime.minute,
-                        selectedTime.period as 'AM' | 'PM'
-                    )}
-                    onChange={handleTempTimeChange}
-                />
+                {mounted && (
+                    <SnapScrollPicker
+                        type="time"
+                        value={formatTimeString(
+                            selectedTime.hour,
+                            selectedTime.minute,
+                            selectedTime.period as 'AM' | 'PM'
+                        )}
+                        onChange={handleTempTimeChange}
+                    />
+                )}
             </SlidePanel>
         </>
     );

@@ -1,5 +1,6 @@
 'use client';
 
+import { Icon } from "@/shared";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
@@ -93,11 +94,10 @@ export function SearchBar() {
                             placeholder="COCOMOMO Search"
                         />
                         <button onClick={handleSearch}>
-                            <Image
-                                src="/assets/svgs/search.svg"
-                                alt="search"
-                                width={24}
-                                height={24}
+                            <Icon
+                                name="search"
+                                size={24}
+                                color="black"
                                 className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none"
                             />
                         </button>
