@@ -1,9 +1,9 @@
 'use client';
 
-import { Post } from "./Post";
+import { BlogList } from "./BlogList";
 
 export function Blog() {
     return (
-        <Post />
+        <BlogList />
     );
 }

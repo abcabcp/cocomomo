@@ -50,7 +50,7 @@ export function CreatePost({ modal, onClose }: { modal?: boolean, onClose: () =>
     }, []);
 
     return (
-        <div className={cn('absolute top-0 left-0 w-full h-full backdrop-blur-md rounded-2xl overflow-hidden pb-5', {
+        <div className={cn('absolute top-0 left-0 w-full h-full backdrop-blur-lg rounded-2xl overflow-hidden pb-5 z-10', {
             'pt-9': modal,
         })}>
             <form

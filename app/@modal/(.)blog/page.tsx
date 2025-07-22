@@ -1,9 +1,6 @@
-import { Blog } from "@/features/blog";
+import { Blog, BlogLayout } from "@/features/blog";
 import { Modal } from "@/widgets";
-import { BlogLayout } from "@/features/blog/ui";
 
 export default function Page() {
-    return (
-        <Modal title="Blog" body={<BlogLayout modal><Blog /></BlogLayout>} />
-    );
+    return <Modal title="Blog" body={<BlogLayout modal><Blog /></BlogLayout>} order={1} />
 }

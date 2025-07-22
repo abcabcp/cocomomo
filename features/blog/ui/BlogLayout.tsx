@@ -1,37 +1,65 @@
 'use client';
 
-import { useRef, useState } from "react";
-import { cn, isMobileDevice } from "@/shared";
-import { Sidebar } from "@/shared/ui";
-import { useUserStore } from "@/shared/store";
 import { CreatePost } from "@/features/blog/ui";
+import { cn } from "@/shared";
+import { useSSRMediaQuery } from "@/shared/lib/utils";
+import { useModalStore } from "@/shared/store";
+import { Sidebar } from "@/shared/ui";
+import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState } from "react";
+import { BlogTagList } from "./BlogTagList";
 
-export function BlogLayout({ children, modal }: { children: React.ReactNode, modal?: boolean }) {
+const BlogLayoutClientOnly = ({ children, modal }: { children: React.ReactNode, modal?: boolean }) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const [asidePanelWidth, setAsidePanelWidth] = useState(200);
-    const { user } = useUserStore();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const isMdScreen = useSSRMediaQuery(768);
+    const { size } = useModalStore();
+
+    const [asidePanelWidth, setAsidePanelWidth] = useState<number | null>(() => {
+        if (typeof window !== 'undefined') {
+            return window.innerWidth <= 768 || size.width < 768 ? null : 200;
+        }
+        return null;
+    });
+
+    useEffect(() => {
+        if (isMdScreen || modal && size.width < 768) {
+            setAsidePanelWidth(null);
+        } else {
+            setAsidePanelWidth(200);
+        }
+    }, [isMdScreen, modal, size]);
+
     return (
-        <div ref={wrapperRef} className={cn('w-full h-full flex border-gray-400 bg-gray-900', {
-            'pt-6': !isMobileDevice() && !modal
+        <div ref={wrapperRef} className={cn('w-full h-full flex bg-gray-900', {
+            'flex-col': !asidePanelWidth,
+            'flex-row': asidePanelWidth
         })}>
             <Sidebar
                 asidePanelWidth={asidePanelWidth}
                 setAsidePanelWidth={setAsidePanelWidth}
                 wrapperRef={wrapperRef}
             >
-                <div className="flex flex-col gap-2 p-2">
-                    {user?.role === 'admin' && (
-                        <button className="bg-white/10 border border-white/20 text-white py-2 rounded-lg transition-colors duration-200 cursor-pointer text-sm w-full" onClick={() => setIsCreateModalOpen(true)}>Create Post</button>
-                    )}
-                    <ul>
-                        {Array.from({ length: 10 }).map((_, index) => (
-                            <li key={index}>menu{index + 1}</li>
-                        ))}
-                    </ul>
-                </div>
+                <BlogTagList
+                    asidePanelWidth={asidePanelWidth}
+                    openCreatePostModal={() => setIsCreateModalOpen(true)}
+                />
             </Sidebar>
-            {children}
+            <article className={cn(
+                "overflow-y-auto",
+                asidePanelWidth ? "flex-1 h-full" : "w-full h-full"
+            )}>
+                {children}
+            </article>
             {isCreateModalOpen && <CreatePost modal onClose={() => setIsCreateModalOpen(false)} />}
-        </div>)
+        </div>
+    );
+};
+
+const BlogLayoutWithNoSSR = dynamic(() => Promise.resolve(BlogLayoutClientOnly), {
+    ssr: false,
+});
+
+export function BlogLayout(props: { children: React.ReactNode, modal?: boolean }) {
+    return <BlogLayoutWithNoSSR {...props} />;
 }
