@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from "@/shared";
+import { cn, Icon } from "@/shared";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -37,7 +37,7 @@ export function InstagramFeedDetail({ modal, feed, onClose }: { modal?: boolean,
                 <div className="flex justify-between items-center w-full gap-x-3 mt-10 my-5 md:my-5">
                     <Link href={feed.permalink} target="_blank" className="bg-white/10 hover:bg-white/20 md:bg-black/40 md:hover:bg-black/20 text-white px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer text-sm flex items-center justify-center gap-2 w-full border border-gray-400">
                         Instagram
-                        <Image src="/assets/svgs/instagram.svg" alt="instagram" width={24} height={24} />
+                        <Icon name="instagram" size={24} />
                     </Link>
                     <button
                         onClick={handleClose}
