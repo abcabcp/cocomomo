@@ -6,11 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type UserResponseRole =
-  (typeof UserResponseRole)[keyof typeof UserResponseRole];
+export type RefreshTokenRequestDtoPlatform =
+  (typeof RefreshTokenRequestDtoPlatform)[keyof typeof RefreshTokenRequestDtoPlatform];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UserResponseRole = {
-  user: 'user',
-  admin: 'admin',
+export const RefreshTokenRequestDtoPlatform = {
+  github: 'github',
 } as const;

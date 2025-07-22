@@ -16,7 +16,7 @@ export type PostDto = {
   /** 썸네일 이미지 URL */
   thumbnailUrl?: string;
   /** 게시글 태그 목록 */
-  tags?: string;
+  tags?: string[];
   /** 게시글 생성 시간 */
   createdAt: string;
   /** 게시글 수정 시간 */

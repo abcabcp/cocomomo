@@ -5,10 +5,9 @@
  * COCOMOMO 백엔드 API 문서
  * OpenAPI spec version: 1.0
  */
-import type { AuthResponseDtoUser } from './authResponseDtoUser';
+import type { RefreshTokenRequestDtoPlatform } from './refreshTokenRequestDtoPlatform';
 
-export type AuthResponseDto = {
-  accessToken: string;
+export type RefreshTokenRequestDto = {
+  platform: RefreshTokenRequestDtoPlatform;
   refreshToken: string;
-  user: AuthResponseDtoUser;
 };
