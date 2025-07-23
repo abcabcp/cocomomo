@@ -31,6 +31,7 @@ export const SingleImageUploader = ({
         folder,
         maxSize,
         isSingle: true,
+        accept,
         onChangeValue: (value: UploadedImage | UploadedImage[] | null) => {
             onChange(value as UploadedImage | null);
         },

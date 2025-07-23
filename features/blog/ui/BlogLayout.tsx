@@ -1,6 +1,6 @@
 'use client';
 
-import { CreatePost } from "@/features/blog/ui";
+import { PostForm } from "@/features/blog/ui";
 import { cn } from "@/shared";
 import { useSSRMediaQuery } from "@/shared/lib/utils";
 import { useModalStore } from "@/shared/store";
@@ -51,7 +51,7 @@ const BlogLayoutClientOnly = ({ children, modal }: { children: React.ReactNode, 
             )}>
                 {children}
             </article>
-            {isCreateModalOpen && <CreatePost modal onClose={() => setIsCreateModalOpen(false)} />}
+            {isCreateModalOpen && <PostForm modal onClose={() => setIsCreateModalOpen(false)} />}
         </div>
     );
 };

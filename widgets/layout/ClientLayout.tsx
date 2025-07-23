@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Dock } from './Dock';
 import { Header } from './Header';
+import ToastMessage from '@/shared/ui/toast/ToastMessage';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -86,6 +87,7 @@ export default function ClientLayout({ children, session }: { children: React.Re
                         <Header />
                         <main className="w-full h-full pt-6">
                             {children}
+                            <ToastMessage />
                         </main>
                         <ReactQueryDevtools />
                         <Dock visible={isHome || (isMobileDevice() ? isNavVisible : true)} />

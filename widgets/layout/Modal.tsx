@@ -1,9 +1,7 @@
 'use client';
 
-import { cn } from '@/shared';
 import { useModalStore } from '@/shared/store';
-import { usePathname } from 'next/navigation';
-import { JSX, ReactNode, unstable_ViewTransition as ViewTransition, useEffect, useRef, useState } from 'react';
+import { JSX, ReactNode, useEffect, useRef, useState } from 'react';
 
 interface ModalProps {
     id?: string;
@@ -246,7 +244,7 @@ export function Modal({
     return (
         <div
             ref={overlayRef}
-            className="fixed inset-0 bg-opacity-50 overflow-hidden h-dvh w-screen"
+            className="fixed inset-0 bg-opacity-50 overflow-hidden h-dvh w-screen top-6"
             style={{
                 zIndex: checkIsMobileView() ? 40 : 20 + (order ?? 0)
             }}

@@ -1,12 +1,11 @@
 'use client';
 
+import { Icon } from '@/shared';
 import { useUserStore } from '@/shared/store';
-import Image from 'next/image';
 import { useState } from 'react';
 import { SearchBar } from './SearchBar';
 import { SubMenu } from './SubMenu';
 import { TimePanel } from './TimePanel';
-import { Icon } from '@/shared';
 
 export enum SUBMENU_STATE {
     NONE = -1,
@@ -27,7 +26,7 @@ export function Header() {
 
     return (
         <header
-            className="fixed top-0 left-0 right-0 w-full bg-black flex justify-between items-center text-sm font-bold px-4 z-20"
+            className="fixed top-0 left-0 right-0 w-full bg-black flex justify-between items-center text-sm font-bold px-4 z-50"
         >
             <div className='flex gap-x-2 items-center text-gray-100'>
                 <button

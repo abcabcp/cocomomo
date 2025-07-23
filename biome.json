@@ -22,7 +22,8 @@
         "noExplicitAny": "off"
       },
       "correctness": {
-        "useExhaustiveDependencies": "off"
+        "useExhaustiveDependencies": "off",
+        "noChildrenProp": "off"
       },
       "security": {
         "noDangerouslySetInnerHtml": "off"
