@@ -8,6 +8,7 @@ import {
 } from '@/entities/api/query/utils';
 import { useState } from 'react';
 import { UploadedImage } from '../types';
+import useToast from '@/shared/store/toast';
 
 type UseImageUploadProps = {
   isDirectUpload?: boolean;
@@ -15,17 +16,20 @@ type UseImageUploadProps = {
   maxSize?: number;
   isSingle?: boolean;
   onChangeValue: (value: UploadedImage | UploadedImage[] | null) => void;
+  accept?: string;
   initialValue?: UploadedImage | UploadedImage[] | null;
 };
 
 export const useImageUpload = ({
   isDirectUpload = false,
   folder,
-  maxSize = 5,
+  maxSize = 10,
   isSingle = true,
   onChangeValue,
+  accept,
   initialValue,
 }: UseImageUploadProps) => {
+  const { add } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -68,15 +72,36 @@ export const useImageUpload = ({
     if (!files || files.length === 0) return;
     setIsLoading(true);
 
-    const validFiles: File[] = Array.from(files).filter((file) => {
+    const validSizeFiles: File[] = Array.from(files).filter((file) => {
       const sizeInMB = file.size / (1024 * 1024);
       return sizeInMB <= maxSize;
     });
 
-    if (validFiles.length === 0) {
-      alert(`파일 크기는 ${maxSize}MB 이하만 가능합니다.`);
+    if (validSizeFiles.length === 0) {
+      add({
+        message: `파일 크기는 ${maxSize}MB 이하만 가능합니다.`,
+        status: 'error',
+      });
       setIsLoading(false);
       return;
+    }
+
+    const validFiles: File[] = validSizeFiles.filter((file) => {
+      if (!accept) return true;
+
+      const acceptTypes = accept.split(',').map((type) => type.trim());
+      return acceptTypes.some((type) => file.type === type);
+    });
+
+    if (validFiles.length < validSizeFiles.length) {
+      add({
+        message: `지원하지 않는 파일 형식이 포함되어 있습니다.\n허용된 형식: ${accept}`,
+        status: 'error',
+      });
+      if (validFiles.length === 0) {
+        setIsLoading(false);
+        return;
+      }
     }
 
     if (isDirectUpload) {
@@ -112,7 +137,10 @@ export const useImageUpload = ({
         }
       } catch (error) {
         console.error('이미지 업로드 실패:', error);
-        alert('이미지 업로드에 실패했습니다.');
+        add({
+          message: '이미지 업로드에 실패했습니다.',
+          status: 'error',
+        });
         setIsLoading(false);
       }
     } else {
