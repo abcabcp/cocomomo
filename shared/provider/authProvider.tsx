@@ -1,10 +1,10 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
-import { useUserStore } from '../store';
-import { getAccessToken } from '../lib/utils/accessToken';
 import { useGetCurrentUserUsers } from '@/entities/api/query/users';
+import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
+import { getAccessToken } from '../lib/utils/accessToken';
+import { useUserStore } from '../store';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       gcTime: 0,
       refetchOnReconnect: true,
       refetchOnWindowFocus: true,
-    }, 
+    },
   });
 
   useEffect(() => {
@@ -30,7 +30,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
     }
   }, [userInfo]);
-
 
   return <>{children}</>
 }

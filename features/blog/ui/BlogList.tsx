@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import removeMd from 'remove-markdown';
 import { usePostSearchStore } from "../store/post-search";
+import { useMemo } from "react";
 
 
 export function BlogList() {
@@ -13,7 +14,9 @@ export function BlogList() {
     const { data: allPosts, isLoading } = useFindAllPosts({
         tags: searchTags?.join(','),
         searchTerm,
+        limit: 15
     } as FindAllPostsParams);
+    const posts = useMemo(() => allPosts?.data?.list || [], [allPosts?.data?.list])
 
     const router = useRouter();
     return (
@@ -23,10 +26,10 @@ export function BlogList() {
                     <li key={index} className="h-50 w-full bg-white/10 rounded-md animate-pulse" />
                 ))
             )}
-            {!isLoading && !allPosts?.data?.list?.length && (
+            {!isLoading && !posts?.length && (
                 <p className="text-center text-gray-400">검색 결과가 없습니다.</p>
             )}
-            {!isLoading && allPosts?.data?.list?.map((post) => (
+            {!isLoading && posts?.map((post) => (
                 <li
                     key={post?.id}
                     className="rounded-xl overflow-hidden shadow-lg relative min-h-50"
