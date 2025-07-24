@@ -7,17 +7,19 @@ import { getAccessToken, setAccessToken, setRefreshToken } from '../lib/utils/ac
 import { useUserStore } from '../store';
 import { useLoginAuth } from '@/entities/api/query/auth';
 import { clearTokens } from '@/entities/api/api';
+import { useAuth } from '@/features/auth';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
+  const { handleLogout } = useAuth();
   const setUser = useUserStore((state) => state.setUser);
   const accessToken = getAccessToken();
-
 
   const onError = () => {
     clearTokens();
     setUser(null);
     sessionStorage.clear();
+    handleLogout()
   };
 
 
