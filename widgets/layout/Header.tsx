@@ -61,7 +61,7 @@ export function Header() {
             <ul className='flex gap-x-2 text-white items-center'>
                 {user?.name && (
                     <li className='flex items-center gap-x-2'>
-                        <div className='bg-yellow-500 text-white rounded-md text-xs px-2'>{user?.name}</div>
+                        <div className='text-white rounded-md text-xs px-2'>Hello, {user?.name}</div>
                         {user?.role === 'ADMIN' && (
                             <p className='bg-blue-500 text-white rounded-md text-xs px-2'>
                                 Admin

@@ -1,7 +1,8 @@
 'use client';
 
+import { closeModalAnimation, cn } from '@/shared';
 import { useModalStore } from '@/shared/store';
-import { JSX, ReactNode, useEffect, useRef, useState } from 'react';
+import { JSX, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 
 interface ModalProps {
     id?: string;
@@ -53,13 +54,10 @@ export function Modal({
     const headerRef = useRef<HTMLDivElement>(null);
     const resizeHandleRef = useRef<HTMLDivElement>(null);
     const { size, setSize } = useModalStore();
-
     const [windowSize, setWindowSize] = useState({
         width: typeof window !== 'undefined' ? window.innerWidth : 1440,
         height: typeof window !== 'undefined' ? window.innerHeight : 900
     });
-
-
 
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
@@ -77,6 +75,7 @@ export function Modal({
     const [initialMousePos, setInitialMousePos] = useState({ x: 0, y: 0 });
     const [initialSize, setInitialSize] = useState<ModalState>({ width: 0, height: 0 });
     const [recentlyInteracted, setRecentlyInteracted] = useState(false);
+    const isFullscreen = useMemo(() => size.width === windowSize.width && size.height === windowSize.height, [size, windowSize]);
 
     const updateModalLayout = () => {
         const { innerWidth, innerHeight } = typeof window !== 'undefined' ? window : { innerWidth: 1440, innerHeight: 900 };
@@ -104,8 +103,10 @@ export function Modal({
 
     const onClose = () => {
         if (typeof window === 'undefined') return;
-        window.history.go(-1);
-        props.onClose?.();
+        closeModalAnimation()?.then(() => {
+            window.history.go(-1);
+            props.onClose?.();
+        });
     };
 
     const onFullscreen = () => {
@@ -225,7 +226,6 @@ export function Modal({
                     setRecentlyInteracted(false);
                 }, 300);
             }
-
             setIsDragging(false);
             setIsResizing(false);
         };
@@ -244,9 +244,9 @@ export function Modal({
     return (
         <div
             ref={overlayRef}
-            className="fixed inset-0 bg-opacity-50 overflow-hidden h-dvh w-screen top-6"
+            className="fixed top-6 inset-0 bg-opacity-50 overflow-hidden h-dvh w-screen"
             style={{
-                zIndex: checkIsMobileView() ? 40 : 20 + (order ?? 0)
+                zIndex: 20 + (order ?? 0)
             }}
         >
             <div
@@ -255,7 +255,7 @@ export function Modal({
                 style={checkIsMobileView() ? {
                     position: 'fixed',
                     left: 0,
-                    top: 0,
+                    top: '24px',
                     width: '100vw',
                     height: '100vh',
                 } : {
@@ -265,11 +265,15 @@ export function Modal({
                     width: `${size.width}px`,
                     height: `${size.height}px`,
                 }}
-                className='flex flex-col bg-black/60 rounded-2xl'
+                className={cn('flex flex-col bg-black/60', {
+                    'rounded-2xl': !isFullscreen && !checkIsMobileView()
+                })}
             >
                 <header
                     ref={headerRef}
-                    className="relative w-full px-4 py-2 flex items-center cursor-move backdrop-blur-sm rounded-t-2xl"
+                    className={cn("relative w-full px-4 py-2 flex items-center cursor-move backdrop-blur-sm", {
+                        'rounded-t-2xl': !isFullscreen && !checkIsMobileView()
+                    })}
                     style={{
                         zIndex: checkIsMobileView() ? 40 : 20 + (order ?? 0)
                     }}

@@ -14,5 +14,5 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     });
     const post = queryClient.getQueryData(['posts', id]) as FindOnePosts200AllOf;
 
-    return <Modal title={post?.data?.title || ''} body={<Post id={id}/>} order={2} />
+    return <Modal title={post?.data?.title || ''} body={<Post id={id} modal />} order={2} />
 }

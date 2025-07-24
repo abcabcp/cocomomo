@@ -1,7 +1,7 @@
 'use client';
 
 import { useFindAllTagsPosts } from "@/entities/api/query/posts";
-import { cn } from "@/shared";
+import { cn, isMobileDevice } from "@/shared";
 import { useUserStore } from "@/shared/store";
 import { usePostSearchStore } from "../store/post-search";
 
@@ -19,8 +19,8 @@ export function BlogTagList({ asidePanelWidth, openCreatePostModal }: { asidePan
 
     return (
         <div className={cn('flex flex-col gap-3 px-4', {
-            'h-full': asidePanelWidth,
-            'h-fit': asidePanelWidth === null
+            'h-full': asidePanelWidth && !isMobileDevice(),
+            'h-fit': asidePanelWidth === null || isMobileDevice()
         })}>
             <ul className="flex flex-col gap-2">
                 {isLoading ? (

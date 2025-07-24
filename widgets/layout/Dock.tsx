@@ -1,14 +1,13 @@
 'use client';
 
 import { dockMenuItems } from '@/entities';
-import { cn, Icon, IconType, isMobileDevice } from '@/shared';
+import { Icon, IconType, closeModalAnimation, cn, isMobileDevice, openModalAnimation } from '@/shared';
 import { useDragAndDrop } from '@/shared/lib/hooks/useDragAndDrop';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { useTransitionRouter } from 'next-view-transitions';
 import { usePathname } from 'next/navigation';
 
-export function Dock({ visible }: { visible: boolean }) {
+export function Dock({ visible, segment }: { visible: boolean, segment: string | null }) {
     const router = useTransitionRouter();
     const pathname = usePathname();
     const {
@@ -80,10 +79,19 @@ export function Dock({ visible }: { visible: boolean }) {
                                 return;
                             }
                             if (pathname === menu.link) {
-                                router.back();
+                                if (segment) {
+                                    router.push('/', {
+                                        onTransitionReady: closeModalAnimation,
+                                        scroll: false,
+                                    });
+                                } else {
+                                    closeModalAnimation()?.then(() => {
+                                        router.back();
+                                    });
+                                }
                             } else {
                                 router.push(`${menu.link}`, {
-                                    onTransitionReady: modalAnimation,
+                                    onTransitionReady: openModalAnimation,
                                     scroll: false,
                                 });
                             }
@@ -107,29 +115,3 @@ export function Dock({ visible }: { visible: boolean }) {
         </nav>
     );
 }
-
-
-const modalAnimation = () => {
-    const modalElement = document.getElementById('modal');
-    if (!modalElement) return;
-
-    modalElement.animate(
-        [
-            {
-                opacity: 0.5,
-                scale: 0.5,
-                transform: "translateY(20%)",
-            },
-            {
-                opacity: 1,
-                scale: 1,
-                transform: "translateY(0%)",
-            },
-        ],
-        {
-            duration: 100,
-            easing: "cubic-bezier(0.76, 0, 0.24, 1)",
-            fill: "forwards",
-        }
-    );
-};

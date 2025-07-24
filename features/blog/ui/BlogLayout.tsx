@@ -2,33 +2,16 @@
 
 import { PostForm } from "@/features/blog/ui";
 import { cn } from "@/shared";
-import { useSSRMediaQuery } from "@/shared/lib/utils";
-import { useModalStore } from "@/shared/store";
+import { useSidebar } from "@/shared/lib/hooks";
 import { Sidebar } from "@/shared/ui";
 import dynamic from 'next/dynamic';
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { BlogTagList } from "./BlogTagList";
 
 const BlogLayoutClientOnly = ({ children, modal }: { children: React.ReactNode, modal?: boolean }) => {
     const wrapperRef = useRef<HTMLDivElement>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const isMdScreen = useSSRMediaQuery(768);
-    const { size } = useModalStore();
-
-    const [asidePanelWidth, setAsidePanelWidth] = useState<number | null>(() => {
-        if (typeof window !== 'undefined') {
-            return window.innerWidth <= 768 || size.width < 768 ? null : 200;
-        }
-        return null;
-    });
-
-    useEffect(() => {
-        if (isMdScreen || modal && size.width < 768) {
-            setAsidePanelWidth(null);
-        } else {
-            setAsidePanelWidth(200);
-        }
-    }, [isMdScreen, modal, size]);
+    const { asidePanelWidth, setAsidePanelWidth, isSidebarOpen, setIsSidebarOpen } = useSidebar({ modal, sidebarWrapperRef: wrapperRef });
 
     return (
         <div ref={wrapperRef} className={cn('w-full h-full flex bg-gray-900', {
@@ -36,6 +19,8 @@ const BlogLayoutClientOnly = ({ children, modal }: { children: React.ReactNode, 
             'flex-row': asidePanelWidth
         })}>
             <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
                 asidePanelWidth={asidePanelWidth}
                 setAsidePanelWidth={setAsidePanelWidth}
                 wrapperRef={wrapperRef}

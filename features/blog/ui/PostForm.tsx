@@ -267,9 +267,9 @@ export function PostForm({ modal, id, onClose }: { modal?: boolean, id?: number,
                 <postForm.Field name="markdown">
                     {(field) => {
                         return (
-                            <div className="flex flex-col gap-2 h-60">
+                            <div className="flex flex-col gap-2 h-60" key={field.name}>
                                 <MDEditor
-                                    id="content"
+                                    id={field.name}
                                     value={field.state.value}
                                     onChange={(val) => {
                                         field.handleChange(val || '')

@@ -13,7 +13,9 @@ export function useAuth() {
 
   const handleGithubLogin = async () => {
     if (!session?.accessToken) {
-      await signIn('github', { callbackUrl: `/login?callbackUrl=${pathname}` });
+      await signIn('github', {
+        callbackUrl: pathname,
+      });
     }
   };
 
