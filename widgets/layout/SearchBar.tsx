@@ -43,7 +43,7 @@ export function SearchBar() {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const handleGlobalKeyDown = (e: KeyboardEvent) => {
-                if ((e.metaKey || e.ctrlKey) && e.key === 'p') {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                     e.preventDefault();
                     setIsOpen(true);
                 }
@@ -75,8 +75,13 @@ export function SearchBar() {
 
     return (
         <>
-            <button className='cursor-pointer text-white' onClick={handleSearchClick}>
+            <button className='cursor-pointer text-gray-200 flex items-center gap-1 bg-gray-800 rounded-full px-2 text-xs' onClick={handleSearchClick}>
                 Search
+                <Icon
+                    name="command"
+                    size={12}
+                />
+                <p className="text-gray-200 text-[12px]">K</p>
             </button>
             {isOpen && (
                 <div
@@ -87,7 +92,7 @@ export function SearchBar() {
                         <input
                             type="search"
                             ref={inputRef}
-                            className="w-full p-4 pl-12 text-lg outline-none rounded-3xl"
+                            className="w-full p-4 pl-12 text-lg outline-none rounded-3xl placeholder:text-gray-300 text-black"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyDown}

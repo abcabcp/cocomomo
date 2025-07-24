@@ -2,10 +2,11 @@
 
 import { debounce } from '@/shared';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { InstagramPost, useGetInstagramFeedInfinite } from '../api';
+import { useModalStore } from '@/shared/store';
 
-export function useInstagramFeed() {
+export function useInstagramFeed(modal?: boolean) {
   const {
     data,
     fetchNextPage,
@@ -16,6 +17,7 @@ export function useInstagramFeed() {
     isError,
     error,
   } = useGetInstagramFeedInfinite();
+  const { size } = useModalStore();
   const [selectedFeed, setSelectedFeed] = useState<InstagramPost>();
 
   const rowHeightRef = useRef<number>(500);
@@ -24,13 +26,16 @@ export function useInstagramFeed() {
 
   const getInitialViewCount = () => {
     if (typeof window === 'undefined') return 4;
-    const width = window.innerWidth;
+    const width = modal ? size.width : window.innerWidth;
     if (width < 768) return 2;
     if (width < 1024) return 3;
     return 4;
   };
 
-  const [viewCount, setViewCount] = useState(getInitialViewCount());
+  const viewCount = useMemo(
+    () => getInitialViewCount(),
+    [modal, size, window?.innerWidth],
+  );
 
   const rowVirtualizer = useVirtualizer({
     count: Math.ceil(posts.length / viewCount),
@@ -99,7 +104,6 @@ export function useInstagramFeed() {
     measureRowHeight,
     posts,
     viewCount,
-    setViewCount,
     isFetching,
     isLoading,
     isError,

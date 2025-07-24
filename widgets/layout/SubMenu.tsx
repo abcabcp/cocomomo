@@ -2,11 +2,10 @@
 
 import { useAuth } from "@/features/auth";
 import { cn } from "@/shared";
+import { useUserStore } from "@/shared/store";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef } from "react";
 import { SUBMENU_STATE } from "./Header";
-import { usePathname, useRouter } from "next/navigation";
-import { useUserStore } from "@/shared/store";
 
 
 export function SubMenu({
@@ -20,8 +19,6 @@ export function SubMenu({
     const { status } = useSession();
     const { handleGithubLogin, handleLogout } = useAuth();
     const { user } = useUserStore();
-    const router = useRouter();
-    const pathname = usePathname();
 
     useEffect(() => {
         if (dropdownState === SUBMENU_STATE.NONE) return;
@@ -50,20 +47,6 @@ export function SubMenu({
                         {dropdownState === SUBMENU_STATE.COCOMOMO &&
                             <>
                                 <li className="w-full px-2 min-w-24 text-ellipsis">
-
-                                    <button className="py-1 hover:bg-white/10 w-full border-b border-gray-800 text-start">
-                                        Cocomomo에 관하여
-                                    </button>
-                                </li>
-                                <li className="w-full px-2 min-w-24 text-ellipsis">
-                                    <button className="py-1 hover:bg-white/10 w-full text-start">
-                                        시스템 설정
-                                    </button>
-                                    <button className="py-1 hover:bg-white/10 w-full border-b border-gray-800 text-start">
-                                        업데이트 내역
-                                    </button>
-                                </li>
-                                <li className="w-full px-2 min-w-24 text-ellipsis">
                                     <button
                                         onClick={() => {
                                             window.location.href = '/';
@@ -72,10 +55,23 @@ export function SubMenu({
                                         className="w-full py-1 hover:bg-white/10 text-start">
                                         홈으로 가기
                                     </button>
+                                    <button className="py-1 hover:bg-white/10 w-full border-b border-gray-800 text-start">
+                                        Cocomomo에 관하여
+                                    </button>
+                                </li>
+                                <li className="w-full px-2 min-w-24 text-ellipsis">
+                                    <button className="py-1 hover:bg-white/10 w-full border-b border-gray-800 text-start">
+                                        업데이트 내역
+                                    </button>
+                                    <button className="py-1 hover:bg-white/10 w-full text-start">
+                                        시스템 설정
+                                    </button>
+                                </li>
+                                <li className="w-full px-2 min-w-24 text-ellipsis">
                                     <button
                                         className="w-full py-1 hover:bg-white/10 text-start"
                                         onClick={async () => {
-                                            if (status === 'unauthenticated' && pathname !== '/login') {
+                                            if (status === 'unauthenticated') {
                                                 handleGithubLogin();
                                             } else {
                                                 handleLogout();

@@ -2,8 +2,8 @@
 
 import { BlogList } from "./BlogList";
 
-export function Blog() {
+export function Blog({ modal }: { modal?: boolean }) {
     return (
-        <BlogList />
+        <BlogList modal={modal} />
     );
 }

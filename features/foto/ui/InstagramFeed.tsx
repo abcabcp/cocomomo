@@ -16,7 +16,7 @@ export function InstagramFeed({ modal, onSelectFeed, onCloseFeed }: { modal?: bo
         isFetching,
         isError,
         error,
-    } = useInstagramFeed();
+    } = useInstagramFeed(modal);
 
     if (isError) {
         return <div className="text-red-500">Error: {error?.message}</div>;
@@ -49,7 +49,10 @@ export function InstagramFeed({ modal, onSelectFeed, onCloseFeed }: { modal?: bo
                             }}
                         >
                             <div
-                                className="grid gap-4 p-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                                className={`grid gap-4 p-2`}
+                                style={{
+                                    gridTemplateColumns: `repeat(${viewCount}, minmax(0, 1fr))`,
+                                }}
                             >
                                 {rowPosts.map((post) => (
                                     <div
@@ -95,8 +98,7 @@ export function InstagramFeed({ modal, onSelectFeed, onCloseFeed }: { modal?: bo
                 (isLoading || isFetching) && (
                     <div
                         className="relative w-full">
-                        <SkeletonFeeds count={12} />
-
+                        <SkeletonFeeds count={12} viewCount={viewCount}/>
                     </div>
                 )
             }

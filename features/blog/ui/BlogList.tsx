@@ -3,14 +3,18 @@
 import { FindAllPostsParams } from "@/entities/api/model";
 import { useFindAllPosts } from "@/entities/api/query/posts";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import removeMd from 'remove-markdown';
 import { usePostSearchStore } from "../store/post-search";
 import { useMemo } from "react";
+import { useModalStore } from "@/shared/store";
+import { useTransitionRouter } from "next-view-transitions";
+import { openModalAnimation, openPostAnimation } from "@/shared";
 
 
-export function BlogList() {
+export function BlogList({ modal }: { modal?: boolean }) {
+    const router = useTransitionRouter();
     const { searchTerm, tags: searchTags } = usePostSearchStore();
+    const { setSize } = useModalStore()
     const { data: allPosts, isLoading } = useFindAllPosts({
         tags: searchTags?.join(','),
         searchTerm,
@@ -18,7 +22,6 @@ export function BlogList() {
     } as FindAllPostsParams);
     const posts = useMemo(() => allPosts?.data?.list || [], [allPosts?.data?.list])
 
-    const router = useRouter();
     return (
         <ul className="flex flex-col gap-6 m-4" id="post-list">
             {isLoading && (
@@ -44,9 +47,23 @@ export function BlogList() {
                         scroll={false}
                         onClick={(e) => {
                             e.preventDefault();
-                            router.push(`/blog/${post?.id}`, {
-                                scroll: false,
-                            });
+                            if (modal) {
+                                router.replace(`/blog/${post?.id}`, {
+                                    scroll: false,
+                                    onTransitionReady: () => {
+                                        openPostAnimation();
+                                    }
+                                });
+                            } else {
+                                setSize({ width: window.innerWidth, height: window.innerHeight })
+                                router.push(`/blog/${post?.id}`, {
+                                    scroll: false,
+                                    onTransitionReady: () => {
+                                        openPostAnimation();
+                                    }
+                                });
+                            }
+
                         }}
                         className="absolute inset-0 p-6 flex flex-col justify-between z-10 transition-transform hover:scale-[1.01]"
                     >

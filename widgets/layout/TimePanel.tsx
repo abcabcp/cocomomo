@@ -36,7 +36,7 @@ export function TimePanel() {
                 onClose={closePanel}
                 direction="right"
                 wrapperClassName="bg-transparent"
-                className="mt-6 h-fit rounded-2xl p-4 bg-white/40"
+                className="mt-6 h-fit rounded-2xl p-4 bg-white/40 backdrop-blur-xl"
                 marginX={16}
             >
                 <button onClick={resetTime} className="flex items-center justify-end">

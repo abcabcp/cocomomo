@@ -15,7 +15,7 @@ interface ModalState {
 export const useModalStore = create<ModalState>()(
   persist(
     (set) => ({
-      isOpen: true,
+      isOpen: false,
       size: {
         width: MODAL_SIZE.DEFAULT_WIDTH,
         height: MODAL_SIZE.DEFAULT_HEIGHT,

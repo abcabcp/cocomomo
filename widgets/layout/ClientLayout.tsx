@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { Dock } from './Dock';
 import { Header } from './Header';
 import ToastMessage from '@/shared/ui/toast/ToastMessage';
+import { useSelectedLayoutSegment } from 'next/navigation'
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -24,6 +25,7 @@ export default function ClientLayout({ children, session }: { children: React.Re
     const [isNavVisible, setIsNavVisible] = useState(!isMobileDevice());
     const pathname = usePathname();
     const isHome = pathname === '/'
+    const segment = useSelectedLayoutSegment()
 
     useEffect(() => {
         if (isHome || typeof window === 'undefined' || !isMobileDevice()) return;
@@ -90,7 +92,7 @@ export default function ClientLayout({ children, session }: { children: React.Re
                             <ToastMessage />
                         </main>
                         <ReactQueryDevtools />
-                        <Dock visible={isHome || (isMobileDevice() ? isNavVisible : true)} />
+                        <Dock visible={isHome || (isMobileDevice() ? isNavVisible : true)} segment={segment} />
                     </div>
                 </AuthProvider>
             </QueryClientProvider>

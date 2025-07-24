@@ -1,9 +1,9 @@
 export function SkeletonPost() {
     return (
         <div className="h-fit bg-gradient-to-b from-gray-900 to-gray-950 text-gray-100 overflow-y-scroll">
-            <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden">
+            <div className="relative w-full h-60 md:h-90 overflow-hidden">
                 <div className="absolute inset-0 bg-gray-800 animate-pulse" />
-                <div className="absolute inset-0 z-20 flex flex-col justify-end p-4 md:p-8 lg:p-12">
+                <div className="absolute inset-0 z-20 flex flex-col justify-end px-4 py-4 md:py-8 lg:py-16">
                     <div className="max-w-5xl mx-auto w-full">
                         <div className="h-10 md:h-12 lg:h-14 bg-gray-700 animate-pulse rounded-lg mb-4 w-3/4" />
                         <div className="flex flex-wrap items-center gap-4 mb-4">
@@ -27,7 +27,7 @@ export function SkeletonPost() {
                     </div>
                 </div>
             </div>
-            <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12 h-fit">
+            <div className="max-w-5xl mx-auto px-4 py-4 md:py-8 lg:py-16 h-fit">
                 <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg shadow-xl">
                     <div className="p-6 md:p-8">
                         <div className="space-y-4">
