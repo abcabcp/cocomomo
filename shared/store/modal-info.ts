@@ -1,3 +1,5 @@
+'use client';
+
 import { MODAL_CONSTANTS } from '@/widgets';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
