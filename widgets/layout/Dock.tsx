@@ -37,7 +37,6 @@ export function Dock({ visible, segment }: { visible: boolean, segment: string |
         };
     };
 
-
     return (
         <nav
             className={cn(
@@ -76,6 +75,10 @@ export function Dock({ visible, segment }: { visible: boolean, segment: string |
                         onClick={() => {
                             if (menu.title === 'mail') {
                                 window.open('mailto:dltmfrl600@gmail.com', '_blank');
+                                return;
+                            }
+                            if (menu.title === 'github') {
+                                window.open('https://github.com/abcabcp', '_blank');
                                 return;
                             }
                             if (pathname === menu.link) {
