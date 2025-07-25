@@ -24,23 +24,27 @@ export function useSearch() {
     }
   };
 
-  const setupKeyboardEvents = () => {
-    useEffect(() => {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-          e.preventDefault();
-          openSearch();
-        }
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearch();
+      }
 
-        if (isOpen && e.key === 'Escape') {
-          closeSearch();
-        }
-      };
+      if (isOpen && e.key === 'Escape') {
+        closeSearch();
+      }
+    };
 
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen]);
-  };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      inputRef.current?.focus();
+    }
+  }, [isOpen]);
 
   const useOutsideClickDetection = (
     contentRef: React.RefObject<HTMLElement>,
@@ -64,14 +68,6 @@ export function useSearch() {
     }, [isOpen, contentRef]);
   };
 
-  const useFocusManagement = () => {
-    useEffect(() => {
-      if (isOpen) {
-        inputRef.current?.focus();
-      }
-    }, [isOpen]);
-  };
-
   return {
     inputValue,
     setInputValue,
@@ -80,8 +76,6 @@ export function useSearch() {
     closeSearch,
     handleSearch,
     inputRef,
-    setupKeyboardEvents,
     useOutsideClickDetection,
-    useFocusManagement,
   };
 }
