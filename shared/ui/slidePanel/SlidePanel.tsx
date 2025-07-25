@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
 import { cn } from '@/shared/lib/utils';
+import { useOutsideClick } from '@/shared/lib';
 
 export type SlidePanelDirection = 'left' | 'right';
 
 export interface SlidePanelProps {
     isOpen: boolean;
-    onClose?: () => void;
+    onClose: () => void;
     direction?: SlidePanelDirection;
     children: React.ReactNode;
     width?: number | string;
@@ -32,38 +33,11 @@ export function SlidePanel({
 }: SlidePanelProps) {
     const panelRef = useRef<HTMLDivElement>(null);
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape' && isOpen && onClose) {
-            onClose();
-        }
-    };
+    useOutsideClick(panelRef as RefObject<HTMLElement>, () => {
+        if (isOpen) onClose();
+    }, isOpen);
 
-    const handleOutsideClick = (e: MouseEvent) => {
-        if (
-            isOpen &&
-            panelRef.current &&
-            !panelRef.current.contains(e.target as Node) &&
-            onClose
-        ) {
-            onClose();
-        }
-    };
-
-    useEffect(() => {
-        if (isOpen) {
-            document.addEventListener('keydown', handleKeyDown);
-            if (hasOverlay) {
-                document.addEventListener('mousedown', handleOutsideClick);
-            }
-            document.body.style.overflow = 'hidden';
-        }
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-            document.removeEventListener('mousedown', handleOutsideClick);
-            document.body.style.overflow = '';
-        };
-    }, [isOpen, onClose, hasOverlay]);
+    if (!isOpen) return null;
 
     return (
         <>
@@ -98,7 +72,6 @@ export function SlidePanel({
                     }),
                     ...(marginX > 0 && {
                         [direction === 'left' ? 'left' : 'right']: `${marginX}px`,
-                        // 동적 transform은 여전히 인라인 스타일로 유지
                         transform: !isOpen
                             ? `translateX(${direction === 'left'
                                 ? `-calc(100% + ${marginX}px)`
@@ -108,7 +81,7 @@ export function SlidePanel({
                     ...(isOpen && marginX > 0 && {
                         transform: 'translateX(0)'
                     }),
-                    ...(!isOpen && marginX === 0 && {
+                    ...(marginX === 0 && {
                         transform: direction === 'left' ? 'translateX(-100%)' : 'translateX(100%)'
                     })
                 }}

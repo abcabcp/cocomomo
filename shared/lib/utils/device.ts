@@ -4,3 +4,13 @@ export const isMobileDevice = () => {
     navigator.userAgent,
   );
 };
+
+export const isClient = () => typeof window !== 'undefined';
+
+export const getWindowSize = () =>
+  isClient()
+    ? {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      }
+    : { width: 1440, height: 900 };
