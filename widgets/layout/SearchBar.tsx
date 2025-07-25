@@ -89,12 +89,7 @@ export function SearchBar() {
         closeSearch,
         handleSearch,
         inputRef,
-        setupKeyboardEvents,
-        useFocusManagement
     } = useSearch();
-
-    setupKeyboardEvents();
-    useFocusManagement();
 
     return (
         <>
