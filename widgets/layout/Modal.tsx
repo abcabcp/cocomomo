@@ -1,32 +1,47 @@
 'use client';
 
-import { closeModalAnimation, cn } from '@/shared';
+import { closeModalAnimation, cn, getWindowSize, isClient, useMaxWidthLaptop, useOutsideClick } from '@/shared';
 import { useModalStore } from '@/shared/store';
-import { JSX, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { useTransitionRouter } from 'next-view-transitions';
+import { usePathname } from 'next/navigation';
+import { JSX, ReactNode, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-interface ModalProps {
+type ModalProps = {
+    className?: string;
     id?: string;
     title?: string;
     body?: ReactNode;
     onClose?: () => void;
-    className?: string;
     order?: number;
-}
+} & Omit<React.HTMLAttributes<HTMLDivElement>, 'id' | 'className'>;
 
-type ModalState = {
+type ModalSize = {
     width: number;
     height: number;
-};
+}
 
-type PositionState = {
+type ModalPosition = {
     left: number;
     top: number;
+}
+
+type InteractionState = {
+    isDragging: boolean;
+    isResizing: boolean;
+    recentlyInteracted: boolean;
+    dragOffset: { x: number; y: number };
+    initialMousePos: { x: number; y: number };
+    initialSize: ModalSize;
 };
 
-export const MODAL_SIZE = {
-    BREAKPOINT: 1000,
+export const MODAL_CONSTANTS = {
     DEFAULT_WIDTH: 960,
     DEFAULT_HEIGHT: 600,
+    MIN_WIDTH: 300,
+    MIN_HEIGHT: 200,
+    MODAL_Z_INDEX: 20,
+    INNER_Z_INDEX: 20,
+    INNER_MOBILE_Z_INDEX: 40,
 };
 
 const calcModalPosition = (
@@ -34,89 +49,102 @@ const calcModalPosition = (
     windowHeight: number,
     modalWidth: number,
     modalHeight: number
-): PositionState => ({
+): ModalPosition => ({
     left: (windowWidth - modalWidth) / 2,
     top: (windowHeight - modalHeight) / 2
 });
 
-const checkIsMobileView = (): boolean => typeof window !== 'undefined' && window.innerWidth <= MODAL_SIZE.BREAKPOINT;
+const checkIsFullscreen = (size: ModalSize, windowSize: ModalSize) => {
+    return size.width === windowSize.width && size.height === windowSize.height;
+}
+
+const ModalButton = ({ color, onClick, ariaLabel }: {
+    color: string;
+    onClick: () => void;
+    ariaLabel: string
+}) => (
+    <button
+        className={`w-3 h-3 ${color} rounded-full mr-2 cursor-pointer`}
+        onClick={onClick}
+    >
+        <p className="sr-only">{ariaLabel}</p>
+    </button>
+);
+
 
 export function Modal({
     id = 'modal',
+    className,
     title,
     body,
-    className,
     order,
     ...props
 }: ModalProps): JSX.Element | null {
+    const isMobileView = useMaxWidthLaptop();
     const modalRef = useRef<HTMLDivElement>(null);
-    const overlayRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
     const resizeHandleRef = useRef<HTMLDivElement>(null);
     const { size, setSize } = useModalStore();
-    const [windowSize, setWindowSize] = useState({
-        width: typeof window !== 'undefined' ? window.innerWidth : 1440,
-        height: typeof window !== 'undefined' ? window.innerHeight : 900
-    });
-
-    const [isDragging, setIsDragging] = useState(false);
-    const [isResizing, setIsResizing] = useState(false);
-
-    const [position, setPosition] = useState<PositionState>(
-        calcModalPosition(
-            windowSize.width,
-            windowSize.height,
-            size.width,
-            size.height
-        )
+    const [windowSize, setWindowSize] = useState(getWindowSize());
+    const [position, setPosition] = useState<ModalPosition>(
+        calcModalPosition(windowSize.width, windowSize.height, size.width, size.height)
     );
 
-    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-    const [initialMousePos, setInitialMousePos] = useState({ x: 0, y: 0 });
-    const [initialSize, setInitialSize] = useState<ModalState>({ width: 0, height: 0 });
-    const [recentlyInteracted, setRecentlyInteracted] = useState(false);
-    const isFullscreen = useMemo(() => size.width === windowSize.width && size.height === windowSize.height, [size, windowSize]);
+    const [interaction, setInteraction] = useState<InteractionState>({
+        isDragging: false,
+        isResizing: false,
+        recentlyInteracted: false,
+        dragOffset: { x: 0, y: 0 },
+        initialMousePos: { x: 0, y: 0 },
+        initialSize: { width: 0, height: 0 }
+    });
 
-    const updateModalLayout = () => {
-        const { innerWidth, innerHeight } = typeof window !== 'undefined' ? window : { innerWidth: 1440, innerHeight: 900 };
-        setWindowSize({
-            width: innerWidth,
-            height: innerHeight
-        });
-        if (checkIsMobileView()) {
-            setSize({
-                width: innerWidth,
-                height: innerHeight
-            });
+    const isFullscreen = useMemo(() => checkIsFullscreen(size, windowSize), [size, windowSize]);
+
+    const modalStyle = useMemo(() =>
+        isMobileView ? {
+            position: 'fixed' as const,
+            left: 0,
+            top: '24px',
+            width: '100vw',
+            height: '100vh',
+        } : {
+            position: 'absolute' as const,
+            left: `${position.left}px`,
+            top: `${position.top}px`,
+            width: `${size.width}px`,
+            height: `${size.height}px`,
+        }, [isMobileView, position, size]
+    );
+
+    const updateModalLayout = useCallback(() => {
+        const { width, height } = getWindowSize();
+
+        setWindowSize({ width, height });
+        if (isMobileView) {
+            setSize({ width, height });
             setPosition({ left: 0, top: 0 });
         } else {
-            setPosition(
-                calcModalPosition(
-                    innerWidth,
-                    innerHeight,
-                    size.width,
-                    size.height
-                )
-            );
+            setPosition(calcModalPosition(width, height, size.width, size.height));
         }
-    };
+    }, [size, setSize, isMobileView]);
 
     const onClose = () => {
         if (typeof window === 'undefined') return;
         closeModalAnimation()?.then(() => {
-            window.history.go(-1);
+            history.back()
             props.onClose?.();
         });
     };
 
     const onFullscreen = () => {
-        if (checkIsMobileView()) return;
-        if (size.width === windowSize.width && size.height === windowSize.height) {
+        if (isMobileView) return;
+        if (isFullscreen) {
             setSize({
-                width: MODAL_SIZE.DEFAULT_WIDTH,
-                height: MODAL_SIZE.DEFAULT_HEIGHT
+                width: MODAL_CONSTANTS.DEFAULT_WIDTH,
+                height: MODAL_CONSTANTS.DEFAULT_HEIGHT
             });
-            setPosition(calcModalPosition(windowSize.width, windowSize.height, MODAL_SIZE.DEFAULT_WIDTH, MODAL_SIZE.DEFAULT_HEIGHT));
+            setPosition(calcModalPosition(windowSize.width, windowSize.height, MODAL_CONSTANTS.DEFAULT_WIDTH, MODAL_CONSTANTS.DEFAULT_HEIGHT));
             return;
         }
         setSize({
@@ -129,108 +157,84 @@ export function Modal({
         });
     };
 
-    const handleMouseDown = (e: React.MouseEvent) => {
-        if (typeof window === 'undefined') return;
-        if (window.innerWidth > MODAL_SIZE.BREAKPOINT && headerRef.current && modalRef.current) {
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+        if (!isClient()) return;
+        if (!isMobileView && headerRef.current && modalRef.current) {
             e.preventDefault();
             e.stopPropagation();
 
             const offsetX = e.clientX - position.left;
             const offsetY = e.clientY - position.top;
 
-            setDragOffset({ x: offsetX, y: offsetY });
-            setIsDragging(true);
+            setInteraction({
+                ...interaction,
+                dragOffset: { x: offsetX, y: offsetY },
+                isDragging: true
+            });
         }
-    };
+    }, [position, isMobileView]);
 
-    const handleResizeMouseDown = (e: React.MouseEvent) => {
-        if (typeof window === 'undefined') return;
-        if (window.innerWidth > MODAL_SIZE.BREAKPOINT && modalRef.current) {
+    const handleResizeMouseDown = useCallback((e: React.MouseEvent) => {
+        if (!isClient()) return;
+        if (!isMobileView && modalRef.current) {
             e.preventDefault();
             e.stopPropagation();
 
-            setInitialSize({
-                width: size.width,
-                height: size.height
+            setInteraction({
+                ...interaction,
+                initialSize: { width: size.width, height: size.height },
+                initialMousePos: { x: e.clientX, y: e.clientY },
+                isResizing: true
             });
-            setInitialMousePos({
-                x: e.clientX,
-                y: e.clientY
-            });
-            setIsResizing(true);
         }
-    };
+    }, [size, isMobileView]);
 
     useEffect(() => {
-        if (typeof window === 'undefined') return;
+        if (!isClient()) return;
+
         const handleResize = () => updateModalLayout();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, [size]);
 
     useEffect(() => {
-        const handleOutsideClick = (event: MouseEvent) => {
-            if (recentlyInteracted || isDragging || isResizing) {
-                return;
-            }
-            if (
-                overlayRef.current &&
-                modalRef.current &&
-                overlayRef.current.contains(event.target as Node) &&
-                !modalRef.current.contains(event.target as Node)
-            ) {
-                onClose();
-            }
-        };
+        if (!isClient()) return;
 
-        const enableBodyScroll = () => {
-            document.body.style.overflow = '';
-        };
-
-        document.addEventListener('click', handleOutsideClick);
-
-        return () => {
-            enableBodyScroll();
-            document.removeEventListener('click', handleOutsideClick);
-        };
-    }, [isDragging, isResizing, recentlyInteracted]);
-
-    useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
-            if (isDragging && modalRef.current) {
+            if (interaction.isDragging && modalRef.current) {
                 e.preventDefault();
-                e.stopPropagation();
-
-                const left = e.clientX - dragOffset.x;
-                const top = e.clientY - dragOffset.y;
-
-                const safeLeft = Math.min(Math.max(0, left), windowSize.width - size.width);
-                const safeTop = Math.min(Math.max(0, top), windowSize.height - size.height);
-
-                setPosition({ left: safeLeft, top: safeTop });
-            } else if (isResizing && modalRef.current) {
+                const left = e.clientX - interaction.dragOffset.x;
+                const top = e.clientY - interaction.dragOffset.y;
+                setPosition({
+                    left: Math.min(Math.max(0, left), windowSize.width - size.width),
+                    top: Math.min(Math.max(0, top), windowSize.height - size.height)
+                });
+            } else if (interaction.isResizing && modalRef.current) {
                 e.preventDefault();
-                e.stopPropagation();
-                const deltaX = e.clientX - initialMousePos.x;
-                const deltaY = e.clientY - initialMousePos.y;
-                const newWidth = Math.max(300, initialSize.width + deltaX);
-                const newHeight = Math.max(200, initialSize.height + deltaY);
-                setSize({ width: newWidth, height: newHeight });
+                const deltaX = e.clientX - interaction.initialMousePos.x;
+                const deltaY = e.clientY - interaction.initialMousePos.y;
+                setSize({
+                    width: Math.max(MODAL_CONSTANTS.MIN_WIDTH, interaction.initialSize.width + deltaX),
+                    height: Math.max(MODAL_CONSTANTS.MIN_HEIGHT, interaction.initialSize.height + deltaY)
+                });
             }
         };
 
         const handleMouseUp = () => {
-            if (isDragging || isResizing) {
-                setRecentlyInteracted(true);
+            if (interaction.isDragging || interaction.isResizing) {
+                setInteraction(prev => ({
+                    ...prev,
+                    recentlyInteracted: true,
+                    isDragging: false,
+                    isResizing: false
+                }));
                 setTimeout(() => {
-                    setRecentlyInteracted(false);
+                    setInteraction(prev => ({ ...prev, recentlyInteracted: false }));
                 }, 300);
             }
-            setIsDragging(false);
-            setIsResizing(false);
         };
 
-        if (isDragging || isResizing) {
+        if (interaction.isDragging || interaction.isResizing) {
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
         }
@@ -239,59 +243,53 @@ export function Modal({
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isDragging, isResizing, dragOffset, size, windowSize, initialMousePos, initialSize]);
+    }, [interaction, size, windowSize]);
+
+    useOutsideClick(
+        modalRef as RefObject<HTMLElement>,
+        onClose,
+        !interaction.recentlyInteracted && !interaction.isDragging && !interaction.isResizing
+    );
 
     return (
         <div
-            ref={overlayRef}
             className="fixed top-6 inset-0 bg-opacity-50 overflow-hidden h-dvh w-screen"
             style={{
-                zIndex: 20 + (order ?? 0)
+                zIndex: MODAL_CONSTANTS.MODAL_Z_INDEX + (order ?? 0)
             }}
         >
             <div
                 id={id}
                 ref={modalRef}
-                style={checkIsMobileView() ? {
-                    position: 'fixed',
-                    left: 0,
-                    top: '24px',
-                    width: '100vw',
-                    height: '100vh',
-                } : {
-                    position: 'absolute',
-                    left: `${position.left}px`,
-                    top: `${position.top}px`,
-                    width: `${size.width}px`,
-                    height: `${size.height}px`,
-                }}
+                style={modalStyle}
+                aria-labelledby={title ? `${id}-title` : undefined}
                 className={cn('flex flex-col bg-black/60', {
-                    'rounded-2xl': !isFullscreen && !checkIsMobileView()
-                })}
+                    'rounded-2xl': !isFullscreen && !isMobileView
+                }, className)}
             >
                 <header
                     ref={headerRef}
                     className={cn("relative w-full px-4 py-2 flex items-center cursor-move backdrop-blur-sm", {
-                        'rounded-t-2xl': !isFullscreen && !checkIsMobileView()
+                        'rounded-t-2xl': !isFullscreen && !isMobileView
                     })}
                     style={{
-                        zIndex: checkIsMobileView() ? 40 : 20 + (order ?? 0)
+                        zIndex: isMobileView ? MODAL_CONSTANTS.INNER_MOBILE_Z_INDEX : MODAL_CONSTANTS.INNER_Z_INDEX + (order ?? 0)
                     }}
                     onMouseDown={handleMouseDown}
                 >
-                    <button className='w-3 h-3 bg-red-500 rounded-full mr-2 cursor-pointer' onClick={onClose}><p className="sr-only">Close</p></button>
-                    <button className='w-3 h-3 bg-green-500 rounded-full mr-2 cursor-pointer' onClick={onFullscreen}><p className="sr-only">Fullscreen</p></button>
+                    <ModalButton color="bg-red-500" onClick={onClose} ariaLabel="Close" />
+                    <ModalButton color="bg-green-500" onClick={onFullscreen} ariaLabel="Fullscreen" />
                     <h2 className="text-sm">{title}</h2>
                 </header>
                 <div className="w-full flex flex-col flex-1 overflow-hidden">
                     {body}
                 </div>
-                {typeof window !== 'undefined' && window.innerWidth > MODAL_SIZE.BREAKPOINT && (
+                {isClient() && !isMobileView && (
                     <div
                         ref={resizeHandleRef}
                         className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize bg-transparent"
                         style={{
-                            zIndex: checkIsMobileView() ? 40 : 20 + (order ?? 0),
+                            zIndex: isMobileView ? MODAL_CONSTANTS.INNER_MOBILE_Z_INDEX : MODAL_CONSTANTS.INNER_Z_INDEX + (order ?? 0),
                             boxShadow: '2px 2px 0 #ffffff inset',
                         }}
                         onMouseDown={handleResizeMouseDown}
@@ -299,6 +297,6 @@ export function Modal({
                     />
                 )}
             </div>
-        </div >
+        </div>
     );
 }

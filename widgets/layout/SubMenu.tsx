@@ -1,10 +1,10 @@
 'use client';
 
 import { useAuth } from "@/features/auth";
-import { cn } from "@/shared";
-import { useUserStore } from "@/shared/store";
+import { cn, useOutsideClick } from "@/shared";
+import { useModalStore, useUserStore } from "@/shared/store";
 import { useSession } from "next-auth/react";
-import { useEffect, useRef } from "react";
+import { RefObject, useRef } from "react";
 import { SUBMENU_STATE } from "./Header";
 
 
@@ -15,24 +15,15 @@ export function SubMenu({
     dropdownState: SUBMENU_STATE;
     handleDropdownClick: (state: SUBMENU_STATE) => void;
 }) {
+    const { setPreviousPath } = useModalStore();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { status } = useSession();
     const { handleGithubLogin, handleLogout } = useAuth();
     const { user } = useUserStore();
 
-    useEffect(() => {
-        if (dropdownState === SUBMENU_STATE.NONE) return;
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                handleDropdownClick(SUBMENU_STATE.NONE);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+    useOutsideClick(dropdownRef as RefObject<HTMLElement>, () => {
+        if (dropdownState !== SUBMENU_STATE.NONE) handleDropdownClick(SUBMENU_STATE.NONE);
+    }, dropdownState !== SUBMENU_STATE.NONE);
 
     return (
         <>
@@ -51,6 +42,7 @@ export function SubMenu({
                                         onClick={() => {
                                             window.location.href = '/';
                                             window.history.pushState(null, '', '/');
+                                            setPreviousPath('/');
                                         }}
                                         className="w-full py-1 hover:bg-white/10 text-start">
                                         홈으로 가기
@@ -77,7 +69,7 @@ export function SubMenu({
                                                 handleLogout();
                                             }
                                         }}>
-                                        {status === 'unauthenticated' ? '로그인' : `${user?.name} 로그아웃`}
+                                        {status === 'unauthenticated' ? '로그인' : `${user?.name ? user?.name : ''} 로그아웃`}
                                     </button>
                                 </li></>
                         }

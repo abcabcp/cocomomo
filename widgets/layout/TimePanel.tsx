@@ -2,7 +2,6 @@
 
 import { formatTimeString, Icon, SlidePanel, SnapScrollPicker } from "@/shared";
 import { useTimeControl } from "@/shared/lib/hooks/useTimeControl";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export function TimePanel() {
@@ -35,7 +34,7 @@ export function TimePanel() {
                 isOpen={isOpen}
                 onClose={closePanel}
                 direction="right"
-                wrapperClassName="bg-transparent"
+                wrapperClassName="bg-transparent top-6"
                 className="mt-6 h-fit rounded-2xl p-4 bg-white/40 backdrop-blur-xl"
                 marginX={16}
             >

@@ -1,3 +1,5 @@
+'use client';
+
 import { useSSRMediaQuery } from '@/shared/lib/utils';
 import { useModalStore } from '@/shared/store';
 import { useEffect, useState } from 'react';
