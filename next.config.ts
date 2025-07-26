@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-import TerserPlugin from 'terser-webpack-plugin';
 
 const nextConfig: NextConfig = {
   compiler: {
@@ -41,26 +40,6 @@ const nextConfig: NextConfig = {
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
       config.optimization.minimize = true;
-      config.optimization.minimizer = config.optimization.minimizer || [];
-      config.optimization.minimizer.push(
-        new TerserPlugin({
-          terserOptions: {
-            compress: {
-              drop_console: true,
-              dead_code: true,
-              drop_debugger: true,
-              ecma: 2020,
-              passes: 2,
-            },
-            mangle: true,
-            format: {
-              comments: false,
-            },
-          },
-          extractComments: false,
-        }),
-      );
-
       config.optimization.usedExports = true;
       config.optimization.sideEffects = true;
       config.optimization.splitChunks = {
