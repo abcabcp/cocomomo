@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'node:path';
 
 const nextConfig: NextConfig = {
   compiler: {
@@ -84,7 +85,13 @@ const nextConfig: NextConfig = {
       use: ['raw-loader'],
       exclude: /node_modules/,
     });
-
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@/shared': path.resolve(__dirname, 'shared'),
+      '@/features': path.resolve(__dirname, 'features'),
+      '@/widgets': path.resolve(__dirname, 'widgets'),
+      '@/entities': path.resolve(__dirname, 'entities')
+    };
     return config;
   },
   images: {
