@@ -1,3 +1,5 @@
+import { isClient } from './device';
+
 export const formatTimeString = (
   hour: number,
   minute: number,
@@ -36,6 +38,7 @@ export const getCurrentTime = (): {
   minute: number;
   period: 'AM' | 'PM';
 } => {
+  if (!isClient()) return { hour: 0, minute: 0, period: 'AM' };
   const now = new Date();
   return parseTimeString(`${now.getHours()}:${now.getMinutes()}`);
 };
