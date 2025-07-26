@@ -25,7 +25,11 @@ interface CurrentTimeStore {
 }
 
 const getLocalTime = (): TimeData => {
-  return getCurrentTime();
+  try {
+    return getCurrentTime();
+  } catch (error) {
+    return { hour: 0, minute: 0, period: 'AM' };
+  }
 };
 
 const calculateTimeDifference = (
