@@ -70,11 +70,20 @@ export function useSearch() {
       if (filteredItems.length === 0) {
         return;
       }
-      if (filteredItems[selectedIndex].link === pathname) {
+      const selectLink = filteredItems[selectedIndex].link;
+      if (selectLink === pathname) {
         closeSearch();
         return;
       }
-      router.push(filteredItems[selectedIndex].link, {
+      if (selectLink.endsWith('/mail')) {
+        window.open('mailto:dltmfrl600@gmail.com', '_blank');
+        return;
+      }
+      if (selectLink.endsWith('/github')) {
+        window.open('https://github.com/abcabcp', '_blank');
+        return;
+      }
+      router.push(selectLink, {
         onTransitionReady: openModalAnimation,
         scroll: false,
       });
