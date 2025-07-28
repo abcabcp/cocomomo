@@ -1,19 +1,19 @@
 'use client';
 
 import { useFindOnePosts } from "@/entities/api/query/posts";
+import { useAuth } from "@/features/auth";
+import { closePostAnimation, cn } from "@/shared";
+import { useModalStore, useUserStore } from "@/shared/store";
 import { Icon } from "@/shared/ui/icon/Icon";
 import MDEditor from "@uiw/react-md-editor";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
+import { useSession } from "next-auth/react";
+import { useTransitionRouter } from "next-view-transitions";
 import Image from "next/image";
-import { SkeletonPost } from "./SkeletonPost";
-import { useModalStore, useUserStore } from "@/shared/store";
 import { useMemo, useState } from "react";
 import { PostForm } from "../../ui";
-import { useSession } from "next-auth/react";
-import { useAuth } from "@/features/auth";
-import { closePostAnimation, cn } from "@/shared";
-import { useTransitionRouter } from "next-view-transitions";
+import { SkeletonPost } from "./SkeletonPost";
 
 export function Post({ id, modal }: { id: string, modal?: boolean }) {
     const router = useTransitionRouter()
@@ -44,9 +44,6 @@ export function Post({ id, modal }: { id: string, modal?: boolean }) {
                         if (modal) {
                             router.replace('/blog', {
                                 scroll: false,
-                                onTransitionReady: () => {
-                                    closePostAnimation();
-                                }
                             })
                         } else {
                             setSize({ width: window.innerWidth, height: window.innerHeight })

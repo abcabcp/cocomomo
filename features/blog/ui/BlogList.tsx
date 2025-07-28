@@ -2,25 +2,41 @@
 
 import { FindAllPostsParams } from "@/entities/api/model";
 import { useFindAllPosts } from "@/entities/api/query/posts";
-import Link from "next/link";
-import removeMd from 'remove-markdown';
-import { usePostSearchStore } from "../store/post-search";
-import { useMemo } from "react";
+import { openPostAnimation } from "@/shared";
 import { useModalStore } from "@/shared/store";
 import { useTransitionRouter } from "next-view-transitions";
-import { openModalAnimation, openPostAnimation } from "@/shared";
+import { useMemo } from "react";
+import removeMd from 'remove-markdown';
+import { usePostSearchStore } from "../store/post-search";
 
 
 export function BlogList({ modal }: { modal?: boolean }) {
     const router = useTransitionRouter();
     const { searchTerm, tags: searchTags } = usePostSearchStore();
-    const { setSize } = useModalStore()
+    const { setSize, setIsRouting } = useModalStore()
     const { data: allPosts, isLoading } = useFindAllPosts({
         tags: searchTags?.join(','),
         searchTerm,
         limit: 15
     } as FindAllPostsParams);
     const posts = useMemo(() => allPosts?.data?.list || [], [allPosts?.data?.list])
+
+    const handlePostClick = (id: number) => {
+        if (modal) {
+            setIsRouting(true);
+            router.replace(`/blog/${id}`, {
+                scroll: false,
+            })
+        } else {
+            setSize({ width: window.innerWidth, height: window.innerHeight })
+            router.push(`/blog/${id}`, {
+                scroll: false,
+                onTransitionReady: () => {
+                    openPostAnimation();
+                }
+            })
+        }
+    }
 
     return (
         <ul className="flex flex-col gap-6 m-4" id="post-list">
@@ -42,30 +58,10 @@ export function BlogList({ modal }: { modal?: boolean }) {
                         style={{ backgroundImage: `url(${post?.thumbnailUrl || '/default-thumbnail.jpg'})` }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/40" />
-                    <Link
-                        href={`/blog/${post?.id}`}
-                        scroll={false}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (modal) {
-                                router.replace(`/blog/${post?.id}`, {
-                                    scroll: false,
-                                    onTransitionReady: () => {
-                                        openPostAnimation();
-                                    }
-                                });
-                            } else {
-                                setSize({ width: window.innerWidth, height: window.innerHeight })
-                                router.push(`/blog/${post?.id}`, {
-                                    scroll: false,
-                                    onTransitionReady: () => {
-                                        openPostAnimation();
-                                    }
-                                });
-                            }
-
-                        }}
-                        className="absolute inset-0 p-6 flex flex-col justify-between z-10 transition-transform hover:scale-[1.01]"
+                    <button
+                        type="button"
+                        onClick={() => handlePostClick(post?.id)}
+                        className="absolute inset-0 p-6 flex flex-col justify-between z-10 transition-transform hover:scale-[1.01] text-left"
                     >
                         <div>
                             <h2 className="text-lg md:text-2xl font-bold text-white mb-2">{post?.title}</h2>
@@ -85,7 +81,7 @@ export function BlogList({ modal }: { modal?: boolean }) {
                                 ))}
                             </div>
                         </div>
-                    </Link>
+                    </button>
                 </li>
             ))}
         </ul>

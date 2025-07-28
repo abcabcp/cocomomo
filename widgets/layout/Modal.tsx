@@ -3,7 +3,6 @@
 import { closeModalAnimation, cn, getWindowSize, isClient, useMaxWidthLaptop, useOutsideClick } from '@/shared';
 import { useModalStore } from '@/shared/store';
 import { useTransitionRouter } from 'next-view-transitions';
-import { usePathname } from 'next/navigation';
 import { JSX, ReactNode, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type ModalProps = {
@@ -80,11 +79,12 @@ export function Modal({
     order,
     ...props
 }: ModalProps): JSX.Element | null {
+    const router = useTransitionRouter()
     const isMobileView = useMaxWidthLaptop();
     const modalRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
     const resizeHandleRef = useRef<HTMLDivElement>(null);
-    const { size, setSize } = useModalStore();
+    const { size, setSize, isRouting, setIsRouting } = useModalStore();
     const [windowSize, setWindowSize] = useState(getWindowSize());
     const [position, setPosition] = useState<ModalPosition>(
         calcModalPosition(windowSize.width, windowSize.height, size.width, size.height)
@@ -125,17 +125,26 @@ export function Modal({
             setSize({ width, height });
             setPosition({ left: 0, top: 0 });
         } else {
-            setPosition(calcModalPosition(width, height, size.width, size.height));
+            if (isFullscreen) {
+                setSize({ width, height });
+            } else {
+                setPosition(calcModalPosition(width, height, size.width, size.height));
+            }
         }
     }, [size, setSize, isMobileView]);
 
     const onClose = () => {
-        if (typeof window === 'undefined') return;
+        console.log('isRouting', isRouting);
+        if (typeof window === 'undefined' || isRouting) return;
         closeModalAnimation()?.then(() => {
-            history.back()
+            if (window.history.length > 1) {
+                router.back()
+            } else {
+                router.replace('/');
+            }
             props.onClose?.();
-        });
-    };
+        })
+    }
 
     const onFullscreen = () => {
         if (isMobileView) return;
@@ -191,7 +200,7 @@ export function Modal({
 
     useEffect(() => {
         if (!isClient()) return;
-
+        setIsRouting(false);
         const handleResize = () => updateModalLayout();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
@@ -247,13 +256,27 @@ export function Modal({
 
     useOutsideClick(
         modalRef as RefObject<HTMLElement>,
-        onClose,
-        !interaction.recentlyInteracted && !interaction.isDragging && !interaction.isResizing
+        (event) => {
+            event.stopPropagation();
+            event.preventDefault();
+            onClose()
+        },
+        !interaction.recentlyInteracted &&
+        !interaction.isDragging &&
+        !interaction.isResizing,
+        (event) => {
+            const headerElement = document.querySelector('[data-header="true"]');
+            const dockElement = document.querySelector('[data-dock="true"]');
+            if (!headerElement || !dockElement || !(event.target instanceof Node)) {
+                return true;
+            }
+            return !headerElement.contains(event.target) && !dockElement.contains(event.target);
+        }
     );
 
     return (
         <div
-            className="fixed top-6 inset-0 bg-opacity-50 overflow-hidden h-dvh w-screen"
+            className="fixed inset-0 top-6 bg-opacity-50 overflow-hidden h-dvh w-screen"
             style={{
                 zIndex: MODAL_CONSTANTS.MODAL_Z_INDEX + (order ?? 0)
             }}

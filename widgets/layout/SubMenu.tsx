@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/features/auth";
 import { cn, useOutsideClick } from "@/shared";
-import { useModalStore, useUserStore } from "@/shared/store";
+import { useUserStore } from "@/shared/store";
 import { useSession } from "next-auth/react";
 import { RefObject, useRef } from "react";
 import { SUBMENU_STATE } from "./Header";
@@ -15,7 +15,6 @@ export function SubMenu({
     dropdownState: SUBMENU_STATE;
     handleDropdownClick: (state: SUBMENU_STATE) => void;
 }) {
-    const { setPreviousPath } = useModalStore();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { status } = useSession();
     const { handleGithubLogin, handleLogout } = useAuth();
@@ -42,7 +41,6 @@ export function SubMenu({
                                         onClick={() => {
                                             window.location.href = '/';
                                             window.history.pushState(null, '', '/');
-                                            setPreviousPath('/');
                                         }}
                                         className="w-full py-1 hover:bg-white/10 text-start">
                                         홈으로 가기
