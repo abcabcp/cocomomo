@@ -27,6 +27,7 @@ export function Header() {
     return (
         <header
             className="fixed top-0 left-0 right-0 w-full bg-black flex justify-between items-center text-sm font-bold px-4 z-50"
+            data-header="true"
         >
             <div className='flex gap-x-2 items-center text-gray-100'>
                 <button

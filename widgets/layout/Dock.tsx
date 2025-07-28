@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { useTransitionRouter } from 'next-view-transitions';
 import { usePathname } from 'next/navigation';
 
-export function Dock({ visible, segment }: { visible: boolean, segment: string | null }) {
+export function Dock({ visible }: { visible: boolean }) {
     const router = useTransitionRouter();
     const pathname = usePathname();
     const {
@@ -81,19 +81,14 @@ export function Dock({ visible, segment }: { visible: boolean, segment: string |
                                 window.open('https://github.com/abcabcp', '_blank');
                                 return;
                             }
-                            if (pathname === menu.link) {
-                                if (segment) {
-                                    router.push('/', {
-                                        onTransitionReady: closeModalAnimation,
-                                        scroll: false,
-                                    });
-                                } else {
-                                    closeModalAnimation()?.then(() => {
-                                        router.back();
-                                    });
-                                }
+                            if (pathname?.includes(menu.link)) {
+                                router.push('/', {
+                                    onTransitionReady: closeModalAnimation,
+                                    scroll: false,
+                                });
                             } else {
-                                router.push(`${menu.link}`, {
+                                console.log('open')
+                                router.push(menu.link, {
                                     onTransitionReady: openModalAnimation,
                                     scroll: false,
                                 });
@@ -110,11 +105,11 @@ export function Dock({ visible, segment }: { visible: boolean, segment: string |
                                 className="pointer-events-none text-black"
                                 size={menu.icon === 'chrome' || menu.icon === 'github' ? 36 : 40}
                             />
-                            {pathname === menu.link && <span className="absolute bottom-[-7px] left-1/2 transform -translate-x-1/2 w-[5px] h-[5px] rounded-full bg-gray-500" />}
+                            {pathname?.includes(menu.link) && <span className="absolute bottom-[-7px] left-1/2 transform -translate-x-1/2 w-[5px] h-[5px] rounded-full bg-gray-500" />}
                         </motion.div>
                     </motion.li>
                 ))}
             </ul>
-        </nav>
+        </nav >
     );
 }

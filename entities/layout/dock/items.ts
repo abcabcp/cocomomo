@@ -13,6 +13,7 @@ export const dockMenuItems = [
     icon: 'blog',
     className: 'h-10 w-10 bg-white',
     order: 2,
+    color: '#ff6f00',
   },
   {
     title: 'github',
