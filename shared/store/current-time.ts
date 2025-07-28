@@ -25,6 +25,9 @@ interface CurrentTimeStore {
 }
 
 const getLocalTime = (): TimeData => {
+  if (!isClientSide()) {
+    return { hour: 0, minute: 0, period: 'AM' };
+  }
   try {
     return getCurrentTime();
   } catch (error) {
@@ -82,7 +85,9 @@ const applyTimeDifference = (differenceMs: number): TimeData => {
 };
 
 export const useCurrentTimeStore = create<CurrentTimeStore>((set, get) => ({
-  currentTime: getLocalTime(),
+  currentTime: isClientSide()
+    ? getLocalTime()
+    : { hour: 0, minute: 0, period: 'AM' },
   isCustomTime: false,
   timeDifferenceMs: 0,
   lastUpdateTime: isClientSide() ? Date.now() : 0,
