@@ -6,8 +6,7 @@ import { useCurrentTimeStore } from '@/shared/store';
 import { getCurrentTime } from '@/shared/lib/utils/time';
 
 export function useTimeControl() {
-  const { currentTime, setCustomTime, resetToLocalTime } =
-    useCurrentTimeStore();
+  const { currentTime, setCustomTime } = useCurrentTimeStore();
 
   const [selectedTime, setSelectedTime] = useState(currentTime);
   const [isReset, setIsReset] = useState(false);
@@ -28,7 +27,7 @@ export function useTimeControl() {
     setIsOpen(false);
   }, [selectedTime, currentTime, setCustomTime]);
 
-  const handleTempTimeChange = useCallback((value: string) => {
+  const handleSelectedTimeChange = useCallback((value: string) => {
     try {
       const parsedTime = parseTimeString(value);
       setSelectedTime(parsedTime);
@@ -37,7 +36,7 @@ export function useTimeControl() {
     }
   }, []);
 
-  const applyTimeImmediately = useCallback(
+  const handleApplyTimeImmediately = useCallback(
     (time: ReturnType<typeof parseTimeString>) => {
       setCustomTime(time);
       setSelectedTime(time);
@@ -47,10 +46,10 @@ export function useTimeControl() {
 
   const resetTime = useCallback(() => {
     setIsReset(true);
-    resetToLocalTime();
+    setCustomTime(getCurrentTime());
     setSelectedTime(getCurrentTime());
     setTimeout(() => setIsReset(false), 1000);
-  }, [resetToLocalTime]);
+  }, [setCustomTime]);
 
   useEffect(() => {
     if (isOpen) {
@@ -58,14 +57,18 @@ export function useTimeControl() {
     }
   }, [isOpen, currentTime]);
 
+  useEffect(() => {
+    setCustomTime(getCurrentTime());
+  }, []);
+
   return {
     isOpen,
     toggleOpen,
     currentTime,
     selectedTime,
     isReset,
-    handleTempTimeChange,
-    applyTimeImmediately,
+    handleSelectedTimeChange,
+    handleApplyTimeImmediately,
     resetTime,
     closePanel,
   };

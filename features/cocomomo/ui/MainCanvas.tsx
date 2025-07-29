@@ -3,11 +3,8 @@
 import { Canvas } from "@react-three/fiber";
 import { Time } from "./Time";
 import { Sea } from "./Sea";
-import { Suspense, memo, useEffect, useState, useRef } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { AdaptiveDpr, AdaptiveEvents, BakeShadows } from "@react-three/drei";
-
-const MemoizedSea = memo(Sea);
-const MemoizedTime = memo(Time);
 
 export default function MainCanvas() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -56,12 +53,11 @@ export default function MainCanvas() {
             <AdaptiveDpr pixelated />
             <AdaptiveEvents />
             <BakeShadows />
-
             <Suspense fallback={null}>
                 {isVisible && (
                     <>
-                        <MemoizedSea />
-                        <MemoizedTime />
+                        <Sea />
+                        <Time />
                     </>
                 )}
             </Suspense>
