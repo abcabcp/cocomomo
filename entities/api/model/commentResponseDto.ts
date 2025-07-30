@@ -12,8 +12,6 @@ export type CommentResponseDto = {
   id: number;
   /** 댓글 내용 */
   content: string;
-  /** 작성자 ID */
-  userId: number;
   /** 게시글 ID */
   postId: number;
   /** 댓글 생성 시간 */

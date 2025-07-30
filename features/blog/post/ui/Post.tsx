@@ -22,7 +22,11 @@ export function Post({ id, modal }: { id: string, modal?: boolean }) {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const { status } = useSession();
     const { user } = useUserStore()
-    const { data } = useFindOnePosts(id as string);
+    const { data } = useFindOnePosts(id as string, {
+        query: {
+            queryKey: ['posts', id],
+        }
+    });
     const post = useMemo(() => data?.data, [data?.data])
 
     const formatDate = (dateString: string) => {
