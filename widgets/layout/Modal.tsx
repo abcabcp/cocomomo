@@ -12,6 +12,7 @@ type ModalProps = {
     body?: ReactNode;
     onClose?: () => void;
     order?: number;
+    defaultFullscreen?: boolean;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'id' | 'className'>;
 
 type ModalSize = {
@@ -77,6 +78,7 @@ export function Modal({
     title,
     body,
     order,
+    defaultFullscreen = false,
     ...props
 }: ModalProps): JSX.Element | null {
     const router = useTransitionRouter()
@@ -89,6 +91,7 @@ export function Modal({
     const [position, setPosition] = useState<ModalPosition>(
         calcModalPosition(windowSize.width, windowSize.height, size.width, size.height)
     );
+    const [isForcedFullscreen, setIsForcedFullscreen] = useState(defaultFullscreen);
 
     const [interaction, setInteraction] = useState<InteractionState>({
         isDragging: false,
@@ -99,7 +102,10 @@ export function Modal({
         initialSize: { width: 0, height: 0 }
     });
 
-    const isFullscreen = useMemo(() => checkIsFullscreen(size, windowSize), [size, windowSize]);
+    const isFullscreen = useMemo(
+        () => isForcedFullscreen || checkIsFullscreen(size, windowSize),
+        [isForcedFullscreen, size, windowSize]
+    );
 
     const modalStyle = useMemo(() =>
         isMobileView ? {
@@ -108,13 +114,19 @@ export function Modal({
             top: '24px',
             width: '100vw',
             height: '100vh',
+        } : isForcedFullscreen ? {
+            position: 'absolute' as const,
+            left: '0px',
+            top: '0px',
+            width: `${windowSize.width}px`,
+            height: `${windowSize.height}px`,
         } : {
             position: 'absolute' as const,
             left: `${position.left}px`,
             top: `${position.top}px`,
             width: `${size.width}px`,
             height: `${size.height}px`,
-        }, [isMobileView, position, size]
+        }, [isForcedFullscreen, isMobileView, position, size, windowSize]
     );
 
     const updateModalLayout = useCallback(() => {
@@ -125,13 +137,15 @@ export function Modal({
             setSize({ width, height });
             setPosition({ left: 0, top: 0 });
         } else {
-            if (isFullscreen) {
+            if (isForcedFullscreen) {
+                setPosition({ left: 0, top: 0 });
+            } else if (isFullscreen) {
                 setSize({ width, height });
             } else {
                 setPosition(calcModalPosition(width, height, size.width, size.height));
             }
         }
-    }, [size, setSize, isMobileView]);
+    }, [isForcedFullscreen, isFullscreen, size, setSize, isMobileView]);
 
     const onClose = () => {
         console.log('isRouting', isRouting);
@@ -149,6 +163,7 @@ export function Modal({
     const onFullscreen = () => {
         if (isMobileView) return;
         if (isFullscreen) {
+            setIsForcedFullscreen(false);
             setSize({
                 width: MODAL_CONSTANTS.DEFAULT_WIDTH,
                 height: MODAL_CONSTANTS.DEFAULT_HEIGHT
@@ -156,14 +171,8 @@ export function Modal({
             setPosition(calcModalPosition(windowSize.width, windowSize.height, MODAL_CONSTANTS.DEFAULT_WIDTH, MODAL_CONSTANTS.DEFAULT_HEIGHT));
             return;
         }
-        setSize({
-            width: windowSize.width,
-            height: windowSize.height
-        });
-        setPosition({
-            left: 0,
-            top: 0
-        });
+        setIsForcedFullscreen(true);
+        setPosition({ left: 0, top: 0 });
     };
 
     const handleMouseDown = useCallback((e: React.MouseEvent) => {

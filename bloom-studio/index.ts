@@ -1,0 +1,12 @@
+export { GardenEditorContainer } from './presentation/containers/GardenEditorContainer';
+export { useGardenFacade } from './application/facade/GardenFacade';
+export { useGardenEditor } from './application/hooks/useGardenEditor';
+export { useBrush } from './application/hooks/useBrush';
+export { useCapture } from './application/hooks/useCapture';
+export { useEditorStore } from './stores/editorStore';
+export type { GardenSlice } from './application/stores/slices/gardenSlice';
+export type { PlacedObject, ObjectType, BrushConfig, SceneData, GardenObjectConfig } from './core/types/garden.types';
+export { GARDEN_OBJECTS } from './core/types/garden.types';
+export { gardenEventBus, GARDEN_EVENTS } from './core/events/DomainEventBus';
+export { sceneSerializer } from './core/services/SceneSerializer';
+export { commandHistory } from './commands/CommandHistory';
