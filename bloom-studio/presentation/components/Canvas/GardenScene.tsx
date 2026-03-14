@@ -3,6 +3,7 @@
 import { Environment, Loader, OrbitControls, Sky } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Suspense, useCallback, useEffect, useRef } from 'react';
+import { useCurrentTimeStore } from '@/shared/store';
 
 import * as THREE from 'three';
 import { BrushConfig, PlacedObject } from '../../../core/types/garden.types';
@@ -68,7 +69,11 @@ function getSkyConfig(hour: number) {
 }
 
 function DynamicSky() {
-  const hour = new Date().getHours() + new Date().getMinutes() / 60;
+  const { currentTime } = useCurrentTimeStore();
+  const hour24 = currentTime.period === 'PM' 
+    ? (currentTime.hour === 12 ? 12 : currentTime.hour + 12)
+    : (currentTime.hour === 12 ? 0 : currentTime.hour);
+  const hour = hour24 + currentTime.minute / 60;
   const sky = getSkyConfig(hour);
 
   return (
@@ -228,7 +233,11 @@ function SceneContent({
   onRendererReady,
 }: SceneContentProps) {
   const groundRef = useRef<THREE.Mesh>(null);
-  const hour = new Date().getHours() + new Date().getMinutes() / 60;
+  const { currentTime } = useCurrentTimeStore();
+  const hour24 = currentTime.period === 'PM' 
+    ? (currentTime.hour === 12 ? 12 : currentTime.hour + 12)
+    : (currentTime.hour === 12 ? 0 : currentTime.hour);
+  const hour = hour24 + currentTime.minute / 60;
   const sky = getSkyConfig(hour);
 
   return (

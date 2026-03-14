@@ -32,11 +32,12 @@ export interface GardenObjectConfig {
   label: string;
   category: 'flower' | 'tree';
   path: string;
-  loaderType: 'obj' | 'fbx';
+  loaderType: 'obj' | 'fbx' | 'gltf';
   defaultScale: number;
   defaultColor: string | null;
   previewColor: string;
   needsZUpFix?: boolean;
+  rotationFix?: [number, number, number];
 }
 
 export interface IntersectionPoint {
@@ -49,9 +50,8 @@ export const GARDEN_OBJECTS: GardenObjectConfig[] = [
     type: 'anemone',
     label: 'Anemone',
     category: 'flower',
-    path: '/flower/anemone/12973_anemone_flower_v1_l2.obj',
-    loaderType: 'obj',
-    needsZUpFix: true,
+    path: '/flower/anemone/anemone.glb',
+    loaderType: 'gltf',
     defaultScale: 1.2,
     defaultColor: '#f0a0c0',
     previewColor: '#f0a0c0',
@@ -60,9 +60,8 @@ export const GARDEN_OBJECTS: GardenObjectConfig[] = [
     type: 'crocus',
     label: 'Crocus',
     category: 'flower',
-    path: '/flower/crocus/12974_crocus_flower_v1_l3.obj',
-    loaderType: 'obj',
-    needsZUpFix: true,
+    path: '/flower/crocus/crocus.glb',
+    loaderType: 'gltf',
     defaultScale: 1.0,
     defaultColor: '#a78bfa',
     previewColor: '#a78bfa',
@@ -71,28 +70,20 @@ export const GARDEN_OBJECTS: GardenObjectConfig[] = [
     type: 'rose',
     label: 'Rose',
     category: 'flower',
-    path: '/flower/rose/rose.fbx',
-    loaderType: 'fbx',
+    path: '/flower/rose/rose.glb',
+    loaderType: 'gltf',
+    rotationFix: [Math.PI / 2, 0, 0],
     defaultScale: 1.2,
     defaultColor: '#f43f5e',
     previewColor: '#f43f5e',
   },
-  // {
-  //   type: 'maple-tree',
-  //   label: 'Maple Tree',
-  //   category: 'tree',
-  //   path: '/tree/mapletree/MapleTree.obj',
-  //   loaderType: 'obj',
-  //   defaultScale: 3.0,
-  //   defaultColor: '#d97706',
-  //   previewColor: '#d97706',
-  // },
   {
     type: 'tree',
     label: 'Pine Tree',
     category: 'tree',
-    path: '/tree/pinetree/Tree/Tree.obj',
-    loaderType: 'obj',
+    path: '/tree/pinetree/Tree/tree.glb',
+    loaderType: 'gltf',
+    rotationFix: [Math.PI / 2, 0, 0],
     defaultScale: 3.0,
     defaultColor: '#16a34a',
     previewColor: '#16a34a',
