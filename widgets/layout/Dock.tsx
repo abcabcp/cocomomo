@@ -46,7 +46,8 @@ export function Dock({ visible }: { visible: boolean }) {
                 isMobileDevice()
                     ? (!visible ? "translate-y-[200%]" : "translate-y-0")
                     : "",
-                "data-[dock=true]"
+                "data-[dock=true]",
+                { 'hidden': pathname?.includes('/bloom-studio') }
             )}
             data-dock="true"
         >

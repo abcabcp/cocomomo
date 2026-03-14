@@ -1,0 +1,24 @@
+newmtl None
+illum 2
+Kd 1.00 1.00 1.00
+Ka 0.20 0.20 0.20
+Ks 0.05 0.05 0.05
+Ns 10.00
+map_Kd maple_bark.png
+
+newmtl None.001
+illum 2
+Kd 1.00 1.00 1.00
+Ka 0.20 0.20 0.20
+Ks 0.05 0.05 0.05
+Ns 10.00
+map_Kd maple_bark.png
+
+newmtl None_maple_leaf.png.001
+illum 2
+Kd 1.00 1.00 1.00
+Ka 0.20 0.20 0.20
+Ks 0.02 0.02 0.02
+Ns 5.00
+map_Kd maple_leaf.png
+map_d maple_leaf_Mask.png

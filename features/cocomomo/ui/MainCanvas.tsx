@@ -13,7 +13,7 @@ export default function MainCanvas() {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            setDpr(Math.min(window.devicePixelRatio, 2));
+            setDpr(Math.min(window.devicePixelRatio, 1.25));
         }
 
         const observer = new IntersectionObserver(
@@ -46,7 +46,7 @@ export default function MainCanvas() {
                 alpha: true
             }}
             dpr={dpr}
-            performance={{ min: 0.5 }}
+            performance={{ min: 0.6 }}
             frameloop={isVisible ? "always" : "demand"}
             shadows={false}
         >
