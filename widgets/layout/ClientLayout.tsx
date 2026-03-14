@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthProvider, isMobileDevice } from '@/shared';
+import { AuthProvider, cn, isMobileDevice } from '@/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Session } from 'next-auth';
@@ -23,7 +23,8 @@ const queryClient = new QueryClient({
 export default function ClientLayout({ children, session }: { children: React.ReactNode, session: Session | null }) {
     const [isNavVisible, setIsNavVisible] = useState(!isMobileDevice());
     const pathname = usePathname();
-    const isHome = pathname === '/'
+    const isHome = pathname === '/';
+    const isGarden = pathname === '/garden';
 
     useEffect(() => {
         if (isHome || typeof window === 'undefined' || !isMobileDevice()) return;
@@ -84,13 +85,15 @@ export default function ClientLayout({ children, session }: { children: React.Re
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
                     <div className="w-full h-full relative bg-black">
-                        <Header />
-                        <main className="w-full h-full pt-6">
+                        {!isGarden && <Header />}
+                        <main className={cn("w-full h-full pt-6", {
+                            "pt-0": isGarden
+                        })}>
                             {children}
                             <ToastMessage />
                         </main>
                         <ReactQueryDevtools />
-                        <Dock visible={isHome || (isMobileDevice() ? isNavVisible : true)} />
+                        {!isGarden && <Dock visible={isHome || (isMobileDevice() ? isNavVisible : true)} />}
                     </div>
                 </AuthProvider>
             </QueryClientProvider>

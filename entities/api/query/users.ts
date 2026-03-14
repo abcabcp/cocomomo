@@ -18,7 +18,7 @@ import type {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import type { ApiErrorDto, GetCurrentUserUsers200AllOf } from '../model';
+import type { GetCurrentUserUsers200AllOf } from '../model';
 
 import { apiInstance } from '../api';
 
@@ -176,7 +176,7 @@ export const getGetCurrentUserUsersQueryKey = () => {
 
 export const getGetCurrentUserUsersQueryOptions = <
   TData = Awaited<ReturnType<typeof getCurrentUserUsers>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -204,11 +204,11 @@ export const getGetCurrentUserUsersQueryOptions = <
 export type GetCurrentUserUsersQueryResult = NonNullable<
   Awaited<ReturnType<typeof getCurrentUserUsers>>
 >;
-export type GetCurrentUserUsersQueryError = ApiErrorDto;
+export type GetCurrentUserUsersQueryError = unknown;
 
 export function useGetCurrentUserUsers<
   TData = Awaited<ReturnType<typeof getCurrentUserUsers>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   options: {
     query: Partial<
@@ -233,7 +233,7 @@ export function useGetCurrentUserUsers<
 };
 export function useGetCurrentUserUsers<
   TData = Awaited<ReturnType<typeof getCurrentUserUsers>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   options?: {
     query?: Partial<
@@ -258,7 +258,7 @@ export function useGetCurrentUserUsers<
 };
 export function useGetCurrentUserUsers<
   TData = Awaited<ReturnType<typeof getCurrentUserUsers>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   options?: {
     query?: Partial<
@@ -276,7 +276,7 @@ export function useGetCurrentUserUsers<
 
 export function useGetCurrentUserUsers<
   TData = Awaited<ReturnType<typeof getCurrentUserUsers>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   options?: {
     query?: Partial<

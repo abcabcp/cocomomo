@@ -22,7 +22,6 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  ApiErrorDto,
   CreateCommentDto,
   CreateComments200AllOf,
   DeleteComments200AllOf,
@@ -53,7 +52,7 @@ export const getGetCommentsByPostIdCommentsQueryKey = (postId: number) => {
 
 export const getGetCommentsByPostIdCommentsQueryOptions = <
   TData = Awaited<ReturnType<typeof getCommentsByPostIdComments>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   postId: number,
   options?: {
@@ -90,11 +89,11 @@ export const getGetCommentsByPostIdCommentsQueryOptions = <
 export type GetCommentsByPostIdCommentsQueryResult = NonNullable<
   Awaited<ReturnType<typeof getCommentsByPostIdComments>>
 >;
-export type GetCommentsByPostIdCommentsQueryError = ApiErrorDto;
+export type GetCommentsByPostIdCommentsQueryError = unknown;
 
 export function useGetCommentsByPostIdComments<
   TData = Awaited<ReturnType<typeof getCommentsByPostIdComments>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   postId: number,
   options: {
@@ -120,7 +119,7 @@ export function useGetCommentsByPostIdComments<
 };
 export function useGetCommentsByPostIdComments<
   TData = Awaited<ReturnType<typeof getCommentsByPostIdComments>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   postId: number,
   options?: {
@@ -146,7 +145,7 @@ export function useGetCommentsByPostIdComments<
 };
 export function useGetCommentsByPostIdComments<
   TData = Awaited<ReturnType<typeof getCommentsByPostIdComments>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   postId: number,
   options?: {
@@ -168,7 +167,7 @@ export function useGetCommentsByPostIdComments<
 
 export function useGetCommentsByPostIdComments<
   TData = Awaited<ReturnType<typeof getCommentsByPostIdComments>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   postId: number,
   options?: {
@@ -217,7 +216,7 @@ export const createComments = (
 };
 
 export const getCreateCommentsMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -257,12 +256,12 @@ export type CreateCommentsMutationResult = NonNullable<
   Awaited<ReturnType<typeof createComments>>
 >;
 export type CreateCommentsMutationBody = CreateCommentDto;
-export type CreateCommentsMutationError = ApiErrorDto;
+export type CreateCommentsMutationError = unknown;
 
 /**
  * @summary 댓글 작성
  */
-export const useCreateComments = <TError = ApiErrorDto, TContext = unknown>(
+export const useCreateComments = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof createComments>>,
@@ -298,7 +297,7 @@ export const updateComments = (
 };
 
 export const getUpdateCommentsMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -338,12 +337,12 @@ export type UpdateCommentsMutationResult = NonNullable<
   Awaited<ReturnType<typeof updateComments>>
 >;
 export type UpdateCommentsMutationBody = UpdateCommentDto;
-export type UpdateCommentsMutationError = ApiErrorDto;
+export type UpdateCommentsMutationError = unknown;
 
 /**
  * @summary 댓글 수정
  */
-export const useUpdateComments = <TError = ApiErrorDto, TContext = unknown>(
+export const useUpdateComments = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updateComments>>,
@@ -374,7 +373,7 @@ export const deleteComments = (id: number) => {
 };
 
 export const getDeleteCommentsMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -414,12 +413,12 @@ export type DeleteCommentsMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteComments>>
 >;
 
-export type DeleteCommentsMutationError = ApiErrorDto;
+export type DeleteCommentsMutationError = unknown;
 
 /**
  * @summary 댓글 삭제
  */
-export const useDeleteComments = <TError = ApiErrorDto, TContext = unknown>(
+export const useDeleteComments = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteComments>>,

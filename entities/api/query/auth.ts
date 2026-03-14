@@ -14,7 +14,6 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  ApiErrorDto,
   LoginAuth200AllOf,
   LoginRequestDto,
   RefreshTokenAuth200AllOf,
@@ -41,7 +40,7 @@ export const loginAuth = (
 };
 
 export const getLoginAuthMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -81,12 +80,12 @@ export type LoginAuthMutationResult = NonNullable<
   Awaited<ReturnType<typeof loginAuth>>
 >;
 export type LoginAuthMutationBody = LoginRequestDto;
-export type LoginAuthMutationError = ApiErrorDto;
+export type LoginAuthMutationError = unknown;
 
 /**
  * @summary 로그인 처리
  */
-export const useLoginAuth = <TError = ApiErrorDto, TContext = unknown>(
+export const useLoginAuth = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof loginAuth>>,
@@ -123,7 +122,7 @@ export const refreshTokenAuth = (
 };
 
 export const getRefreshTokenAuthMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -163,12 +162,12 @@ export type RefreshTokenAuthMutationResult = NonNullable<
   Awaited<ReturnType<typeof refreshTokenAuth>>
 >;
 export type RefreshTokenAuthMutationBody = RefreshTokenRequestDto;
-export type RefreshTokenAuthMutationError = ApiErrorDto;
+export type RefreshTokenAuthMutationError = unknown;
 
 /**
  * @summary 액세스 토큰 갱신
  */
-export const useRefreshTokenAuth = <TError = ApiErrorDto, TContext = unknown>(
+export const useRefreshTokenAuth = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof refreshTokenAuth>>,

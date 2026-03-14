@@ -22,7 +22,6 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  ApiErrorDto,
   CreatePostDto,
   CreatePosts200AllOf,
   FindAllPosts200AllOf,
@@ -201,7 +200,7 @@ export const createPosts = (
 };
 
 export const getCreatePostsMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -241,12 +240,12 @@ export type CreatePostsMutationResult = NonNullable<
   Awaited<ReturnType<typeof createPosts>>
 >;
 export type CreatePostsMutationBody = CreatePostDto;
-export type CreatePostsMutationError = ApiErrorDto;
+export type CreatePostsMutationError = unknown;
 
 /**
  * @summary 게시글 생성
  */
-export const useCreatePosts = <TError = ApiErrorDto, TContext = unknown>(
+export const useCreatePosts = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof createPosts>>,
@@ -426,7 +425,7 @@ export const getFindOnePostsQueryKey = (id: string) => {
 
 export const getFindOnePostsQueryOptions = <
   TData = Awaited<ReturnType<typeof findOnePosts>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   id: string,
   options?: {
@@ -458,11 +457,11 @@ export const getFindOnePostsQueryOptions = <
 export type FindOnePostsQueryResult = NonNullable<
   Awaited<ReturnType<typeof findOnePosts>>
 >;
-export type FindOnePostsQueryError = ApiErrorDto;
+export type FindOnePostsQueryError = unknown;
 
 export function useFindOnePosts<
   TData = Awaited<ReturnType<typeof findOnePosts>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   id: string,
   options: {
@@ -484,7 +483,7 @@ export function useFindOnePosts<
 };
 export function useFindOnePosts<
   TData = Awaited<ReturnType<typeof findOnePosts>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   id: string,
   options?: {
@@ -506,7 +505,7 @@ export function useFindOnePosts<
 };
 export function useFindOnePosts<
   TData = Awaited<ReturnType<typeof findOnePosts>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   id: string,
   options?: {
@@ -524,7 +523,7 @@ export function useFindOnePosts<
 
 export function useFindOnePosts<
   TData = Awaited<ReturnType<typeof findOnePosts>>,
-  TError = ApiErrorDto,
+  TError = unknown,
 >(
   id: string,
   options?: {
@@ -575,7 +574,7 @@ export const updatePosts = (id: string, updatePostDto: UpdatePostDto) => {
 };
 
 export const getUpdatePostsMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -615,12 +614,12 @@ export type UpdatePostsMutationResult = NonNullable<
   Awaited<ReturnType<typeof updatePosts>>
 >;
 export type UpdatePostsMutationBody = UpdatePostDto;
-export type UpdatePostsMutationError = ApiErrorDto;
+export type UpdatePostsMutationError = unknown;
 
 /**
  * @summary 게시글 수정
  */
-export const useUpdatePosts = <TError = ApiErrorDto, TContext = unknown>(
+export const useUpdatePosts = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof updatePosts>>,
@@ -651,7 +650,7 @@ export const removePosts = (id: string) => {
 };
 
 export const getRemovePostsMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -691,12 +690,12 @@ export type RemovePostsMutationResult = NonNullable<
   Awaited<ReturnType<typeof removePosts>>
 >;
 
-export type RemovePostsMutationError = ApiErrorDto;
+export type RemovePostsMutationError = unknown;
 
 /**
  * @summary 게시글 삭제
  */
-export const useRemovePosts = <TError = ApiErrorDto, TContext = unknown>(
+export const useRemovePosts = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof removePosts>>,

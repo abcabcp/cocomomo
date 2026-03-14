@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { SearchBar } from './SearchBar';
 import { SubMenu } from './SubMenu';
 import { TimePanel } from './TimePanel';
+import { usePathname } from 'next/navigation';
 
 export enum SUBMENU_STATE {
     NONE = -1,
@@ -14,6 +15,7 @@ export enum SUBMENU_STATE {
 }
 
 export function Header() {
+    const pathname = usePathname();
     const [dropdownState, setDropdownState] = useState<SUBMENU_STATE>(SUBMENU_STATE.NONE);
     const { user } = useUserStore();
 

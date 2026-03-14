@@ -18,7 +18,6 @@ import type {
   AddImageUtilsParams,
   AddImagesUtils200AllOf,
   AddImagesUtilsParams,
-  ApiErrorDto,
   DeleteImageByUrlUtils200AllOf,
   DeleteImageByUrlUtilsParams,
   UploadImageRequestDto,
@@ -51,7 +50,7 @@ export const addImagesUtils = (
 };
 
 export const getAddImagesUtilsMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -91,12 +90,12 @@ export type AddImagesUtilsMutationResult = NonNullable<
   Awaited<ReturnType<typeof addImagesUtils>>
 >;
 export type AddImagesUtilsMutationBody = UploadImagesRequestDto;
-export type AddImagesUtilsMutationError = ApiErrorDto;
+export type AddImagesUtilsMutationError = unknown;
 
 /**
  * @summary 이미지들 등록
  */
-export const useAddImagesUtils = <TError = ApiErrorDto, TContext = unknown>(
+export const useAddImagesUtils = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof addImagesUtils>>,
@@ -138,7 +137,7 @@ export const addImageUtils = (
 };
 
 export const getAddImageUtilsMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -178,12 +177,12 @@ export type AddImageUtilsMutationResult = NonNullable<
   Awaited<ReturnType<typeof addImageUtils>>
 >;
 export type AddImageUtilsMutationBody = UploadImageRequestDto;
-export type AddImageUtilsMutationError = ApiErrorDto;
+export type AddImageUtilsMutationError = unknown;
 
 /**
  * @summary 단건 이미지 등록
  */
-export const useAddImageUtils = <TError = ApiErrorDto, TContext = unknown>(
+export const useAddImageUtils = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof addImageUtils>>,
@@ -215,7 +214,7 @@ export const deleteImageByUrlUtils = (params: DeleteImageByUrlUtilsParams) => {
 };
 
 export const getDeleteImageByUrlUtilsMutationOptions = <
-  TError = ApiErrorDto,
+  TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -255,15 +254,12 @@ export type DeleteImageByUrlUtilsMutationResult = NonNullable<
   Awaited<ReturnType<typeof deleteImageByUrlUtils>>
 >;
 
-export type DeleteImageByUrlUtilsMutationError = ApiErrorDto;
+export type DeleteImageByUrlUtilsMutationError = unknown;
 
 /**
  * @summary 이미지 삭제
  */
-export const useDeleteImageByUrlUtils = <
-  TError = ApiErrorDto,
-  TContext = unknown,
->(
+export const useDeleteImageByUrlUtils = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof deleteImageByUrlUtils>>,
