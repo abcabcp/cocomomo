@@ -9,7 +9,8 @@
     "lint": "next lint",
     "orval": "dotenv -e .env.development -- orval",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "optimize-textures": "node scripts/optimize-textures.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.3.0",
@@ -56,6 +57,7 @@
     "dotenv-cli": "^8.0.0",
     "orval": "^7.9.0",
     "raw-loader": "^4.0.2",
+    "sharp": "^0.34.5",
     "storybook": "^8.0.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4",
