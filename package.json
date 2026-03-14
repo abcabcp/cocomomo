@@ -10,7 +10,8 @@
     "orval": "dotenv -e .env.development -- orval",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "optimize-textures": "node scripts/optimize-textures.js"
+    "optimize-textures": "node scripts/optimize-textures.js",
+    "convert-to-glb": "node scripts/convert-to-glb.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.3.0",
@@ -55,6 +56,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv-cli": "^8.0.0",
+    "gltf-pipeline": "^4.3.0",
+    "obj2gltf": "^3.2.0",
     "orval": "^7.9.0",
     "raw-loader": "^4.0.2",
     "sharp": "^0.34.5",

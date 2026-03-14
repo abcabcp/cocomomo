@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { modelCache } from '../cache/ModelCache';
 import { enableShadows } from '../../core/services/ObjectService';
 import { GARDEN_OBJECTS } from '../../core/types/garden.types';
@@ -142,10 +144,45 @@ export async function loadFBX(path: string): Promise<THREE.Object3D> {
   return object;
 }
 
+export async function loadGLB(path: string): Promise<THREE.Object3D> {
+  if (modelCache.has(path)) {
+    return modelCache.get(path) as THREE.Object3D;
+  }
+
+  const loader = new GLTFLoader();
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+  loader.setDRACOLoader(dracoLoader);
+
+  const gltf = await loader.loadAsync(path);
+  const object = gltf.scene;
+  
+  const config = GARDEN_OBJECTS.find(o => o.path === path);
+  if (config?.rotationFix) {
+    const [x, y, z] = config.rotationFix;
+    const rotMatrix = new THREE.Matrix4().makeRotationFromEuler(
+      new THREE.Euler(x, y, z, 'XYZ')
+    );
+    object.traverse(child => {
+      if (child instanceof THREE.Mesh && child.geometry) {
+        child.geometry = child.geometry.clone();
+        child.geometry.applyMatrix4(rotMatrix);
+      }
+    });
+  }
+  
+  normalizeModel(object);
+  modelCache.set(path, object);
+  dracoLoader.dispose();
+  
+  return object;
+}
+
 export async function loadModel(
   path: string,
-  loaderType: 'obj' | 'fbx',
+  loaderType: 'obj' | 'fbx' | 'gltf',
 ): Promise<THREE.Object3D> {
+  if (loaderType === 'gltf') return loadGLB(path);
   if (loaderType === 'fbx') return loadFBX(path);
   return loadOBJ(path);
 }

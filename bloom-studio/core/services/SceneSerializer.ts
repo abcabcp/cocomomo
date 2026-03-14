@@ -1,11 +1,23 @@
 import { SceneData, PlacedObject } from '../types/garden.types';
+import { useCurrentTimeStore } from '@/shared/store';
 
 const STORAGE_KEY = 'bloom-studio:garden-scene';
 const CURRENT_VERSION = 1;
 
+function getCurrentTimeString(): string {
+  const { currentTime } = useCurrentTimeStore.getState();
+  const hour24 = currentTime.period === 'PM' 
+    ? (currentTime.hour === 12 ? 12 : currentTime.hour + 12)
+    : (currentTime.hour === 12 ? 0 : currentTime.hour);
+  
+  const now = new Date();
+  now.setHours(hour24, currentTime.minute, 0, 0);
+  return now.toISOString();
+}
+
 export class SceneSerializer {
   serialize(objects: PlacedObject[]): SceneData {
-    const now = new Date().toISOString();
+    const now = getCurrentTimeString();
     return {
       version: CURRENT_VERSION,
       objects,
