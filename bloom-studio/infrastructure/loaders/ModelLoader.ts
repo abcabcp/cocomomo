@@ -10,6 +10,48 @@ import { GARDEN_OBJECTS } from '../../core/types/garden.types';
 
 const DEFAULT_MATERIALS: Record<string, THREE.MeshStandardMaterial> = {};
 
+let dracoLoaderInstance: DRACOLoader | null = null;
+
+function getDracoLoader(): DRACOLoader {
+  if (!dracoLoaderInstance) {
+    dracoLoaderInstance = new DRACOLoader();
+    dracoLoaderInstance.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+  }
+  return dracoLoaderInstance;
+}
+
+type LoadTask = {
+  path: string;
+  resolve: (obj: THREE.Object3D) => void;
+  reject: (err: any) => void;
+};
+
+const loadQueue: LoadTask[] = [];
+let isLoading = false;
+
+async function processLoadQueue() {
+  if (isLoading || loadQueue.length === 0) return;
+  
+  isLoading = true;
+  const task = loadQueue.shift();
+  if (!task) {
+    isLoading = false;
+    return;
+  }
+  
+  try {
+    const obj = await loadGLBInternal(task.path);
+    task.resolve(obj);
+  } catch (err) {
+    task.reject(err);
+  } finally {
+    isLoading = false;
+    if (loadQueue.length > 0) {
+      setTimeout(() => processLoadQueue(), 10); 
+    }
+  }
+}
+
 function getDefaultMaterial(color: string): THREE.MeshStandardMaterial {
   if (!DEFAULT_MATERIALS[color]) {
     DEFAULT_MATERIALS[color] = new THREE.MeshStandardMaterial({
@@ -144,15 +186,14 @@ export async function loadFBX(path: string): Promise<THREE.Object3D> {
   return object;
 }
 
-export async function loadGLB(path: string): Promise<THREE.Object3D> {
+// 내부 GLB 로딩 함수 (큐에서 호출)
+async function loadGLBInternal(path: string): Promise<THREE.Object3D> {
   if (modelCache.has(path)) {
     return modelCache.get(path) as THREE.Object3D;
   }
 
   const loader = new GLTFLoader();
-  const dracoLoader = new DRACOLoader();
-  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-  loader.setDRACOLoader(dracoLoader);
+  loader.setDRACOLoader(getDracoLoader());
 
   const gltf = await loader.loadAsync(path);
   const object = gltf.scene;
@@ -173,9 +214,22 @@ export async function loadGLB(path: string): Promise<THREE.Object3D> {
   
   normalizeModel(object);
   modelCache.set(path, object);
-  dracoLoader.dispose();
   
   return object;
+}
+
+// 큐를 통한 순차 로딩
+export async function loadGLB(path: string): Promise<THREE.Object3D> {
+  // 이미 캐시에 있으면 바로 반환
+  if (modelCache.has(path)) {
+    return modelCache.get(path) as THREE.Object3D;
+  }
+
+  // 큐에 추가하고 Promise 반환
+  return new Promise<THREE.Object3D>((resolve, reject) => {
+    loadQueue.push({ path, resolve, reject });
+    processLoadQueue();
+  });
 }
 
 export async function loadModel(
