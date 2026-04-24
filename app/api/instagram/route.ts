@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+const INSTAGRAM_REVALIDATE_SECONDS = 3600;
+
 async function fetchInstagramMedia(accessToken: string, after?: string | null) {
   const params = new URLSearchParams({
     access_token: accessToken,
@@ -20,6 +22,10 @@ async function fetchInstagramMedia(accessToken: string, after?: string | null) {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
+      next: {
+        revalidate: INSTAGRAM_REVALIDATE_SECONDS,
+        tags: ['instagram-feed'],
+      },
     });
 
     if (!response.ok) {
@@ -39,12 +45,10 @@ async function fetchInstagramMedia(accessToken: string, after?: string | null) {
 
 export async function GET(request: Request) {
   try {
-    const accessToken = process.env.NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN;
+    const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
 
     if (!accessToken) {
-      console.error(
-        'NEXT_PUBLIC_INSTAGRAM_ACCESS_TOKEN 환경 변수가 설정되지 않았습니다.',
-      );
+      console.error('INSTAGRAM_ACCESS_TOKEN 환경 변수가 설정되지 않았습니다.');
       return NextResponse.json(
         { error: 'Instagram access token is not configured' },
         { status: 500 },
@@ -66,10 +70,17 @@ export async function GET(request: Request) {
       }
     }
 
-    return NextResponse.json({
-      data: response.data,
-      nextCursor: nextCursor,
-    });
+    return NextResponse.json(
+      {
+        data: response.data,
+        nextCursor: nextCursor,
+      },
+      {
+        headers: {
+          'Cache-Control': `public, s-maxage=${INSTAGRAM_REVALIDATE_SECONDS}, stale-while-revalidate=600`,
+        },
+      },
+    );
   } catch (error: any) {
     console.error('API 라우트 오류:', error);
 
@@ -78,7 +89,12 @@ export async function GET(request: Request) {
         error: '인스타그램 피드를 가져오는 중 오류가 발생했습니다',
         message: error.message,
       },
-      { status: 500 },
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate',
+        },
+      },
     );
   }
 }
