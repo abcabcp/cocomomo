@@ -1,30 +1,12 @@
-'use client';
-
 import { create } from 'zustand';
+import { type TimeOfDay, fromMinutes, nowMinutes } from '../lib/time';
 
-interface TimeData {
-  hour: number;
-  minute: number;
-  period: 'AM' | 'PM';
-}
+type CurrentTimeStore = {
+  currentTime: TimeOfDay;
+  setCurrentTime: (time: TimeOfDay) => void;
+};
 
-interface CurrentTimeStore {
-  currentTime: TimeData;
-  setCurrentTime: (time: TimeData) => void;
-  setCustomTime: (time: TimeData) => void;
-}
-
-export const useCurrentTimeStore = create<CurrentTimeStore>((set, get) => ({
-  currentTime: {
-    hour: 0,
-    minute: 0,
-    period: 'AM',
-  },
-
-  setCurrentTime: (time: TimeData) => set({ currentTime: time }),
-  setCustomTime: (time: TimeData) => {
-    set({
-      currentTime: time,
-    });
-  },
+export const useCurrentTimeStore = create<CurrentTimeStore>((set) => ({
+  currentTime: fromMinutes(typeof window === 'undefined' ? 720 : nowMinutes()),
+  setCurrentTime: (currentTime) => set({ currentTime }),
 }));
