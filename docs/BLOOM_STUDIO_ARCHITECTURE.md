@@ -9,7 +9,7 @@
 **Clean Architecture** 
 
 ```
-bloom-studio/
+labs/bloom-studio/
 ├── core/              # 도메인 로직 (타입, 서비스, 이벤트)
 ├── application/       # 유스케이스 (훅, 커맨드, Facade)
 ├── infrastructure/    # 외부 의존성 (3D 로더, 캐시)

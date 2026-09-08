@@ -1,73 +1,48 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+* {
+  scrollbar-width: none;
 }
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*::-webkit-scrollbar {
+  display: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-pretendard-jp);
+  font-family: var(--font-pretendard-jp), system-ui, sans-serif;
 }
 
-html,
-body,
-div,
-section,
-article,
-main,
-aside,
-nav,
-header,
-footer,
-form,
-ul,
-ol,
-pre,
-code {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  -webkit-overflow-scrolling: auto !important;
+.font-mono {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
 }
 
-.scroll-container::-webkit-scrollbar,
-.overflow-auto::-webkit-scrollbar,
-.overflow-y-auto::-webkit-scrollbar,
-.overflow-x-auto::-webkit-scrollbar,
-[style*="overflow"]::-webkit-scrollbar,
-[style*="overflow-y"]::-webkit-scrollbar,
-[style*="overflow-x"]::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+.scrub {
+  appearance: none;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+  cursor: ew-resize;
+  transition: opacity 0.3s;
 }
-
-@supports (-webkit-touch-callout: none) {
-  * {
-    -webkit-overflow-scrolling: auto !important;
-  }
+.scrub:hover,
+.scrub:focus-visible {
+  opacity: 1;
+  outline: none;
 }
-
-*[class*="overflow"]::-webkit-scrollbar {
-  display: none;
+.scrub::-webkit-slider-thumb {
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+  transition: transform 0.2s;
 }
-
-*::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-  background: transparent;
+.scrub:active::-webkit-slider-thumb {
+  transform: scale(1.6);
+}
+.scrub::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: currentColor;
 }

@@ -44,5 +44,8 @@
     "formatter": {
       "quoteStyle": "single"
     }
+  },
+  "files": {
+    "ignore": [".next", "node_modules"]
   }
 }
