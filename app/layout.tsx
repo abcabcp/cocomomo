@@ -20,7 +20,7 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="ko">
         <body
-          className={`${pretendardJP.className} h-dvh w-dvw overflow-hidden bg-[#0a0a0a] text-white antialiased`}
+          className={`${pretendardJP.className} min-h-dvh bg-[#0a0a0a] text-white antialiased`}
         >
           {children}
         </body>

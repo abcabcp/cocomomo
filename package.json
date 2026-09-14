@@ -7,18 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check .",
-    "test": "node --experimental-strip-types --experimental-default-type=module --no-warnings --test shared/lib/time.test.ts labs/sea/presets.test.ts",
+    "test": "node --experimental-strip-types --experimental-default-type=module --no-warnings --test lib/posts.test.ts shared/lib/time.test.ts labs/sea/presets.test.ts",
     "optimize-textures": "node scripts/optimize-textures.js",
-    "convert-to-glb": "node scripts/convert-to-glb.js"
+    "convert-to-glb": "node scripts/convert-to-glb.js",
+    "optimize-posts": "node scripts/optimize-posts.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.3.0",
     "@react-three/fiber": "^9.1.2",
     "gsap": "^3.13.0",
+    "marked": "^18.0.13",
     "next": "15.5.12",
     "next-view-transitions": "^0.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "shiki": "^4.4.3",
     "three": "^0.177.0",
     "zustand": "^5.0.6"
   },
