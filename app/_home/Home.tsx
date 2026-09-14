@@ -31,7 +31,24 @@ export function Home() {
       >
         <header className="flex items-baseline justify-between text-[11px] uppercase tracking-[0.2em]">
           <h1>cocomomo</h1>
-          <span>interactive lab · {labs.length} works</span>
+          <span>
+            interactive lab · {labs.length} works ·{' '}
+            <Link
+              href="/writing"
+              className="pointer-events-auto transition-opacity hover:opacity-60"
+            >
+              writing
+            </Link>{' '}
+            ·{' '}
+            <a
+              href="https://github.com/abcabcp"
+              target="_blank"
+              rel="noreferrer"
+              className="pointer-events-auto transition-opacity hover:opacity-60"
+            >
+              github
+            </a>
+          </span>
         </header>
 
         <ol className="mb-16 flex flex-col items-end gap-6 md:mb-24 md:gap-8">

@@ -46,3 +46,76 @@ body {
   border-radius: 50%;
   background: currentColor;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+.post {
+  @apply text-[17px] leading-[1.75] text-[#141414]/85 break-keep [overflow-wrap:anywhere];
+}
+.post > * + * {
+  @apply mt-[0.8em];
+}
+.post h2,
+.post h3 {
+  @apply font-semibold leading-tight tracking-[-0.02em] text-[#141414] scroll-mt-28;
+}
+.post h2 {
+  @apply mt-[2.8em] text-2xl;
+}
+.post h3 {
+  @apply mt-[2.5em] text-lg;
+}
+.post strong {
+  @apply font-semibold text-[#141414];
+}
+.post a {
+  @apply text-[#141414] underline underline-offset-4 decoration-[#141414]/30 transition-colors hover:decoration-[#141414];
+}
+.post blockquote {
+  @apply border-l border-[#141414]/25 pl-5 text-[#141414]/55;
+}
+.post ul,
+.post ol {
+  @apply pl-6;
+}
+.post ul {
+  list-style-type: "–  ";
+}
+.post li + li {
+  @apply mt-[0.4em];
+}
+.post li::marker {
+  @apply text-[#141414]/35;
+}
+.post code {
+  @apply font-mono text-[0.88em] bg-[#141414]/6 px-1.5 py-0.5;
+}
+.post pre {
+  @apply overflow-x-auto border border-[#141414]/10 px-6 py-5 text-[13.5px] leading-[1.7];
+}
+.post pre code {
+  @apply bg-transparent p-0 text-[length:inherit];
+}
+.post table {
+  @apply block w-full overflow-x-auto border-collapse text-[15px] leading-relaxed;
+}
+.post th {
+  @apply whitespace-nowrap border-b border-[#141414]/30 py-3 pr-5 text-left text-[11px] font-medium uppercase tracking-[0.2em] text-[#141414]/45;
+}
+.post td {
+  @apply border-b border-[#141414]/10 py-3.5 pr-5 align-top;
+}
+.post figure {
+  @apply my-10;
+}
+.post img {
+  @apply block h-auto w-full;
+}
+.post figcaption {
+  @apply mt-3 text-center text-xs text-[#141414]/45;
+}
+.post hr {
+  @apply my-14 border-0 border-t border-[#141414]/10;
+}
