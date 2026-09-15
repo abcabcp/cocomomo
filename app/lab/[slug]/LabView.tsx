@@ -1,11 +1,13 @@
 'use client';
 
 import { findLab } from '@/labs/registry';
+import { useLockScroll } from '@/shared/lib/useLockScroll';
 import { Link } from 'next-view-transitions';
 import dynamic from 'next/dynamic';
 import { useMemo } from 'react';
 
 export function LabView({ slug }: { slug: string }) {
+  useLockScroll();
   const lab = findLab(slug);
   const Lab = useMemo(
     () =>
