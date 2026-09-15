@@ -1,6 +1,7 @@
 'use client';
 
 import { type Lab, labs } from '@/labs/registry';
+import { useLockScroll } from '@/shared/lib/useLockScroll';
 import { Link } from 'next-view-transitions';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
@@ -8,6 +9,7 @@ import { useEffect, useState } from 'react';
 const SeaLab = dynamic(() => import('@/labs/sea'), { ssr: false });
 
 export function Home() {
+  useLockScroll();
   const [hovered, setHovered] = useState<Lab | null>(null);
   const [focused, setFocused] = useState(false);
 
